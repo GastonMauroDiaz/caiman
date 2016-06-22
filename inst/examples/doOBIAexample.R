@@ -1,0 +1,25 @@
+x <- loadPhoto()
+x <- normalize(x, 0, 255)
+z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
+
+# Because next line takes too long for an example...
+\dontrun{
+  seg <- doPolarQtree(x, z, scaleParameter = 0.1)
+}
+# ... you can open the result whit the next lines.
+seg <- raster(system.file("external/seg.tif", package="caiman"))
+seg <- as(seg, "PolarSegmentation")
+
+g1 <- makePolarGrid(z)
+zlim <- asAngle(c(20, 80))
+\donttest{
+out <- doOBIA(x, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = FALSE)
+plot(out)
+out <- doOBIA(x, z, seg, g1, zlim = zlim, calibration = TRUE)
+plot(out)
+
+zlim <- asAngle(c(30, 60))
+
+out <- doOBIA(x, z, seg, g1, zlim = zlim, calibration = TRUE)
+plot(out)
+}

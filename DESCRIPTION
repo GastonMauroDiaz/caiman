@@ -1,0 +1,29 @@
+Package: caiman
+Type: Package
+Title: Canopy Image Analysis
+Version: 0.0.0.9002
+Date: 2016-05-24
+Author@R: person("Gaston Mauro", "Diaz", email =
+    "gdiaz@ciefap.org.ar", role = c("aut", "cre"))
+Description: Caiman uses the functionalities of the packages raster and
+    EBImage to provide algorithms specially developed to process photographs
+    of the plant canopy.
+License: GPL (>= 3)
+Author: Gaston Mauro Diaz <gdiaz@ciefap.org.ar> [aut, cre]
+Maintainer: "Gaston Mauro Diaz <gdiaz@ciefap.org.ar>
+URL: https://github.com/GastonMauroDiaz/caiman
+BugReports: https://github.com/GastonMauroDiaz/caiman/issues
+LazyData: TRUE
+Imports:
+    pracma,
+    class,
+    EBImage,
+    sp,
+    methods,
+    colorspace
+Depends:
+    raster
+RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

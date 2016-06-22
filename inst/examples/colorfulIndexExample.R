@@ -1,0 +1,8 @@
+x <- loadPhoto()
+x <- normalize(x, 0, 255)
+z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
+m <- doMask(z, alim = asAngle(c(0, 10)), zlim = asAngle(c(30, 40)))
+m <- doMask(z)
+colorfulIndex(x, m, TRUE)
+r <- colorfulIndex(x, m, TRUE, TRUE)
+plotRGB(r)
