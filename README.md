@@ -39,7 +39,6 @@ Run this code:
       # see the help of loadPhoto with ?loadPhoto. 
       # Maybe you need to use the arguments upperLeft, width and height.
       x <- loadPhoto(paste0(path_in, "/", i))
-      x <- loadPhoto(paste0(path_in, "/", i))
       fisheye(x) <- newFishEye(TRUE, TRUE, FALSE)
       x <- normalize(x, 0, 255)
       # Here, I assume that your lens has perfect polor projection.

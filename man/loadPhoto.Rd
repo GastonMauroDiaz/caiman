@@ -90,9 +90,8 @@ plot(is.na(x), legend = FALSE, axes = FALSE, box = FALSE,
   xlab = "240 px", ylab = "300 px")
 plot(e, add = TRUE)
 text(sp::SpatialPoints(cbind(50, 220)), "upperLeft = c(20, 50)", col = "white")
-
 }
 \seealso{
-\code{\link{cloneSlots}}.
+\code{\link{cloneSlots}}, \code{\link{doMask}}.
 }
 

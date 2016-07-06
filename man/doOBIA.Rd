@@ -7,12 +7,12 @@
 \title{Do an Object-based image analysis to classify plant.}
 \usage{
 doOBIA(x, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
-  g1 = makePolarGrid(z), sampleSize = 50, k = 1, zlim = asAngle(30, 60),
-  calibration = FALSE)
+  g1 = makePolarGrid(z), sampleSize = 50, k = 1, zlim = asAngle(c(30,
+  60)), calibration = FALSE)
 
 \S4method{doOBIA}{CanopyPhoto}(x, z, seg = doPolarQtree(x, z, scaleParameter =
   0.2), g1 = makePolarGrid(z), sampleSize = 50, k = 1,
-  zlim = asAngle(30, 60), calibration = FALSE)
+  zlim = asAngle(c(30, 60)), calibration = FALSE)
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
@@ -32,10 +32,10 @@ doOBIA(x, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
 \item{calibration}{logical. The default is FALSE, see Details.}
 }
 \value{
-A \linkS4class{BinImage} by default. If \code{calibrate} is set to TRUE, a \linkS4class{RasterLayer}.
+A \code{\linkS4class{BinImage}} by default. If \code{calibrate} is set to \code{TRUE}, a \code{\linkS4class{RasterLayer}}.
 }
 \description{
-Do an Object-based image analysis of hemispherical photographs that are full-color and upward looking, whit the aim of to classify plant.
+Do an Object-based image analysis of hemispherical photographs that are full-color and upward looking, whit the aim of classify plant.
 }
 \details{
 This algorithm uses color transformations, fuzzy logic, and object-based image analysis (OBIA). Internally, this algorithm first makes a call to \code{\link{enhanceHemiPhoto}} which result is binarizes with a call to \code{\link{autoThr}}. The class \emph{Gap-candidate} is assigned to pixels above the threshold and the class \emph{Plant} to the rest of unclassified pixels. Next, the algorithm uses this result and \code{g1} to isolated segments of hemisphere with one degree of resolution that are not fully cover by \emph{Plant} (i.e., Gap Fraction > 0), which are classified as \emph{Mix-OR-Gap}. Next, the algorithm takes this result to get a binary mask which is intersected with the argument \emph{seg}. At this point, the algorithms could identify all the segments of \code{seg} that could have some gaps at pixel level (i.e., \emph{Mix-OR-Gap}). Next, the algorithm relabels all this segments in \emph{Gap} or \emph{Mix} with a two stage process: (1) automatic selection of samples and (2) sample-based classification. The argument \code{sampleSize} control the sample size for both targeted classes. The algorithm uses the brightness of the blue channel to selects the samples, it assumes that brighter objects belong to \emph{Gap} and objects with middle bright belong to \emph{Mix}. The argument \code{k} is the argument for \code{\link[class]{knn}} that is used in the second stage of sample-based classification. The process continues on segments labeled as \emph{Mix} with the aim of unmixed them at pixel level (see references for more details). The arguments \code{mnZ} and \code{mxZ} can be used to delimited de range of zenith angle in which the aforementioned process is computed. In the rest of the image the result will be the same as a call to \code{\link{enhanceHemiPhoto}} binarizes with \code{\link{autoThr}}.
@@ -60,12 +60,35 @@ zlim <- asAngle(c(20, 80))
 \donttest{
 out <- doOBIA(x, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = FALSE)
 plot(out)
-out <- doOBIA(x, z, seg, g1, zlim = zlim, calibration = TRUE)
+out <- doOBIA(x, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = TRUE)
 plot(out)
 
 zlim <- asAngle(c(30, 60))
 
-out <- doOBIA(x, z, seg, g1, zlim = zlim, calibration = TRUE)
+out <- doOBIA(x, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = TRUE)
+plot(out)
+}
+
+
+# Fullframe
+
+## Making an artificially fullframe hemiphoto by cropping a non-fullframe
+## hemiphoto (just for making an example).
+path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
+x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
+### declaring it as a fullframe
+fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
+
+x <- normalize(x, 0, 255)
+
+\dontrun{
+  seg <- doPolarQtree(x, z, scaleParameter = 0.1)
+}
+### It is not exactly the same, but you can use the previous seg.
+\donttest{
+out <- doOBIA(x, z, seg, sampleSize = 20, calibration = TRUE)
+plot(out)
+out <- doOBIA(x, z, seg, sampleSize = 20, calibration = FALSE)
 plot(out)
 }
 }

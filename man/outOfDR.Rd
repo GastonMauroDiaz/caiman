@@ -33,6 +33,7 @@ z <- makeZimage(ncol(x), lensPolyCoef())
 m <- doMask(z)
 outOfDR(x, m)
 plot(outOfDR(x, m, TRUE))
+
 }
 \seealso{
 \code{link{normalize}}, \code{link{colorfulIndex}}.

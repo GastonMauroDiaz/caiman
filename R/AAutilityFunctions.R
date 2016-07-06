@@ -144,11 +144,12 @@ setMethod("rtitle<-",
 ## ** doMask ** ##
 ##################
 
-#' @title It does a mask for hemispherical photographs.
+#' @title It does masks for hemispherical photographs.
 #'
-#' @description Use angular limits to do a mask for hemispherical photographs.
+#' @description It does masks for hemispherical photographs.
 #'
-#' @param z \code{\linkS4class{ZenithImage}}.
+#' @param x \code{\linkS4class{ZenithImage}} or \code{\linkS4class{CanopyPhoto}}.
+#' @param previousMask \code{\linkS4class{BinImage}}. Default is NULL.
 #' @param a \code{\linkS4class{AzimuthImage}}.
 #' @param zlim \code{\linkS4class{Angle}}. Set the zenith angle range with inclusive limits.
 #' @param alim \code{\linkS4class{Angle}}. Set the azimuth angle range with inclusive limits.
@@ -159,18 +160,26 @@ setMethod("rtitle<-",
 #'
 #' @seealso \code{\link{makeZimage}}, \code{\link{makeAimage}}.
 #'
+#' @references Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of geometric models for fisheye lenses. ISPRS J. Photogramm. Remote Sens. 64, 259-266.
+#'
 #' @example /inst/examples/doMaskExample.R
 #'
 setGeneric("doMask",
-  function(z, a = makeAimage(z), zlim = NULL, alim = NULL)
+  function (x, previousMask = NULL, a = makeAimage(x), zlim = NULL, alim = NULL)
     standardGeneric("doMask"))
 #' @export doMask
 
-#' @rdname doMask
+#' @describeIn doMask You can use angular limits to do a mask for hemispherical photographs.
 setMethod("doMask",
-  signature(z = "ZenithImage"),
-  function (z, a, zlim, alim) {
+  signature(x = "ZenithImage"),
+  function (x, previousMask, a, zlim, alim) {
 
+    if (!is.null(previousMask))
+      stopifnot(is(previousMask)[1] == "BinImage")
+
+    a
+    z <- x
+    rm(x)
     noDataArea <- is.na(z)
 
     if (all(is.null(zlim), is.null(alim))) {
@@ -226,6 +235,77 @@ setMethod("doMask",
     out[noDataArea] <- 0
     #
     out <- as(out, "BinImage")
+
+    if (!is.null(previousMask)) out <- out * previousMask
+
     return(out)
+  }
+)
+
+#' @describeIn doMask This feature is needed to further process fullframe photographs. It assumes that the diagonal of the frame has 180 degrees field of view. See references.
+setMethod("doMask",
+  signature(x = "CanopyPhoto"),
+  function (x) {
+    if (all(!fisheye(x)@fullframe, fisheye(x)@is))
+      stop("Argument x should be a fullframe hemispherical photo, you need to declare this with the fisheye function.")
+    x <- raster::subset(x, 1)
+    diameter <- round(sqrt(nrow(x)^2 + ncol(x)^2))
+    if (diameter / 2 != round(diameter / 2))
+            diameter <- diameter + 1
+    r <- makeRimage(diameter)
+    center <- ncol(r) / 2
+    xmn <- center - (ncol(x) / 2)
+    xmx <- center + (ncol(x) / 2)
+    ymn <- center - (nrow(x) / 2)
+    ymx <- center + (nrow(x) / 2)
+    e <- extent(xmn, xmx, ymn, ymx)
+    extent(x) <- e
+    foo <- extend(x, r)
+    x <- !is.na(foo)
+    as(x, "BinImage")
+  }
+)
+
+
+#' @rdname doMask
+setMethod("doMask",
+  signature(x = "RelativeRadiusImage"),
+  function (x) {
+    as(!is.na(x), "BinImage")
+  }
+)
+
+#' @title Expand full frame hemispherical photographs
+#'
+#' @description Expand a full frame hemispherical photograph to get the equivalent of a circular hemispherical photograph in which the added pixels have \code{0} or \code{NA} in the tree channels.
+#'
+#' @param x x \code{\linkS4class{CanopyPhoto}}.
+#' @param zero logical. Default \code{TRUE} means that the added pixels will have \code{0}, \code{FALSE} means that will have \code{NA}.
+#'
+#' @return x \code{\linkS4class{CanopyPhoto}}.
+#'
+#' @seealso \code{\link{doMask}}.
+#'
+#' @example /inst/examples/doMaskExample.R
+#'
+setGeneric("expandFullframe",
+  function (x, zero = TRUE)
+    standardGeneric("expandFullframe"))
+#' @export expandFullframe
+
+#' @rdname expandFullframe
+setMethod("expandFullframe",
+  signature(x = "CanopyPhoto"),
+  function (x, zero) {
+    if (all(!fisheye(x)@fullframe, fisheye(x)@is))
+      stop("Argument x should be a fullframe hemispherical photo, you need to declare this with the fisheye function.")
+    m <- doMask(x)
+    y <- stack(m, m, m)
+    y[y == 1] <- values(x)
+    y <- as(y, "CanopyPhoto")
+    y <- cloneSlots(x, y)
+    y@fisheye@fullframe <- FALSE
+    if (!zero) y[m == 0] <- NA
+    return(y)
   }
 )

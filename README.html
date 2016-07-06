@@ -49,7 +49,6 @@ for (i in unique(listofpics)) {
   # see the help of loadPhoto with ?loadPhoto. 
   # Maybe you need to use the arguments upperLeft, width and height.
   x &lt;- loadPhoto(paste0(path_in, &quot;/&quot;, i))
-  x &lt;- loadPhoto(paste0(path_in, &quot;/&quot;, i))
   fisheye(x) &lt;- newFishEye(TRUE, TRUE, FALSE)
   x &lt;- normalize(x, 0, 255)
   # Here, I assume that your lens has perfect polor projection.

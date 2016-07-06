@@ -32,8 +32,32 @@ This algorithm models the degree of membership to a color with two Gaussian memb
 \examples{
 x <- loadPhoto()
 x <- normalize(x, 0, 255)
-x <- enhanceHemiPhoto(x)
-plot(x)
+xe <- enhanceHemiPhoto(x)
+plot(xe)
+
+z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
+
+m <- doMask(z, zlim = asAngle(c(30,60)), alim = asAngle(c(0, 45)))
+# mask affects the result but not crop it (see Details).
+plot(enhanceHemiPhoto(x, mask = m))
+
+# Making an artificially fullframe hemiphoto by cropping a non-fullframe
+# hemiphoto (just for making an example)
+path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
+x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
+## declaring it as a fullframe
+fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
+
+x <- normalize(x, 0, 255)
+xe <- enhanceHemiPhoto(x)
+plot(xe)
+
+# Using a mask for fullframe photos is tricky (see Details).
+m <- doMask(x)
+m <- doMask(z, previousMask = m, zlim = asAngle(c(30, 40)),
+                                                      alim = asAngle(c(20,130)))
+plot(m)
+plot(enhanceHemiPhoto(x, mask = m) - enhanceHemiPhoto(x))
 }
 \seealso{
 \code{\link{normalize}}, \code{\link{enhanceHemiPhoto}}.

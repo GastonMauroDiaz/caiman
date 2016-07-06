@@ -35,7 +35,7 @@
 
 #' @title Do an Object-based image analysis to classify plant.
 #'
-#' @description Do an Object-based image analysis of hemispherical photographs that are full-color and upward looking, whit the aim of to classify plant.
+#' @description Do an Object-based image analysis of hemispherical photographs that are full-color and upward looking, whit the aim of classify plant.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
 #' @param z \code{\linkS4class{ZenithImage}}.
@@ -50,7 +50,7 @@
 #'
 #' If \code{calibrate} is set to TRUE, the process stops just after the sample-based classification described in the previous paragraph and return a classification at object level of \emph{Plan}, \emph{Mix} and \emph{Gap}. This kind of output can be used to calibrate \code{sampleSize} and \code{k}.
 #'
-#' @return A \linkS4class{BinImage} by default. If \code{calibrate} is set to TRUE, a \linkS4class{RasterLayer}.
+#' @return A \code{\linkS4class{BinImage}} by default. If \code{calibrate} is set to \code{TRUE}, a \code{\linkS4class{RasterLayer}}.
 #'
 #' @references
 #' Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
@@ -61,7 +61,7 @@
 #'
 setGeneric("doOBIA",
   function(x, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
-    g1 = makePolarGrid(z), sampleSize = 50, k = 1, zlim = asAngle(30, 60),
+    g1 = makePolarGrid(z), sampleSize = 50, k = 1, zlim = asAngle(c(30, 60)),
        calibration = FALSE) standardGeneric("doOBIA"))
 #' @export doOBIA
 
@@ -70,12 +70,21 @@ setMethod("doOBIA",
   signature(x = "CanopyPhoto"),
   function (x, z, seg, g1, sampleSize, k, zlim, calibration) {
 
-    msn <- "This algorithm was designed to process upward looking hemispherical photographs that are not fullframe."
+    msn <- "This algorithm was designed to process upward looking hemispherical photographs."
     if (!fisheye(x)@is) {
       warning(msn)
     } else {
       if (!fisheye(x)@up) warning(msn)
-      if (fisheye(x)@fullframe) warning(msn)
+      # if (fisheye(x)@fullframe) warning(msn)
+    }
+
+    isFullframe <-
+
+    if (x@fisheye@fullframe) {
+      bin <- autoThr(enhanceHemiPhoto(x))
+      x <- expandFullframe(x)
+    } else {
+      bin <- autoThr(enhanceHemiPhoto(x))
     }
 
     stopifnot(compareRaster(x, z))
@@ -85,7 +94,6 @@ setMethod("doOBIA",
     stopifnot(is(zlim) == "Angle")
 
     if (!zlim@degrees) zlim <- switchUnit(zlim)
-
 
     stopifnot(length(zlim@values) == 2)
 
@@ -97,7 +105,6 @@ setMethod("doOBIA",
     stopifnot(max(getMax(x)) <= 1)
     stopifnot(min(getMin(x)) >= 0)
 
-    bin <- autoThr(enhanceHemiPhoto(x))
     g1[z > mxZ | z < mnZ]  <- NA
 
     ## step 3

@@ -6,9 +6,9 @@
 \alias{fuzzyLightness,numeric-method}
 \title{Compute a weighted membership value to lightness.}
 \usage{
-fuzzyLightness(x, m, thr, fuzzyness)
+fuzzyLightness(x, m, thr, fuzziness)
 
-\S4method{fuzzyLightness}{numeric}(x, m, thr, fuzzyness)
+\S4method{fuzzyLightness}{numeric}(x, m, thr, fuzziness)
 }
 \arguments{
 \item{x}{numeric. The lightness value.}
@@ -17,7 +17,7 @@ fuzzyLightness(x, m, thr, fuzzyness)
 
 \item{thr}{numeric of length one. Location parameter of the logistic membership function.}
 
-\item{fuzzyness}{numeric of length one.}
+\item{fuzziness}{numeric of length one.}
 }
 \value{
 Numeric.

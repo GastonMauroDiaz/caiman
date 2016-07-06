@@ -35,8 +35,13 @@ setMethod("doPolarQtree",
 
     stopifnot(class(z)[[1]] == "ZenithImage")
     stopifnot(class(a)[[1]] == "AzimuthImage")
-    stopifnot(raster::compareRaster(x, z))
-    stopifnot(raster::compareRaster(z, a))
+
+    if (x@fisheye@fullframe) x <- expandFullframe(x)
+
+    if (!raster::compareRaster(x, z, stopiffalse = FALSE))
+      stop("Maybe you not declare your hemispherical photo as a fullframe. To do it, use fisheye(x) <- newFishEye(TRUE, TRUE, TRUE), for example.")
+
+    raster::compareRaster(z, a)
 
 
     if( divisions == 1)
@@ -139,6 +144,4 @@ setMethod("doPolarQtree",
   rtitle(g) <- "Polar Quadtree"
   return(g)
   }
-
-
 )

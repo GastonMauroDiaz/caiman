@@ -21,7 +21,7 @@
 #'
 #' @return \code{\linkS4class{CanopyPhoto}}.
 #'
-#' @seealso \code{\link{cloneSlots}}.
+#' @seealso \code{\link{cloneSlots}}, \code{\link{doMask}}.
 #'
 #' @example /inst/examples/loadPhotoExample.R
 #'
@@ -64,7 +64,7 @@ setMethod("loadPhoto",
       r <- brick(x)
       r <- as(r, "CanopyPhoto")
       if (nlayers(r) != 3) stop("The photograph must have tree layer.")
-      names(r) <- c("Blue", "Red", "Green")
+      names(r) <- c("Red", "Green", "Blue")
     }
     if (exists("r", inherits = FALSE)) {
       if (!is.null(equipment)) equipment(r) <- equipment
@@ -91,6 +91,10 @@ setMethod("loadPhoto",
         xmx <- xFromCol(r, upperLeft[1] + width)
         ymx <- yFromRow(r, upperLeft[2])
         ymn <- yFromRow(r, upperLeft[2] + height)
+
+        if(any(is.na(xmn), is.na(xmx), is.na(ymn), is.na(ymx))) {
+          stop("Your selection goes out of the picture, please review upperLeft, heigth and width.")
+        }
 
         e <- extent(xmn, xmx, ymn, ymx)
         r <- crop(r, e)

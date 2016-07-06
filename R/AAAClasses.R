@@ -2,7 +2,7 @@
 devtools::use_package("pracma")
 devtools::use_package("class")
 devtools::use_package("EBImage")
-#devtools::use_package("rgdal")
+devtools::use_package("rgdal")
 devtools::use_package("sp")
 #devtools::use_package("HistogramTools", type = "Depends")
 devtools::use_package("raster", type = "Depends")
@@ -298,7 +298,7 @@ setClass(Class = "CanopyPhoto",
     c2 <- length(object@bearing@values) == 1
     c3 <- length(object@elevation@values) == 1
     if (object@fisheye@is) {
-      stopifnot(nrow(object) == ncol(object))
+      if (!object@fisheye@fullframe) stopifnot(nrow(object) == ncol(object))
       if (round(nrow(object) / 2) != nrow(object) / 2)
         stop("The diameter of the fisheye picture must be even.")
     }

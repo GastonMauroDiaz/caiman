@@ -9,14 +9,14 @@
 \usage{
 enhanceHemiPhoto(x, ...)
 
-\S4method{enhanceHemiPhoto}{matrix}(x, thr = NULL, fuzzyness = NULL,
+\S4method{enhanceHemiPhoto}{matrix}(x, thr = NULL, fuzziness = NULL,
   wR = 0.5, wB = 1.5, skyBlue = colorspace::sRGB(matrix(normalize(c(135,
   206, 235), 0, 255), ncol = 3)), ...)
 
-\S4method{enhanceHemiPhoto}{CanopyPhoto}(x,
-  mask = !is.na(makeRimage(ncol(x))), wR = 0.5, wB = 1.5,
-  sharpen = TRUE, skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206,
-  235), 0, 255), ncol = 3)), ...)
+\S4method{enhanceHemiPhoto}{CanopyPhoto}(x, mask = NULL, wR = 0.5,
+  wB = 1.5, sharpen = TRUE,
+  skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255), ncol
+  = 3)), ...)
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
@@ -25,7 +25,7 @@ enhanceHemiPhoto(x, ...)
 
 \item{thr}{numeric. By default, the algorithm will try to estimate it.}
 
-\item{fuzzyness}{numeric. By default, the algorithm will try to estimate it.}
+\item{fuzziness}{numeric. By default, the algorithm will try to estimate it.}
 
 \item{wR}{numeric. Weight of red layer. See details.}
 
@@ -44,9 +44,11 @@ Numeric or \linkS4class{RasterLayer}.
 This algorithm uses the color perceptual attributes to enhance the contrast between the sky and plants through fuzzy classification. Color has three different perceptual attributes: hue, lightness, and chroma. The algorithm was developed using this premise: the color of the sky is different from the color of plants. It performs the next classification rules, here expressed in natural language: clear sky is blue and clouds decrease its chroma; if clouds are highly dense, then the sky is achromatic, and, in such cases, it can be light or dark; everything that does not match this description is not sky. These linguistic rules were translated to math language by means of fuzzy logic.
 }
 \details{
-The greatest contrast on gray levels between the sky and the plants should be observed in the blue channel because sky scattering is relatively high in the higher frequencies of light, and so the blue channel ensures the brightest sky pixels. Nevertheless, in the blue channel, the interface between the sky and the foliage pixels can be as bright as sky pixels. These pixels look dark cyan colored instead of green. The color distortion observed should be linked with: color formation through color filter array and chromatic aberration. Thus, we propose to use an original feature that we denominate Relative Brightness instead of one-channel brightness, which use weighting parameters for red and blue channels (see references).
+This is a pixelwise algorithm that evaluates if pixels are sky blue colored, in such case it assigns a high score. When the pixels are achromatic, then it uses how bright or dark the pixel is. The algorithm internally uses \code{\link{membership2color}} an \code{\link{fuzzyLightness}}. The argument \code{skyBlue} is the \code{targetColor} of the former function, which output is the argument \code{m} of the other function. To evaluate how bright or dark is an achromatic pixel, the algorithm uses the feature \emph{Relative Brightness} (see references), which takes into account that the interface between the sky and the foliage pixels looks dark cyan colored instead of green and can be as bright as sky pixels. This color distortion observed should be linked with: color formation through color filter array and chromatic aberration.
 
 If sharpen is set to TRUE (default), a sharpen filter is applied to the raster with the membership values. The kernel used is \code{matrix(c(rep(-1, 3), -1, 12, -1, rep(-1, 3)), ncol = 3)}.
+
+A mask affects the estimation of two arguments of the function \code{\link{fuzzyLightness}} that is internally called by \code{enhanceHemiPhoto}. These arguments are \code{thr} and \code{fuzziness}. The function \code{\link{autoThr}} is used for estimate \code{thr}. \code{fuzziness} is the mean of the maximum and the minimum values of \emph{Relative Brightness}.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -57,8 +59,32 @@ If sharpen is set to TRUE (default), a sharpen filter is applied to the raster w
 \examples{
 x <- loadPhoto()
 x <- normalize(x, 0, 255)
-x <- enhanceHemiPhoto(x)
-plot(x)
+xe <- enhanceHemiPhoto(x)
+plot(xe)
+
+z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
+
+m <- doMask(z, zlim = asAngle(c(30,60)), alim = asAngle(c(0, 45)))
+# mask affects the result but not crop it (see Details).
+plot(enhanceHemiPhoto(x, mask = m))
+
+# Making an artificially fullframe hemiphoto by cropping a non-fullframe
+# hemiphoto (just for making an example)
+path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
+x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
+## declaring it as a fullframe
+fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
+
+x <- normalize(x, 0, 255)
+xe <- enhanceHemiPhoto(x)
+plot(xe)
+
+# Using a mask for fullframe photos is tricky (see Details).
+m <- doMask(x)
+m <- doMask(z, previousMask = m, zlim = asAngle(c(30, 40)),
+                                                      alim = asAngle(c(20,130)))
+plot(m)
+plot(enhanceHemiPhoto(x, mask = m) - enhanceHemiPhoto(x))
 }
 \references{
 Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.

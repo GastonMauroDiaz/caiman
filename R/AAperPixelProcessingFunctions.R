@@ -210,7 +210,7 @@ setMethod("sRGB2LAB",
   signature(x = "CanopyPhoto"),
   function (x, ...)
   {
-    stopifnot(names(x) == c("Blue", "Red", "Green"))
+    stopifnot(names(x) == c("Red", "Green", "Blue"))
     from <- x
     stopifnot(max(getMax(x)) <= 1)
     stopifnot(min(getMin(x)) >= 0)
@@ -325,7 +325,7 @@ setMethod("membership2color",
 #' @param x numeric. The lightness value.
 #' @param m numeric lying between \code{0} and {1}. It must have the same lenght as x. It is the scale parameter of the logistic membership function.
 #' @param thr numeric of length one. Location parameter of the logistic membership function.
-#' @param fuzzyness numeric of length one.
+#' @param fuzziness numeric of length one.
 #'
 #' @return Numeric.
 #'
@@ -336,18 +336,18 @@ setMethod("membership2color",
 #' @references
 #' Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
 #'
-setGeneric("fuzzyLightness", function(x, m, thr, fuzzyness) standardGeneric("fuzzyLightness"))
+setGeneric("fuzzyLightness", function(x, m, thr, fuzziness) standardGeneric("fuzzyLightness"))
 #' @export fuzzyLightness
 
 #' @rdname fuzzyLightness
 setMethod("fuzzyLightness",
   signature(x = "numeric"),
-  function (x, m, thr, fuzzyness)
+  function (x, m, thr, fuzziness)
   {
     stopifnot(length(thr) == 1)
-    stopifnot(length(fuzzyness) == 1)
+    stopifnot(length(fuzziness) == 1)
     stopifnot(length(x) == length(m))
-    stats::plogis(x, thr, fuzzyness * (1 - m))
+    stats::plogis(x, thr, fuzziness * (1 - m))
   }
 )
 
@@ -370,12 +370,14 @@ setMethod("fuzzyLightness",
 #' @param sharpen logical. The default is TRUE, see details.
 #' @param skyBlue \linkS4class{color}. See details.
 #' @param thr numeric. By default, the algorithm will try to estimate it.
-#' @param fuzzyness numeric. By default, the algorithm will try to estimate it.
+#' @param fuzziness numeric. By default, the algorithm will try to estimate it.
 #' @param ... Additional arguments as for \code{\link[raster]{writeRaster}}.
 #'
-#' @details The greatest contrast on gray levels between the sky and the plants should be observed in the blue channel because sky scattering is relatively high in the higher frequencies of light, and so the blue channel ensures the brightest sky pixels. Nevertheless, in the blue channel, the interface between the sky and the foliage pixels can be as bright as sky pixels. These pixels look dark cyan colored instead of green. The color distortion observed should be linked with: color formation through color filter array and chromatic aberration. Thus, we propose to use an original feature that we denominate Relative Brightness instead of one-channel brightness, which use weighting parameters for red and blue channels (see references).
+#' @details This is a pixelwise algorithm that evaluates if pixels are sky blue colored, in such case it assigns a high score. When the pixels are achromatic, then it uses how bright or dark the pixel is. The algorithm internally uses \code{\link{membership2color}} an \code{\link{fuzzyLightness}}. The argument \code{skyBlue} is the \code{targetColor} of the former function, which output is the argument \code{m} of the other function. To evaluate how bright or dark is an achromatic pixel, the algorithm uses the feature \emph{Relative Brightness} (see references), which takes into account that the interface between the sky and the foliage pixels looks dark cyan colored instead of green and can be as bright as sky pixels. This color distortion observed should be linked with: color formation through color filter array and chromatic aberration.
 #'
 #' If sharpen is set to TRUE (default), a sharpen filter is applied to the raster with the membership values. The kernel used is \code{matrix(c(rep(-1, 3), -1, 12, -1, rep(-1, 3)), ncol = 3)}.
+#'
+#' A mask affects the estimation of two arguments of the function \code{\link{fuzzyLightness}} that is internally called by \code{enhanceHemiPhoto}. These arguments are \code{thr} and \code{fuzziness}. The function \code{\link{autoThr}} is used for estimate \code{thr}. \code{fuzziness} is the mean of the maximum and the minimum values of \emph{Relative Brightness}.
 #'
 #' @references
 #' Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
@@ -386,19 +388,21 @@ setMethod("fuzzyLightness",
 #'
 #' @example /inst/examples/enhanceHemiPhotoExample.R
 #'
-setGeneric("enhanceHemiPhoto", function(x, ...) standardGeneric("enhanceHemiPhoto"))
+setGeneric("enhanceHemiPhoto", function(x, ...)
+  standardGeneric("enhanceHemiPhoto"))
 #' @export enhanceHemiPhoto
 
 #' @describeIn enhanceHemiPhoto The output is a numeric vector.
 setMethod("enhanceHemiPhoto",
   signature(x = "matrix"),
-  function (x, thr = NULL, fuzzyness = NULL, wR = 0.5, wB = 1.5,
-    skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255), ncol = 3)), ...)
+  function (x, thr = NULL, fuzziness = NULL, wR = 0.5, wB = 1.5,
+    skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255),
+      ncol = 3)), ...)
   {
 
     stopifnot(max(x, na.rm = TRUE) <= 1)
     stopifnot(min(x, na.rm = TRUE) >= 0)
-    if (ncol(x) != 4) stop("x must be a matrix with 4 columns")
+    if (ncol(x) != 4) stop("x must be a matrix with 4 columns.")
 
     mask <- x[, 4]
     x <- x[, 1:3]
@@ -411,12 +415,12 @@ setMethod("enhanceHemiPhoto",
 
     if(length(reBr) > 1) {
       if(is.null(thr)) thr <- autoThr(reBr[as.logical(mask)])
-      if(is.null(fuzzyness)) fuzzyness <- (max(reBr) - min(reBr)) / 2
+      if(is.null(fuzziness)) fuzziness <- (max(reBr) - min(reBr)) / 2
     } else {
-      stop("Please provide thr and fuzzyness.")
+      stop("Please provide thr and fuzziness.")
     }
 
-    mLight <- fuzzyLightness(reBr, mSkyBlue, thr, fuzzyness)
+    mLight <- fuzzyLightness(reBr, mSkyBlue, thr, fuzziness)
 
     out <- mSkyBlue * mLight
 
@@ -427,31 +431,62 @@ setMethod("enhanceHemiPhoto",
 #' @describeIn enhanceHemiPhoto The output is a \linkS4class{RasterLayer}.
 setMethod("enhanceHemiPhoto",
   signature(x = "CanopyPhoto"),
-  function (x, mask = !is.na(makeRimage(ncol(x))), wR = 0.5, wB = 1.5,
-    sharpen = TRUE, skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255),
-                                                                ncol = 3)), ...)
+  function (x, mask = NULL, wR = 0.5, wB = 1.5, sharpen = TRUE,
+    skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255),
+     ncol = 3)), ...)
   {
     stopifnot(all(getMax(x) <= 1))
     stopifnot(all(getMin(x) >= 0))
 
-    if (class(mask)[[1]] == "RasterLayer") {
-      mask <- as(mask, "BinImage")
-      validObject(mask)
+    userInputMask <- TRUE # I use it later
+    if (is.null(mask)) {
+      userInputMask <- FALSE
+      if (x@fisheye@fullframe) {
+        mask <- doMask(x)
+        x <- expandFullframe(x)
+      } else {
+        mask <- doMask(makeRimage(ncol(x)))
+      }
+
     } else {
-      if (class(mask)[[1]] != "BinImage")
-        stop("Invalid object class for argument mask.")
+
+      if (class(mask)[[1]] == "RasterLayer") {
+        mask <- as(mask, "BinImage")
+        validObject(mask)
+      } else {
+        if (class(mask)[[1]] != "BinImage")
+          stop("Invalid object class for argument mask.")
+      }
+
+      if (x@fisheye@fullframe) {
+        if (compareRaster(x, mask, stopiffalse = FALSE)) {
+          stop("x and mask should have different number of pixels in this case. Check the examples in ?enhanceHemiPhoto.")
+        }
+        x <- expandFullframe(x)
+      }
     }
 
     x <- as(x, "RasterBrick")
+
+    if (!compareRaster(x, mask, stopiffalse = FALSE)) {
+
+      if (userInputMask) {
+        stop("x should match pixel by pixel whit mask.")
+      } else {
+        stop("Maybe you not declare your hemispherical photo as a fullframe. To do it, use fisheye(x) <- newFishEye(TRUE, TRUE, TRUE), for example.")
+      }
+
+    }
+
     x <- stack(x, mask)
 
     reBr <- .relativeBrightness(values(x), wR, wB)
 
     thr <-  autoThr(reBr[as.logical(values(mask))])
-    fuzzyness <- (max(reBr[as.logical(values(mask))]) -
+    fuzziness <- (max(reBr[as.logical(values(mask))]) -
                                         min(reBr[as.logical(values(mask))])) / 2
 
-    foo <- function(x, ...) enhanceHemiPhoto(x, thr=thr, fuzzyness=fuzzyness)
+    foo <- function(x, ...) enhanceHemiPhoto(x, thr=thr, fuzziness=fuzziness)
 
     fun <- .makeF8single(foo, ...)
 
@@ -501,8 +536,10 @@ setMethod("outOfDR",
     stopifnot(is.logical(returnImages))
     stopifnot(all(getMax(x) <= 1))
     stopifnot(all(getMin(x) >= 0))
-    stopifnot(compareRaster(x, mask) == TRUE)
-    stopifnot(any(is(mask) == "BinImage"))
+    if(!is.null(mask)){
+      stopifnot(compareRaster(x, mask) == TRUE)
+      stopifnot(any(is(mask) == "BinImage"))
+    }
 
     fun <- function(x, value, mask){
 
@@ -577,10 +614,11 @@ setMethod("colorfulIndex",
     stopifnot(is.logical(plot))
     stopifnot(all(getMax(x) <= 1))
     stopifnot(all(getMin(x) >= 0))
-    stopifnot(compareRaster(x, mask) == TRUE)
-    stopifnot(any(is(mask) == "BinImage"))
+
 
     if (!is.null(mask)) {
+      stopifnot(compareRaster(x, mask) == TRUE)
+      stopifnot(any(is(mask) == "BinImage"))
       x[mask == 0] <- 0
     }
 

@@ -3,16 +3,25 @@
 \docType{methods}
 \name{doMask}
 \alias{doMask}
+\alias{doMask,CanopyPhoto-method}
+\alias{doMask,RelativeRadiusImage-method}
 \alias{doMask,ZenithImage-method}
-\title{It does a mask for hemispherical photographs.}
+\title{It does masks for hemispherical photographs.}
 \usage{
-doMask(z, a = makeAimage(z), zlim = NULL, alim = NULL)
-
-\S4method{doMask}{ZenithImage}(z, a = makeAimage(z), zlim = NULL,
+doMask(x, previousMask = NULL, a = makeAimage(x), zlim = NULL,
   alim = NULL)
+
+\S4method{doMask}{ZenithImage}(x, previousMask = NULL, a = makeAimage(x),
+  zlim = NULL, alim = NULL)
+
+\S4method{doMask}{CanopyPhoto}(x)
+
+\S4method{doMask}{RelativeRadiusImage}(x)
 }
 \arguments{
-\item{z}{\code{\linkS4class{ZenithImage}}.}
+\item{x}{\code{\linkS4class{ZenithImage}} or \code{\linkS4class{CanopyPhoto}}.}
+
+\item{previousMask}{\code{\linkS4class{BinImage}}. Default is NULL.}
 
 \item{a}{\code{\linkS4class{AzimuthImage}}.}
 
@@ -24,11 +33,17 @@ doMask(z, a = makeAimage(z), zlim = NULL, alim = NULL)
 \code{\linkS4class{BinImage}}.
 }
 \description{
-Use angular limits to do a mask for hemispherical photographs.
+It does masks for hemispherical photographs.
 }
 \details{
 The intervals are closed on the right and on the left.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{ZenithImage}: You can use angular limits to do a mask for hemispherical photographs.
+
+\item \code{CanopyPhoto}: This feature is needed to further process fullframe photographs. It assumes that the diagonal of the frame has 180 degrees field of view. See references.
+}}
 \examples{
 x <- loadPhoto()
 z <- makeZimage(ncol(x), lensPolyCoef(c(0.9192, -0.1792, -0.000443)))
@@ -39,6 +54,26 @@ m <- doMask(z, zlim = asAngle(c(30, 60)), alim = asAngle(c(0, 90)))
 plot(m)
 
 plot(x[m, drop = FALSE])
+
+# Making an artificially fullframe hemiphoto by cropping a non-fullframe
+# hemiphoto (just for making an example)
+path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
+x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
+## declaring it as a fullframe
+fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
+
+m <- doMask(x)
+plot(m)
+
+m <- doMask(z, previousMask = m, zlim = asAngle(c(30, 60)),
+                                                    alim = asAngle(c(0, 90)))
+plot(m)
+
+## Diagonals of the rectangular frame are the radius of the circle:
+plot(doMask(makeRimage(ncol(m))) + m, legend = FALSE)
+}
+\references{
+Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of geometric models for fisheye lenses. ISPRS J. Photogramm. Remote Sens. 64, 259-266.
 }
 \seealso{
 \code{\link{makeZimage}}, \code{\link{makeAimage}}.
