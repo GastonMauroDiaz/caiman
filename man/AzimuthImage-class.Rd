@@ -5,13 +5,16 @@
 \alias{AzimuthImage-class}
 \title{An S4 class to represent azimuth angles as an image.}
 \description{
-An S4 class to represent azimuth angles as an image. Use the helper function \code{\link{makeAimage}} to generate new objects of this class.
+An S4 class to represent azimuth angles as an image. Use the
+  helper function \code{\link{makeAimage}} to generate new objects of this
+  class.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{...}}{Inhereted from \code{\linkS4class{ZenithImage}}.}
+\item{\code{...}}{Inherited from \code{\linkS4class{ZenithImage}}.}
 }}
+
 \examples{
 showClass("AzimuthImage")
 
@@ -19,4 +22,3 @@ showClass("AzimuthImage")
 \seealso{
 \code{\link{makeAimage}}
 }
-

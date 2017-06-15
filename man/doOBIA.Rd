@@ -21,26 +21,60 @@ doOBIA(x, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
 
 \item{seg}{\code{\linkS4class{PolarSegmentation}}.}
 
-\item{g1}{\code{\linkS4class{PolarSegmentation}}. The default is a call to \code{makePolarGrid(z)}. For save time in bath processing of photos token with the same camera, you can compute \code{makePolarGrid(z)} only once and provide the result thought this argument. If you provide anything different, the algorithm will provide unexpected outputs.}
+\item{g1}{\code{\linkS4class{PolarSegmentation}}. The default option is a
+PolarSegmentation created by calling \code{makePolarGrid(z)}. To save time in
+batch processing of photos token with the same camera, you can compute
+\code{makePolarGrid(z)} only once and provide the result through this argument.}
 
-\item{sampleSize}{integer. The default is 50, see Details.}
+\item{sampleSize}{integer. Default is \code{50}, see Details.}
 
-\item{k}{integer. The default is 1 nearest neighbor, see Details.}
+\item{k}{integer. Default is \code{1} nearest neighbor, see Details.}
 
-\item{zlim}{code{\linkS4class{Angle}}. The defaults are 30 and 60 degrees of zenith angle, see Details.}
+\item{zlim}{\code{\linkS4class{Angle}}. Defaults are \code{30} to \code{60} degrees of
+zenith angle, see Details.}
 
-\item{calibration}{logical. The default is FALSE, see Details.}
+\item{calibration}{logical. Default is \code{FALSE}, see Details.}
 }
 \value{
-A \code{\linkS4class{BinImage}} by default. If \code{calibrate} is set to \code{TRUE}, a \code{\linkS4class{RasterLayer}}.
+A \code{\linkS4class{BinImage}} by default. If \code{calibrate} is
+  set to \code{TRUE}, a \code{\linkS4class{RasterLayer}}.
 }
 \description{
-Do an Object-based image analysis of hemispherical photographs that are full-color and upward looking, whit the aim of classify plant.
+Do an Object-based image analysis with the aim of classify
+  plants in full-color-upward-looking hemispherical photographs.
 }
 \details{
-This algorithm uses color transformations, fuzzy logic, and object-based image analysis (OBIA). Internally, this algorithm first makes a call to \code{\link{enhanceHemiPhoto}} which result is binarizes with a call to \code{\link{autoThr}}. The class \emph{Gap-candidate} is assigned to pixels above the threshold and the class \emph{Plant} to the rest of unclassified pixels. Next, the algorithm uses this result and \code{g1} to isolated segments of hemisphere with one degree of resolution that are not fully cover by \emph{Plant} (i.e., Gap Fraction > 0), which are classified as \emph{Mix-OR-Gap}. Next, the algorithm takes this result to get a binary mask which is intersected with the argument \emph{seg}. At this point, the algorithms could identify all the segments of \code{seg} that could have some gaps at pixel level (i.e., \emph{Mix-OR-Gap}). Next, the algorithm relabels all this segments in \emph{Gap} or \emph{Mix} with a two stage process: (1) automatic selection of samples and (2) sample-based classification. The argument \code{sampleSize} control the sample size for both targeted classes. The algorithm uses the brightness of the blue channel to selects the samples, it assumes that brighter objects belong to \emph{Gap} and objects with middle bright belong to \emph{Mix}. The argument \code{k} is the argument for \code{\link[class]{knn}} that is used in the second stage of sample-based classification. The process continues on segments labeled as \emph{Mix} with the aim of unmixed them at pixel level (see references for more details). The arguments \code{mnZ} and \code{mxZ} can be used to delimited de range of zenith angle in which the aforementioned process is computed. In the rest of the image the result will be the same as a call to \code{\link{enhanceHemiPhoto}} binarizes with \code{\link{autoThr}}.
+This algorithm uses color transformations, fuzzy logic, and
+  object-based image analysis (OBIA). Internally, this algorithm makes a call
+  to \code{\link{enhanceHemiPhoto}} which result is binarized calling
+  \code{\link{autoThr}}. The class \emph{Gap-candidate} is assigned to pixels
+  above the threshold and the class \emph{Plant} to the rest of the
+  unclassified pixels. Next, the algorithm uses this result and \code{g1} to
+  isolate hemisphere segments with \code{1} degree of resolution that are not
+  fully cover by \emph{Plant} (i.e., Gap Fraction > 0), which are classified
+  as \emph{Mix-OR-Gap}. Next, the algorithm get a binary mask from this
+  result and intersect it with the argument \code{seg}. At this point, the
+  algorithms achieve the identification of all segments of \code{seg} that
+  could have some gaps at pixel level (i.e., \emph{Mix-OR-Gap}). Next, the
+  algorithm classified all this segments in \emph{Gap} or \emph{Mix} in a two
+  stage process: (1) automatic selection of samples and (2) sample-based
+  classification. The argument \code{sampleSize} controls the sample size for
+  both targeted classes. The algorithm uses the brightness of the blue
+  channel to select the samples. It assumes that brighter objects belong to
+  \emph{Gap} and objects with middle brightness belong to \emph{Mix}. The
+  argument \code{k} is for the knn used in the second stage of the
+  sample-based classification. Processing continues on Mix-segments in order
+  to unmix them at pixel level (see references for more details). The
+  arguments \code{mnZ} and \code{mxZ} can be used to delimitate the range of
+  zenith angle in which the aforementioned process is computed. In the rest
+  of the image the result will be the same as using \code{\link{autoThr}} to
+  binarize the result of calling \code{\link{enhanceHemiPhoto}}.
 
-If \code{calibrate} is set to TRUE, the process stops just after the sample-based classification described in the previous paragraph and return a classification at object level of \emph{Plan}, \emph{Mix} and \emph{Gap}. This kind of output can be used to calibrate \code{sampleSize} and \code{k}.
+  If calibrate is set as \code{TRUE}, the process stops just after the
+  sample-based classification described in the previous paragraph and returns
+  a classification at object level of \emph{Plan}, \emph{Mix} and \emph{Gap}.
+  This kind of output can be used to calibrate \code{sampleSize} and
+  \code{k}.
 }
 \examples{
 x <- loadPhoto()
@@ -51,7 +85,7 @@ z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
 \dontrun{
   seg <- doPolarQtree(x, z, scaleParameter = 0.1)
 }
-# ... you can open the result whit the next lines.
+# ... you can open the result with the following lines.
 seg <- raster(system.file("external/seg.tif", package="caiman"))
 seg <- as(seg, "PolarSegmentation")
 
@@ -72,8 +106,8 @@ plot(out)
 
 # Fullframe
 
-## Making an artificially fullframe hemiphoto by cropping a non-fullframe
-## hemiphoto (just for making an example).
+## Making an artificiall fullframe hemiphoto by cropping a non-fullframe
+## hemiphoto (just as an example).
 path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
 x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
 ### declaring it as a fullframe
@@ -93,9 +127,10 @@ plot(out)
 }
 }
 \references{
-Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
+Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction
+Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett.
+12, 1784-1789.
 }
 \seealso{
 \code{\link{loadPhoto}}, \code{\link{doPolarQtree}}, \code{\link{makeZimage}}.
 }
-

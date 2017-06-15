@@ -5,15 +5,18 @@
 \alias{ZenithImage-class}
 \title{An S4 class to represent zenith angles as an image.}
 \description{
-An S4 class to represent zenith angles as an image. Use the helper function \code{\link{makeZimage}} to generate new objects of this class.
+An S4 class to represent zenith angles as an image. Use the
+  helper function \code{\link{makeZimage}} to generate new objects of this
+  class.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{lens}}{\code{\linkS4class{LensPolyCoef}}.}
 
-\item{\code{...}}{Inhereted from \code{\linkS4class{RelativeRadiusImage}}.}
+\item{\code{...}}{Inherited from \code{\linkS4class{RelativeRadiusImage}}.}
 }}
+
 \examples{
 showClass("ZenithImage")
 
@@ -21,4 +24,3 @@ showClass("ZenithImage")
 \seealso{
 \code{\link{makeZimage}}
 }
-

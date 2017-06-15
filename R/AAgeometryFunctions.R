@@ -1,33 +1,68 @@
-########################
-## ** lenspolyCoef ** ##
-########################
-
+#### lenspolyCoef####
 #' @title Generate a LensPolyCoef.
 #'
-#' @description Helper function to generate a \code{\linkS4class{LensPolyCoef}} needed to make a \code{\linkS4class{ZenithImage}}.
+#' @description Helper function to generate a \code{\linkS4class{LensPolyCoef}}
+#'   needed to make a \code{\linkS4class{ZenithImage}}.
 #'
-#' @param x numeric or missing. Coefficient of the polynomial function. First number correspond with the term powered to one, second with the term powered to two and so on. To ingest the coefficient to the first and third term, you need to input \code{c(a, 0, c)}, being \code{a} and \code{c} the coefficient. Missing return a perfect equidistant model.
+#' @param x numeric or missing. Coefficient of the polynomial function. First
+#'   number corresponds to the term powered to \code{1}, the second with the
+#'   term powered to \code{2} and so on. To input the coefficient to the first
+#'   and third term, you need to input \code{c(a, 0, c)}, being \code{a} and
+#'   \code{c} the coefficient. Missing returns a perfect equidistant model.
 #'
-#' @details A projection method is required to visually represent the reality in a flat surface. A natural looking picture can be made with a central perspective projection model restricted to the cone of vision of an average person (looking with one eye), which has more or less 50 degrees. This is achieved using cameras with focal length of about 50 mm. For more detail see a good perspective drawing book.
+#' @details A projection method is required to visually represent the reality in
+#'   a flat surface. A natural looking picture can be made with a central
+#'   perspective projection model restricted to the cone of vision of an average
+#'   person (looking with one eye), which has more or less 50 degrees. This is
+#'   achieved using cameras with focal length of about 50 mm. For more detail
+#'   see a good perspective drawing book. In fisheye lens the focal length is
+#'   about 7-8 mm. The path of all the light rays that go through the camera
+#'   diaphragm can be barely imagined as a very wide cone, so the term field of
+#'   view is used instead of cone of vision. The standard fisheye lens has 180
+#'   degrees field of view, which represents a complete hemisphere. There is a
+#'   variety of models that can be used to mathematically project a 180 degrees
+#'   field of view into a plane, such as: orthographic, equisolid angle,
+#'   equidistant, stereographic and the previously mentioned central
+#'   perspective. This models relate zenith angle with relative radius. The
+#'   zenith is an imaginary point directly above a location. The location is
+#'   represented as a point in the tridimensional space. The straight line that
+#'   contains the location point and the zenith is a perfect vertical. The angle
+#'   between this vertical line and any other line that pass though the location
+#'   point is the zenith angle.
 #'
-#' In fisheye lens the focal length is about 7-8 mm. The path of all the light rays that go through the camera diaphragm can be barely imagined as a very wide cone, so the term field of view is used instead of cone of vision. The standard fisheye lens has 180 degrees field of view, which represents a complete hemisphere.
-#'
-#' There is a variety of models that can be used to mathematically project a 180 degrees field of view into a plane, such as: orthographic, equisolid angle, equidistant, stereographic and the lather mentioned central perspective. This models relate zenith angle with relative radius.
-#'
-#' The \strong{zenith} is an imaginary point directly above a location. The \strong{location} is represented as a point in the tridimensional space. The straight line that contain the location point and the zenith is a perfect vertical. The angle between this vertical line and any other line that pass though the location point is the \strong{zenith angle}.
-#'
-#' In looking upward leveled hemispherical photography, the zenith is the center of a circle which perimeter is the horizon. This is true only if the lens field of view is 180 degrees. The \strong{relative radius} is the radius of concentric circles expressed as a fraction of the radius that belong to the circle that has the horizon as perimeter.
-#'
-#' The equidistant model, also called polar, is the most widely used as a standard reference. Real lens can approximate the projection models but they always have some kind of distortion. In the equidistant model the relation between zenith angle and relative radius is modeled with a straight line. In caiman, a polynomial curve is used to model lens distortion. This kind of model is used by the software HemiView and Hemisphere, both are proprietary software currently available in the market.
+#'   In looking upward leveled hemispherical photography, the zenith is the
+#'   center of a circle which perimeter is the horizon. This is true only if the
+#'   lens field of view is 180 degrees. The relative radius is the radius of
+#'   concentric circles expressed as a fraction of the radius that belong to the
+#'   circle that has the horizon as perimeter. The equidistant model, also
+#'   called polar, is the most widely used as a standard reference. Real lens
+#'   can approximate the projection models but they always have some kind of
+#'   distortion. In the equidistant model the relation between zenith angle and
+#'   relative radius is modeled with a straight line. In \code{caiman}, a
+#'   polynomial curve is used to model lens distortion. This kind of model is
+#'   used by the software HemiView and Hemisphere, both are proprietary software
+#'   currently available in the market.
 #'
 #' @references
-#' Inoue, A., Yamamoto, K., Mizoue, N., Kawahara, Y., 2004. Calibrating view angle and lens distortion of the Nikon fish-eye converter FC-E8. J. For. Res. 9, 177-181. DOI: 10.1007/s10310-003-0073-8
+#' Frazer, G. W., Fournier, R. A., Trofymow, J. A., & Hall, R. J. (2001). A
+#' comparison of digital and film fisheye photography for analysisof forest
+#' canopy structure and gap light transmission. Agricultural and Forest
+#' Meteorology, 109, 249-263.
 #'
-#' Kannala, J., Brandt, S.S., 2006. A generic camera model and calibration method for conventional, wide-angle, and fish-eye lenses. IEEE Trans. Pattern Anal. Mach. Intell. 28, 1335-1340. DOI: 10.1109/TPAMI.2006.153
+#' Inoue, A., Yamamoto, K., Mizoue, N., Kawahara, Y., 2004. Calibrating view
+#' angle and lens distortion of the Nikon fish-eye converter FC-E8. J. For. Res.
+#' 9, 177-181. DOI: 10.1007/s10310-003-0073-8
 #'
-#'Roberson, S., Bertling, T., 2013. How to Draw: drawing and sketching objects and environments from your imagination. Design Studio Press.
+#' Kannala, J., Brandt, S.S., 2006. A generic camera model and calibration
+#' method for conventional, wide-angle, and fish-eye lenses. IEEE Trans. Pattern
+#' Anal. Mach. Intell. 28, 1335-1340. DOI: 10.1109/TPAMI.2006.153
 #'
-#'Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of geometric models for fisheye lenses. ISPRS J. Photogramm. Remote Sens. 64, 259-266. DOI: 10.1016/j.isprsjprs.2009.01.001
+#' Roberson, S., Bertling, T., 2013. How to Draw: drawing and sketching objects
+#' and environments from your imagination. Design Studio Press.
+#'
+#' Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of geometric
+#' models for fisheye lenses. ISPRS J. Photogramm. Remote Sens. 64, 259-266.
+#' DOI: 10.1016/j.isprsjprs.2009.01.001
 #'
 #' @return \code{\linkS4class{LensPolyCoef}}.
 #'
@@ -54,20 +89,19 @@ setMethod("lensPolyCoef",
   }
 )
 
-#################
-## ** calcR ** ##
-#################
-
+#### calcR ####
 #' @title Calculate relative radius.
 #'
-#' @description Given a zenith angle, calculate \strong{relative radius} (R) taken into account the lens distortion. For definition of relative radius see details of \code{\link{lensPolyCoef}}.
+#' @description Given a zenith angle, it calculates the \strong{relative radius}
+#'   (R) taken into account the lens distortion. For a definition of relative
+#'   radius see details of \code{\link{lensPolyCoef}}.
 #'
 #' @aliases calcR
 #'
 #' @param x \code{\linkS4class{Angle}}.
 #' @param y \code{\linkS4class{LensPolyCoef}}.
 #'
-#' @return Numeric.
+#' @return numeric.
 #'
 #' @seealso \code{\link{makeRimage}}, \code{\link{makeZimage}}
 #'
@@ -106,20 +140,31 @@ setMethod("calcR",
   }
 )
 
-######################
-## ** makeRimage ** ##
-######################
-
+#### makeRimage ####
 #' @title Generate a RelativeRadiusImage.
 #'
-#' @description Helper function to generate a \code{\linkS4class{RelativeRadiusImage}}. Compute relative radius for each pixel that is needed to represent a circular hemispherical image with a 180 degrees field of view and a given diameter, expressed in pixels. For definition of relative radius see details of \code{\link{lensPolyCoef}}.
+#' @description Helper function to generate a
+#'   \code{\linkS4class{RelativeRadiusImage}}. Compute relative radius for each
+#'   pixes needed to represent a circular hemispherical image with a \code{180}
+#'   degrees field of view and a given diameter, expressed in pixels. For
+#'   definition of relative radius see details of \code{\link{lensPolyCoef}}.
 #'
-#' @param x numeric. Diameter of the circle in pixels expressed as one-length even integer.
+#' @param x numeric. Diameter of the circle in pixels expressed as one-length
+#'   even integer.
 #'
-#' @details Most digital cameras take photos with an aspect ratio of 3:4, which means a rectangular frame. If all the circle area is in the picture frame, hundreds of pixels will have no-data. RelativeRadiusImage has 1:1 aspect ratio to minimize no-data pixels, so the circle is inscribed in a square. The size of the square equals the diameter of the circle. To represent the zenith as a point between pixels, the diameter of the circle must be even. In a high resolution image this restriction of snapping the zenith between pixels does not affect accuracy because half-pixel is less than the uncertainty in localizing the circle in the frame.
+#' @details Most digital cameras take photos with an aspect ratio of 3:4, which
+#'   means a rectangular frame. If all the circle area is in the picture frame,
+#'   hundreds of pixels will have no-data. \code{RelativeRadiusImage} has 1:1 aspect
+#'   ratio to minimize no-data pixels, so the circle is inscribed in a square.
+#'   The size of the square equals the diameter of the circle. To represent the
+#'   zenith as a point between pixels, the diameter of the circle must be even.
+#'   In a high resolution image this restriction of snapping the zenith between
+#'   pixels does not affect accuracy because half-pixel is less than the
+#'   uncertainty in localizing the circle in the frame.
+#'
 #' @return \code{\linkS4class{RelativeRadiusImage}}.
 #'
-#' @seealso code{\link{makeZimage}}.
+#' @seealso \code{\link{makeZimage}}.
 #'
 #' @example /inst/examples/makeRimageExample.R
 #'
@@ -152,18 +197,19 @@ setMethod("makeRimage",
   }
 )
 
-######################
-## ** makeZimage ** ##
-######################
-
+#### makeZimage ####
 #' @title Generate a ZenithImage.
 #'
-#' @description Helper function to generate a \code{\linkS4class{ZenithImage}}. Compute zenith angle for each pixel that is needed to represent a circular hemispherical image with 180 degrees field of view. For definition of zenith angle see details of \code{\link{lensPolyCoef}}.
+#' @description Helper function to generate a \code{\linkS4class{ZenithImage}}. Compute zenith angle
+#'   for each pixel needed to represent a circular hemispherical image with \code{180}
+#'   degrees field of view. For definition of zenith angle see details of
+#'   \code{\link{lensPolyCoef}}.
 #'
 #' @param x numeric or \code{\linkS4class{RelativeRadiusImage}}.
-#' @param y \code{linkS4class{LensPolyCoef}}.
+#' @param y \code{\linkS4class{LensPolyCoef}}.
 #'
-#' @details If the \code{x} argument of a call to makeZimage is numeric, the function internally calls to makeRimage.
+#' @details If the \code{x} argument of a call to \code{makeZimage} is numeric,
+#'   the function internally calls to \code{\link{makeRimage}}.
 #'
 #' @return \code{\linkS4class{ZenithImage}}.
 #'
@@ -174,7 +220,9 @@ setMethod("makeRimage",
 setGeneric("makeZimage", function(x, y) standardGeneric("makeZimage"))
 #' @export makeZimage
 
-#' @describeIn makeZimage It is the most frequent use. You only need to provide the diameter in pixels of the circle that has data in the hemispherical photographs that you want to process.
+#' @describeIn makeZimage It is the most frequent use. You only need to provide
+#'   the diameter in pixels of the circle that has data in the hemispherical
+#'   photographs you want to process.
 setMethod("makeZimage",
   signature(x = "RelativeRadiusImage", y = "LensPolyCoef"),
   function (x, y)
@@ -193,13 +241,13 @@ setMethod("makeZimage",
     if (!all(rcl[, 2] >= rcl[, 1])) {
       index <- !(rcl[, 2] >= rcl[, 1])
       problemsAreHere <- round(mean(rcl[index, 3]), 1)
-      wathProblems <- max(rcl[index, 1] - rcl[index, 2])
+      whatProblems <- max(rcl[index, 1] - rcl[index, 2])
 
       tolerance <- 0.0001
-      if (wathProblems < tolerance) {
+      if (whatProblems < tolerance) {
         rcl[index, 2] <- rcl[index, 1]
         warning(
-          paste0("Relative radius around ", problemsAreHere, " degrees of zenith angle were rectified adding or subtracting around ", wathProblems, ". Tolerance is ", tolerance, ".")
+          paste0("Relative radius around ", problemsAreHere, " degrees of zenith angle were rectified adding or subtracting around ", whatProblems, ". Tolerance is ", tolerance, ".")
         )
       } else {
         stop(
@@ -226,7 +274,9 @@ setMethod("makeZimage",
   }
 )
 
-#' @describeIn makeZimage In certain processing chain, maybe it could help to decrease processing time. For example, in processing same resolution photo but taken with different lens.
+#' @describeIn makeZimage In certains processing chain, maybe it could help to decrease
+#'   processing time. For example, in processing photos with same resolution but
+#'   taken with different lens.
 #'
 setMethod("makeZimage",
   signature(x = "numeric", y = "LensPolyCoef"),
@@ -236,31 +286,36 @@ setMethod("makeZimage",
   }
 )
 
-######################
-## ** makeAimage ** ##
-######################
-
+#### makeAimage ####
 #' @title Generate an AzimuthImage.
 #'
-#' @description Helper function to generate an \code{\linkS4class{AzimuthImage}}. Compute Azimuth angle for each pixel that is needed to represent a circular hemispherical image with 180 degrees field of view. North is oriented up and West is oriented left.
+#' @description Helper function to generate an
+#'   \code{\linkS4class{AzimuthImage}}. Compute Azimuth angle for each pixels
+#'   that are needed to represent a circular hemispherical image with \code{180}
+#'   degrees field of view. North is oriented up and West is oriented left.
 #'
 #' @param x \code{\linkS4class{ZenithImage}}.
+#' @param cwRotAngle numeric. Angle in degrees.
 #'
-#' @details Azimuth angle is the angle between the North direction and the line of sight projected to the leveled plane. The angle increase in clockwise direction at the field but not in the hemispherical image because it is flipped in the East-West direction.
+#' @details Azimuth angle is the angle between the North direction and the line
+#'   of sight projected to the leveled plane. The angle increases in clockwise
+#'   direction at the field but not in the hemispherical image because it is
+#'   flipped in the East-West direction.
 #'
 #' @return \code{\linkS4class{AzimuthImage}}.
 #'
-#' @seealso code{\link{makeZimage}}.
+#' @seealso \code{\link{makeZimage}}.
 #'
 #' @example /inst/examples/makeAimageExample.R
 #'
-setGeneric("makeAimage", function(x) standardGeneric("makeAimage"))
+setGeneric("makeAimage", function(x, cwRotAngle = NULL)
+            standardGeneric("makeAimage"))
 #' @export makeAimage
 
 #' @rdname makeAimage
 setMethod("makeAimage",
   signature(x = "ZenithImage"),
-  function (x)
+  function (x, cwRotAngle)
   {
     mask <- is.na(x)
 
@@ -279,6 +334,16 @@ setMethod("makeAimage",
 
     values(a) <- sph[, 1] * 180 / pi
     values(a) <- values(abs(t(a) - 180)) # to orient North up and West left
+
+    if (!is.null(cwRotAngle)) {
+
+      foo <- as.matrix(a)
+      foo <- imager::as.cimg(foo)
+      foo <- imager::rotate_xy(foo, -cwRotAngle,
+                                ncol(a) / 2, nrow(a) / 2, interpolation = 0)
+      values(a) <- as.matrix(foo)
+    }
+
     a[is.na(x)] <- NA
 
     return(a)

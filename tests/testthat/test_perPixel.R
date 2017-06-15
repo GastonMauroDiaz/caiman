@@ -19,8 +19,9 @@ test_that("autoThr works.", {
   expect_equal(getMin(x), 0)
 })
 
-path <- "I:/CT_MyRpackages/caiman"
-x <- brick(paste0(path, "/tests/file.tif"))
+
+path <- sub("inst", "" , system.file(package = "caiman"))
+x <- brick(paste0(path, "tests/file.tif"))
 x <- normalize(x, 0, getMax(x)[1])
 
 test_that("normalize works whit Raster.", {

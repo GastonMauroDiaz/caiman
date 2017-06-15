@@ -13,17 +13,25 @@ fuzzyLightness(x, m, thr, fuzziness)
 \arguments{
 \item{x}{numeric. The lightness value.}
 
-\item{m}{numeric lying between \code{0} and {1}. It must have the same lenght as x. It is the scale parameter of the logistic membership function.}
+\item{m}{numeric lying between \code{0} and \code{1}, same length as
+\code{x}. It is the scale parameter of the logistic membership function.}
 
-\item{thr}{numeric of length one. Location parameter of the logistic membership function.}
+\item{thr}{numeric of length \code{1}. Location parameter of the logistic
+membership function.}
 
-\item{fuzziness}{numeric of length one.}
+\item{fuzziness}{numeric of length \code{1}.}
 }
 \value{
-Numeric.
+\code{numeric.}
 }
 \description{
-This algorithm uses a threshold value as the location parameter of a logistic membership function whose scale parameter depend on a variable. This dependence can be explained as follows: if the variable is equal to \code{1}, then the membership function is as a threshold function because the scale parameter is zero; lowering the variable increases the scale parameter, thus blurring the threshold because it decreases the steepness of the curve.
+This algorithm uses a threshold value as the location parameter
+  of a logistic membership function whose scale parameter depends on a
+  variable. This dependence can be explained as follows: if the variable is
+  equal to \code{1}, then the membership function is as a threshold function
+  because the scale parameter is \code{0}; lowering the variable increases
+  the scale parameter, thus blurring the threshold because it decreases the
+  steepness of the curve.
 }
 \examples{
 x <- raster(ncol = 100, nrow = 100)
@@ -48,9 +56,10 @@ values(r) <- fuzzyLightness(values(x), values(m), 80, 1)
 plot(r, col = grey(1:100 / 100), add = TRUE)
 }
 \references{
-Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
+Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction
+Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett.
+12, 1784-1789.
 }
 \seealso{
 \code{\link[stats]{plogis}}.
 }
-

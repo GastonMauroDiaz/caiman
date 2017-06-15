@@ -3,9 +3,9 @@
 \docType{methods}
 \name{sRGB2LAB}
 \alias{sRGB2LAB}
-\alias{sRGB2LAB,CanopyPhoto-method}
 \alias{sRGB2LAB,matrix-method}
 \alias{sRGB2LAB,numeric-method}
+\alias{sRGB2LAB,CanopyPhoto-method}
 \title{Convert sRGB to LAB.}
 \usage{
 sRGB2LAB(x, ...)
@@ -17,7 +17,8 @@ sRGB2LAB(x, ...)
 \S4method{sRGB2LAB}{CanopyPhoto}(x, ...)
 }
 \arguments{
-\item{x}{numeric, matrix or \code{\linkS4class{CanopyPhoto}}. Values must lying between \code{0} and {1}.}
+\item{x}{numeric, matrix or \code{\linkS4class{CanopyPhoto}}. Values must
+lying between \code{0} and \code{1}.}
 
 \item{...}{Additional arguments as for \code{\link[raster]{writeRaster}}.}
 }
@@ -25,7 +26,8 @@ sRGB2LAB(x, ...)
 Matrix, or \code{\linkS4class{CanopyPhoto}}.
 }
 \description{
-Wrapper function of \code{\link[colorspace]{sRGB}} and \code{\link[colorspace]{LAB}} that convert colors from sRGB to LAB.
+Wrapper function of \code{\link[colorspace]{sRGB}} and
+  \code{\link[colorspace]{LAB}} that convert colors from sRGB to LAB.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -35,6 +37,7 @@ Wrapper function of \code{\link[colorspace]{sRGB}} and \code{\link[colorspace]{L
 
 \item \code{CanopyPhoto}: The output is a \code{\linkS4class{CanopyPhoto}} with layer names L, A and B.
 }}
+
 \examples{
 sRGB2LAB(c(0.5,0.7,0.5))
 x <- sRGB2LAB(matrix(c(normalize(1:90, 1, 90)), ncol = 3))
@@ -57,4 +60,3 @@ plot(x)
 \seealso{
 \code{\link{normalize}}.
 }
-

@@ -3,10 +3,10 @@
 \docType{methods}
 \name{geocode}
 \alias{geocode}
-\alias{geocode,CanopyPhoto-method}
 \alias{geocode<-}
+\alias{geocode,CanopyPhoto-method}
 \alias{geocode<-,CanopyPhoto,SpatialPoints-method}
-\title{Set or get geocode.}
+\title{Set or get the geocode slot.}
 \usage{
 geocode(x)
 
@@ -17,13 +17,16 @@ geocode(x)
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{value}{\code{\link[sp]{SpatialPoints}} that represents the location of \code{x}.}
+\item{value}{\code{\link[sp]{SpatialPoints}} that represents the location of
+\code{x}.}
 }
 \value{
 \code{\link[sp]{SpatialPoints}}.
 }
 \description{
-Set or get the \code{\link[sp]{SpatialPoints}} that represent the shot location for the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+Set or get the \code{\link[sp]{SpatialPoints}} that represent
+  the shot location for the photograph represented by a
+  \code{\linkS4class{CanopyPhoto}}.
 }
 \examples{
 x <- loadPhoto()
@@ -42,4 +45,3 @@ geocode(x)
 \seealso{
 \code{\link{loadPhoto}}.
 }
-

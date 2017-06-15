@@ -3,9 +3,9 @@
 \docType{methods}
 \name{autoThr}
 \alias{autoThr}
+\alias{autoThr,numeric-method}
 \alias{autoThr,CanopyPhoto-method}
 \alias{autoThr,RasterLayer-method}
-\alias{autoThr,numeric-method}
 \title{Binarize images with an automatic threshold.}
 \usage{
 autoThr(x, ...)
@@ -17,29 +17,45 @@ autoThr(x, ...)
 \S4method{autoThr}{RasterLayer}(x)
 }
 \arguments{
-\item{x}{numeric, \code{\linkS4class{CanopyPhoto}} or \code{\linkS4class{RasterLayer}}.}
+\item{x}{numeric, \code{\linkS4class{CanopyPhoto}} or
+\code{\linkS4class{RasterLayer}}.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments (none implemented).}
 
-\item{subset}{numeric or character. Should indicate the channel to process (represented as integer or by their name).}
+\item{subset}{numeric or character. It indicates the channel to process
+(represented as integer or by their name).}
 }
 \value{
-Numeric or \code{\linkS4class{BinImage}}.
+numeric or \code{\linkS4class{BinImage}}.
 }
 \description{
-Given a single layer image, a global threshold value is automatically obtained and a binarized image is returned. All pixels above the auto-threshold are replaced with \code{1} and the rest with \code{0}. On the other hand, only a threshold value is returned for numeric vector input.
+Given a single layer image, a global threshold value is
+  automatically obtained and a binarized image is returned. All pixels above
+  the auto-threshold are replaced by \code{1} and the rest by \code{0}.
+  On the other hand, only a threshold value is returned for numeric vector
+  input.
 }
 \details{
-Threshold value is obtained with the Ridler and Calvard (1978) method. The implementation is based on \href{http://fiji.sc/Auto_Threshold#IsoData}{the IsoData method of Auto Threshold ImageJ plugin by Gabriel Landini}.
+Threshold value is obtained with the Ridler and Calvard (1978)
+  method. The implementation is based on
+  \href{http://fiji.sc/Auto_Threshold#IsoData}{the IsoData method of Auto
+  Threshold ImageJ plugin by Gabriel Landini}.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{numeric}: Require a numeric vector of length greater than one and standard deviation greater than zero. This method returns the threshold value.
+\item \code{numeric}: Require a numeric vector of length greater than \code{1} and
+standard deviation greater than \code{0}. This method returns the threshold
+value.
 
-\item \code{CanopyPhoto}: The argument \code{subset} will be passed to \code{\link[raster]{subset}} for selecting which channel of the \code{\linkS4class{CanopyPhoto}} will be processed. It computes the threshold of selected layer and return a \code{\linkS4class{BinImage}}.
+\item \code{CanopyPhoto}: The argument \code{subset} will be passed to
+\code{\link[raster]{subset}} for selecting which channel of the
+\code{\linkS4class{CanopyPhoto}} will be processed. It computes the
+threshold of the selected layer and return a \code{\linkS4class{BinImage}}.
 
-\item \code{RasterLayer}: Compute threshold and return a \code{\linkS4class{BinImage}}.
+\item \code{RasterLayer}: Compute the threshold and return a
+\code{\linkS4class{BinImage}}.
 }}
+
 \examples{
 x <- loadPhoto()
 bin <- autoThr(x, 3)
@@ -52,9 +68,9 @@ bin <- autoThr(raster(path))
 plot(bin)
 }
 \references{
-Ridler, T., Calvard, S., 1978. Picture thresholding using an iterative selection method. IEEE Trans. Syst. Man Cybern. 8, 260-263.
+Ridler, T., Calvard, S., 1978. Picture thresholding using an iterative
+selection method. IEEE Trans. Syst. Man Cybern. 8, 260-263.
 }
 \seealso{
 \code{\link{presetThr}}.
 }
-

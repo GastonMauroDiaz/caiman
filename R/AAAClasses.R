@@ -8,6 +8,8 @@ devtools::use_package("sp")
 devtools::use_package("raster", type = "Depends")
 devtools::use_package("methods")
 devtools::use_package("colorspace")
+devtools::use_package("exif")
+devtools::use_package("imager")
 #devtools::use_package("testthat", type = "Suggests")
 
 
@@ -18,13 +20,12 @@ NULL
 
 setClassUnion("RasterAll", c("RasterStackBrick", "RasterLayer"))
 
-########################
-## ** LensPolyCoef ** ##
-########################
-
+##### LensPolyCoef #####
 #' @title An S4 class to represent coefficients that models lens distortion.
 #'
-#' @description An S4 class to represent coefficients that models lens distortion of hemispherical photographs. Use the helper function \code{\link{lensPolyCoef}} to generate new objects of this class.
+#' @description An S4 class to represent coefficients that models lens
+#'   distortion of hemispherical photographs. Use the helper function
+#'   \code{\link{lensPolyCoef}} to generate new objects of this class.
 #'
 #' @slot coef numeric.
 #'
@@ -49,20 +50,27 @@ setClass(Class = "LensPolyCoef",
   prototype = list(coef = 2 / pi)
 )
 
-###############################
-## ** RelativeRadiusImage ** ##
-###############################
-
+##### RelativeRadiusImage ####
 #' @title An S4 class to represent Relative Radius as an image.
 #'
-#' @description An S4 class to represent Relative Radius as an image. This class was built on top of \code{\linkS4class{Raster}}. In circular fisheye image, all data is contained in a perfect circle. \code{RelativeRadiusImage} objects are square-form raster with a circle inscribed in. Use the helper function \code{\link{makeRimage}} to generate a new \code{RelativeRadiusImage}.
+#' @description An S4 class to represent Relative Radius as an image. Use the
+#'   helper function \code{\link{makeRimage}} to generate a new
+#'   \code{\linkS4class{RelativeRadiusImage}}.
 #'
 #' @slot diameter integer.
-#' @slot ... Inhereted from \code{\linkS4class{RasterLayer}}.
+#' @slot ... Inherited from \code{\linkS4class{RasterLayer}}.
 #'
-#' @details \code{raster package} offer a wide range of functionality to manipulate raster files efficiently. It uses georeferenced raster because was designed with a field-based conception of the geographical reality (Galton, 2011). To manipulate such data, \code{raster package} defines "S4 classes" grouped in the \code{\linkS4class{Raster}} family that has a complex hierarchical structure of inheritance. These classes have slots that help to precisely locate each cell over the earth because they were designed to represent georeferenced raster.
-#'
-#'\code{RelativeRadiusImage} was built on top of \code{RasterLayer} to take advantage of \code{raster package} functionality. However, \code{RelativeRadiusImage} require raster implementation but not georeferenced. That is why some inherited slots are meaningless for these class.
+#' @details \code{raster} package offer a wide range of functionalities to
+#'   manipulate raster files efficiently. It uses georeferenced raster because
+#'   was designed with a field-based conception of the geographical reality
+#'   (Galton, 2011). To manipulate such data, \code{raster} package defines "S4
+#'   classes" grouped in the \code{\linkS4class{Raster}} family that has a complex hierarchical
+#'   structure of inheritance. These classes have slots that help to precisely
+#'   locate each cell over the earth because they were designed to represent
+#'   georeferenced raster. \code{RelativeRadiusImage} was built on top of \code{RasterLayer}
+#'   to take advantage of \code{raster} package functionality. However,
+#'   \code{RelativeRadiusImage} requires raster implementation but not georeference.
+#'   That is why some inherited slots are meaningless for these class.
 #'
 #' @references Galton, A., 2001. A Formal Theory of Objects and Fields, in:
 #'   COSIT. pp. 458-473.
@@ -86,16 +94,15 @@ setClass(Class = "RelativeRadiusImage",
   contains = "RasterLayer"
 )
 
-#######################
-## ** ZenithImage ** ##
-#######################
-
+##### ZenithImage ####
 #' @title An S4 class to represent zenith angles as an image.
 #'
-#' @description An S4 class to represent zenith angles as an image. Use the helper function \code{\link{makeZimage}} to generate new objects of this class.
+#' @description An S4 class to represent zenith angles as an image. Use the
+#'   helper function \code{\link{makeZimage}} to generate new objects of this
+#'   class.
 #'
 #' @slot lens \code{\linkS4class{LensPolyCoef}}.
-#' @slot ... Inhereted from \code{\linkS4class{RelativeRadiusImage}}.
+#' @slot ... Inherited from \code{\linkS4class{RelativeRadiusImage}}.
 #'
 #' @seealso \code{\link{makeZimage}}
 #'
@@ -108,15 +115,14 @@ setClass(Class = "ZenithImage",
   contains = "RelativeRadiusImage"
 )
 
-########################
-## ** AzimuthImage ** ##
-########################
-
+##### AzimuthImage ####
 #' @title An S4 class to represent azimuth angles as an image.
 #'
-#' @description An S4 class to represent azimuth angles as an image. Use the helper function \code{\link{makeAimage}} to generate new objects of this class.
+#' @description An S4 class to represent azimuth angles as an image. Use the
+#'   helper function \code{\link{makeAimage}} to generate new objects of this
+#'   class.
 #'
-#' @slot ... Inhereted from \code{\linkS4class{ZenithImage}}.
+#' @slot ... Inherited from \code{\linkS4class{ZenithImage}}.
 #'
 #' @seealso \code{\link{makeAimage}}
 #'
@@ -131,13 +137,13 @@ setClass ("AzimuthImage",
   },
   contains = c("RelativeRadiusImage"))
 
-#################
-## ** Angle ** ##
-#################
-
+##### Angle ####
 #' @title An S4 class to represent angle values.
 #'
-#' @description An S4 class to represent angle values and made things easy for users because has a slot that set if it is in degrees or radians, so method and functions can adapt to it instead of users. Only allow positive values. Use the helper function \code{\link{asAngle}} to generate new objects of this class.
+#' @description An S4 class to represent angle values. It has a slot that sets
+#'   whether it is in degrees or radians, so the methods and functions can adapt
+#'   to it instead of users. Only allows positive values. Use the helper
+#'   function \code{\link{asAngle}} to generate new objects of this class.
 #'
 #' @slot values numeric.
 #' @slot degrees logical.
@@ -163,20 +169,17 @@ setClass(Class = "Angle",
     if (error)
     {
       stop(
-          "\nAngle in degrees must be equal or greater than zero and less than 360.\nAngle in radians must be equal or greater than zero and less than 2pi.")
+          "\nAngle in degrees must be equal or greater than 0 and less than 360.\nAngle in radians must be equal or greater than 0 and less than 2pi.")
     } else {
       return(TRUE)
     }
   }
 )
 
-###################
-## ** FishEye ** ##
-###################
-
-#' @title An S4 class to represent metadata related with fisheye photographs.
+##### FishEye ####
+#' @title An S4 class to represent the metadata related with fisheye photographs.
 #'
-#' @description An S4 class to represent metadata related with fisheye photographs.
+#' @description An S4 class to represent the metadata related with fisheye photographs.
 #'
 #' @slot is logical.
 #' @slot up logical.
@@ -209,10 +212,7 @@ setClass(Class = "FishEye",
   prototype = list(is = FALSE, up = FALSE, leveled = FALSE, fullframe = FALSE)
 )
 
-#######################
-## ** CanopyPhoto ** ##
-#######################
-
+##### CanopyPhoto ####
 .datetimeCharacterValidation <- function (x) {
   if(length(x) != 1) {stop("The datetime slot must have length one")}
 
@@ -261,9 +261,11 @@ setClass(Class = "FishEye",
   return(TRUE)
 }
 
-#' @title An S4 class to store photographs of a vegetal canopy.
+#' @title An S4 class to store vegetal canopy photographs.
 #'
-#' @description An S4 class to store photographs of a vegetal canopy. Use the helper function \code{\link{loadPhoto}} to build new objects of this class from a file on disk.
+#' @description An S4 class to store vegetal canopy photographs. Use the
+#'   helper function \code{\link{loadPhoto}} to build new objects of this class
+#'   from a file.
 #'
 #' @slot equipment character.
 #' @slot fisheye \code{\linkS4class{FishEye}}.
@@ -271,11 +273,15 @@ setClass(Class = "FishEye",
 #' @slot geocode \code{\link[sp]{SpatialPoints}}.
 #' @slot bearing \code{\linkS4class{Angle}}.
 #' @slot elevation \code{\linkS4class{Angle}}.
-#' @slot ... Inhereted from \code{\linkS4class{RasterBrick}}.
+#' @slot ssDenominator numeric.
+#' @slot aperture numeric.
+#' @slot isoSpeed numeric.
+#' @slot ... Inherited from \code{\linkS4class{RasterBrick}}.
 #'
-#' @details \code{CanopyPhoto} can store photographs with any visual content but methods were designed to process real-color-photographs of the vegetal canopy.
-#'
-#' \code{CanopyPhoto} was built on top of \code{RasterBrick} to take advantage of \code{raster package} functionality. However, \code{CanopyPhoto} require raster implementation but not georeferenced. That is why some inherited slots are meaningless for these class.
+#' @details \code{CanopyPhoto} was built on top of \code{RasterBrick} to take
+#'   advantage of the \code{raster package} functionalities. However,
+#'   \code{CanopyPhoto} requires raster implementation but not georeference and
+#'   this is why some inherited slots are meaningless for this class.
 #'
 #' @seealso \code{\link{loadPhoto}}
 #'
@@ -288,23 +294,31 @@ setClass(Class = "CanopyPhoto",
     datetime = "character",
     geocode = "SpatialPoints",
     bearing = "Angle",
-    elevation = "Angle"
+    elevation = "Angle",
+    ssDenominator = "numeric",
+    aperture = "numeric",
+    isoSpeed = "numeric"
     ),
   validity = function(object) {
 
     .elevationValidation(object@elevation)
-    .datetimeCharacterValidation(object@datetime)
+#    .datetimeCharacterValidation(object@datetime)
     c1 <- length(object@geocode) == 1
     c2 <- length(object@bearing@values) == 1
     c3 <- length(object@elevation@values) == 1
+    c4 <- length(object@ssDenominator) == 1
+    c5 <- length(object@aperture) == 1
+    c6 <- length(object@isoSpeed) == 1
     if (object@fisheye@is) {
       if (!object@fisheye@fullframe) stopifnot(nrow(object) == ncol(object))
       if (round(nrow(object) / 2) != nrow(object) / 2)
         stop("The diameter of the fisheye picture must be even.")
     }
-    if (c1 & c2 & c3) {
+    if (c1 & c2 & c3 & c4 & c5 & c6) {
       return(TRUE)
-    } else {stop("At lest one of this slots have length greater than one: geocode, bearing or elevation")}
+    } else {
+      stop("At lest one of this slots have length greater than one: geocode, bearing, elevation, ssDenominator, aperture or isoSpeed")
+    }
   },
   prototype = list(
     fisheye = new("FishEye"),
@@ -313,15 +327,15 @@ setClass(Class = "CanopyPhoto",
       SpatialPoints(coords = matrix(c(-57.95, -34.93333), ncol = 2),
         proj4string = CRS("+init=epsg:4326")),
     bearing = new("Angle", values = 0, degrees = TRUE),
-    elevation = new("Angle", values = 0, degrees = TRUE)
+    elevation = new("Angle", values = 0, degrees = TRUE),
+    ssDenominator = 0,
+    aperture = 0,
+    isoSpeed = 0
   ),
   contains = "RasterBrick"
 )
 
-####################
-## ** BinImage ** ##
-####################
-
+##### BinImage ####
 #' @title An S4 class to store binarized images.
 #'
 #' @description An S4 class to store binarized images.
@@ -329,9 +343,10 @@ setClass(Class = "CanopyPhoto",
 #' @slot threshold One-length numeric.
 #' @slot originalData One-length character.
 #' @slot processedLayer One-length integer	.
-#' @slot ... Inhereted from \code{\linkS4class{RasterLayer}}.
+#' @slot ... Inherited from \code{\linkS4class{RasterLayer}}.
 #'
-#' @seealso \code{\link{autoThr}}, \code{\link{presetThr}}, \code{\link{doMask}}, \code{\link{doOBIA}}
+#' @seealso \code{\link{autoThr}}, \code{\link{presetThr}},
+#'   \code{\link{doMask}}, \code{\link{doOBIA}}
 #'
 #' @examples showClass("BinImage")
 #'
@@ -350,19 +365,17 @@ setClass(Class = "BinImage",
   contains = "RasterLayer"
 )
 
-#############################
-## ** PolarSegmentation ** ##
-#############################
-
+##### PolarSegmentation ####
 #' @title An S4 class to store polar segmentations.
 #'
 #' @description An S4 class to store polar segmentations.
 #'
-#' @slot  angleWidth Angle
+#' @slot  angleWidth \code{\linkS4class{Angle}}
 #' @slot  scaleParameter numeric
-#' @slot  ... Inhereted from \code{linkS4class{ZenithImage}}.
+#' @slot  ... Inherited from \code{\linkS4class{ZenithImage}}.
 #'
-#' @seealso \code{\link{makeRings}}, \code{\link{makePolarSectors}}, \code{\link{makePolarGrid}}
+#' @seealso \code{\link{makeRings}}, \code{\link{makePolarSectors}},
+#'   \code{\link{makePolarGrid}}
 #'
 #' @examples showClass("PolarSegmentation")
 #'

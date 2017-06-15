@@ -1,5 +1,5 @@
 ## Making an artificially fullframe hemiphoto by cropping a non-fullframe
-## hemiphoto (just for making an example)
+## hemiphoto (just as an example)
 path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
 x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
 ### declaring it as a fullframe

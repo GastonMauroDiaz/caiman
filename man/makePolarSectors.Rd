@@ -13,18 +13,24 @@ makePolarSectors(x, angleWidth, angleMean = FALSE)
 \arguments{
 \item{x}{\code{\linkS4class{AzimuthImage}}.}
 
-\item{angleWidth}{\code{\linkS4class{Angle}}. AngleWidth must divide 0-360 into a whole number of segments.}
+\item{angleWidth}{\code{\linkS4class{Angle}}. It must divides \code{0:360}
+into a whole number of segments.}
 
-\item{angleMean}{logical. If it is FALSE, all the pixels belong to a sector are labeled with an ID number. Otherwise, the angle mean of the sector are assigned to the pixels.}
+\item{angleMean}{logical. If \code{FALSE}, all the pixels that belong to a sector
+are labeled with an ID number. Otherwise, the angle mean of the sector are
+assigned to the pixels.}
 }
 \value{
 \code{\linkS4class{PolarSegmentation}}.
 }
 \description{
-Make sectors by slicing the azimuth angle from 0 to 360 in equals intervals.
+Make sectors by slicing the azimuth angle from \code{0} to
+  \code{360} in equals intervals.
 }
 \details{
-The intervals are closed on the right and open on the left. The first sector never contain \code{0} because zenith point is always in between two pixels (\code{\link{makeZimage}}), that is way a pixel never will be in the exact Norte direction.
+The intervals are closed on the right and open on the left. The
+  first sector never contains \code{0} because the zenith point is always in
+  between two pixels (see \code{\link{makeZimage}}).
 }
 \examples{
 z <- makeZimage(480, lensPolyCoef())
@@ -44,4 +50,3 @@ plot(s)
 \seealso{
 \code{\link{makeAimage}}, \code{\link{makeRings}}, \code{\link{makePolarGrid}}.
 }
-

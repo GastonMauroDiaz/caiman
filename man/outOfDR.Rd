@@ -4,38 +4,58 @@
 \name{outOfDR}
 \alias{outOfDR}
 \alias{outOfDR,CanopyPhoto-method}
-\title{Get the percentages of pixels out of the dynamic range.}
+\title{Get the percentages of pixels that are out of the dynamic range.}
 \usage{
-outOfDR(x, mask = NULL, returnImages = FALSE)
+outOfDR(x, channel = NULL, mask = NULL, returnImages = FALSE)
 
-\S4method{outOfDR}{CanopyPhoto}(x, mask = NULL, returnImages = FALSE)
+\S4method{outOfDR}{CanopyPhoto}(x, channel = NULL, mask = NULL,
+  returnImages = FALSE)
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{mask}{\linkS4class{BinImage}. The default of NULL means that all the pixels will be taking into account in the computations. If you provide a \code{BinImage}, it must have the same extent and resolution of \code{x}. All pixels from the image covered by pixels of the \code{mask} with value \code{1} will be taking into account in the computations.}
+\item{channel}{One-length character, "Red", "Green" or "Blue".}
 
-\item{returnImages}{logical. The default is FALSE.}
+\item{mask}{\linkS4class{BinImage}. Default value \code{NULL} means that all
+the pixels will be taking into account in the computations. If you provide
+a \linkS4class{BinImage}, it must have the same extent and resolution of
+\code{x}. All pixels from the image covered by pixels of the mask with
+value \code{1} will be taking into account in the computations.}
+
+\item{returnImages}{logical. Default is \code{FALSE}, see Value.}
 }
 \value{
-By default, it returns a vector of length tree with percentages for all the pixels outside the dynamic range, only the underexposure and only the overexposure. If you set \code{returnImages = TRUE}, it return a \code{\linkS4class{RasterStack}} that has two binary layers in which \code{1} means under or overexposure, respectively.
+By default, it returns a vector of length \code{3}. If
+  \code{returnImages = TRUE}, then it returns a
+  \code{\linkS4class{RasterStack}} that has two binary layers in which \code{1}
+  means under/overexposure.
+
+  todo
 }
 \description{
-Get the percentages of pixels out of the dynamic range, i.e., the under and overexposure pixels of an image.
+Get the percentages of pixels that are out of the dynamic range,
+  i.e., the under and overexposure pixels of an image.
 }
 \details{
-This algorithm classifies the pixels of \code{x} that are in the limits of the dynamic range. These pixels are often called under or overexpose because is very probably that in such a case the energy that reach the sensor fall outside the range. If the energy is under the dynamic range, then the pixel adopt value 0 for the three channel. If the energy is over the dynamic range, then the pixel adopts the maximum value for the three channel. The maximum value depends of the data type used, for example, 8-bit image has 255 and 16-bit has 65536.
+This algorithm classifies the pixels of x that start and end the
+  dynamic range. These pixels are called under or overexposed because is
+  highly probable that they are out of the dynamic range and not just in the
+  limits.
+
+  todo
 }
 \examples{
 x <- loadPhoto()
 x <- normalize(x, 0, 255)
 z <- makeZimage(ncol(x), lensPolyCoef())
 m <- doMask(z)
-outOfDR(x, m)
-plot(outOfDR(x, m, TRUE))
 
+outOfDR(x, mask = m)
+plot(outOfDR(x, mask = m,  returnImages = TRUE))
+
+outOfDR(x, "Blue", mask = m)
+plot(outOfDR(x, "Blue", mask = m,  returnImages = TRUE))
 }
 \seealso{
-\code{link{normalize}}, \code{link{colorfulIndex}}.
+\code{\link{normalize}}, \code{\link{colorfulness}}.
 }
-

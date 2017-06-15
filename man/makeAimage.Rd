@@ -6,21 +6,29 @@
 \alias{makeAimage,ZenithImage-method}
 \title{Generate an AzimuthImage.}
 \usage{
-makeAimage(x)
+makeAimage(x, cwRotAngle = NULL)
 
-\S4method{makeAimage}{ZenithImage}(x)
+\S4method{makeAimage}{ZenithImage}(x, cwRotAngle = NULL)
 }
 \arguments{
 \item{x}{\code{\linkS4class{ZenithImage}}.}
+
+\item{cwRotAngle}{numeric. Angle in degrees.}
 }
 \value{
 \code{\linkS4class{AzimuthImage}}.
 }
 \description{
-Helper function to generate an \code{\linkS4class{AzimuthImage}}. Compute Azimuth angle for each pixel that is needed to represent a circular hemispherical image with 180 degrees field of view. North is oriented up and West is oriented left.
+Helper function to generate an
+  \code{\linkS4class{AzimuthImage}}. Compute Azimuth angle for each pixels
+  that are needed to represent a circular hemispherical image with \code{180}
+  degrees field of view. North is oriented up and West is oriented left.
 }
 \details{
-Azimuth angle is the angle between the North direction and the line of sight projected to the leveled plane. The angle increase in clockwise direction at the field but not in the hemispherical image because it is flipped in the East-West direction.
+Azimuth angle is the angle between the North direction and the line
+  of sight projected to the leveled plane. The angle increases in clockwise
+  direction at the field but not in the hemispherical image because it is
+  flipped in the East-West direction.
 }
 \examples{
 z <- makeZimage(480, lensPolyCoef())
@@ -29,6 +37,5 @@ plot(a)
 a
 }
 \seealso{
-code{\link{makeZimage}}.
+\code{\link{makeZimage}}.
 }
-

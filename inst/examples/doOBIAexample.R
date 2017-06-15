@@ -6,7 +6,7 @@ z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
 \dontrun{
   seg <- doPolarQtree(x, z, scaleParameter = 0.1)
 }
-# ... you can open the result whit the next lines.
+# ... you can open the result with the following lines.
 seg <- raster(system.file("external/seg.tif", package="caiman"))
 seg <- as(seg, "PolarSegmentation")
 
@@ -27,8 +27,8 @@ plot(out)
 
 # Fullframe
 
-## Making an artificially fullframe hemiphoto by cropping a non-fullframe
-## hemiphoto (just for making an example).
+## Making an artificiall fullframe hemiphoto by cropping a non-fullframe
+## hemiphoto (just as an example).
 path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
 x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
 ### declaring it as a fullframe

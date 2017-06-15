@@ -3,10 +3,10 @@
 \docType{methods}
 \name{fisheye}
 \alias{fisheye}
-\alias{fisheye,CanopyPhoto-method}
 \alias{fisheye<-}
+\alias{fisheye,CanopyPhoto-method}
 \alias{fisheye<-,CanopyPhoto,FishEye-method}
-\title{Set or get fisheye.}
+\title{Set or get the fisheye slot.}
 \usage{
 fisheye(x)
 
@@ -17,13 +17,14 @@ fisheye(x)
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{value}{\code{\linkS4class{FishEye}} that contains the fisheye attributes of \code{x}.}
+\item{value}{\code{\linkS4class{FishEye}}.}
 }
 \value{
 \code{\linkS4class{FishEye}}.
 }
 \description{
-Set or get fisheye attributes for the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+Set or get the fisheye object that describe the photograph
+  represented by a \code{\linkS4class{CanopyPhoto}}.
 }
 \examples{
 x <- loadPhoto()
@@ -34,4 +35,3 @@ fisheye(x)
 \seealso{
 \code{\link{loadPhoto}}.
 }
-

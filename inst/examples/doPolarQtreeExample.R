@@ -7,7 +7,7 @@ seg <- doPolarQtree(x, z, a, scaleParameter = 1)
 seg
 plot(seg)
 }
-# Next lines open a result obtained with scaleParameter = 0.1, which takes
+# Next lines open a result obtained using scaleParameter = 0.1, which takes
 # too long for an example.
 seg <- raster(system.file("external/seg.tif", package="caiman"))
 seg <- as(seg, "PolarSegmentation")

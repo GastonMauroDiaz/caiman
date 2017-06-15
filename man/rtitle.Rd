@@ -3,8 +3,8 @@
 \docType{methods}
 \name{rtitle}
 \alias{rtitle}
-\alias{rtitle,Raster-method}
 \alias{rtitle<-}
+\alias{rtitle,Raster-method}
 \alias{rtitle<-,Raster,character-method}
 \title{Set or get the title of a Raster*.}
 \usage{
@@ -17,16 +17,18 @@ rtitle(x)
 \arguments{
 \item{x}{\code{\linkS4class{Raster}}.}
 
-\item{value}{Character. The title.}
+\item{value}{character. The title.}
 }
 \value{
-Character.
+character.
 }
 \description{
-Set or show the title of a \code{\linkS4class{Raster}}.
+Set or get the title of a \code{\linkS4class{Raster}}.
 }
 \details{
-This method was written after reading this \href{https://stackoverflow.com/questions/9900134/is-it-bad-practice-to-access-s4-objects-slots-directly-using}{stackoverflow answer}.
+This method was written after reading this
+  \href{https://stackoverflow.com/questions/9900134/is-it-bad-practice-to-access-s4-objects-slots-directly-using}{stackoverflow
+  answer}.
 }
 \examples{
 x <- makeRimage(480)
@@ -34,4 +36,3 @@ rtitle(x)
 rtitle(x) <- "some string"
 rtitle(x)
 }
-

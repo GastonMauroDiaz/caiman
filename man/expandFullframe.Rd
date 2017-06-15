@@ -11,15 +11,17 @@ expandFullframe(x, zero = TRUE)
 \S4method{expandFullframe}{CanopyPhoto}(x, zero = TRUE)
 }
 \arguments{
-\item{x}{x \code{\linkS4class{CanopyPhoto}}.}
+\item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{zero}{logical. Default \code{TRUE} means that the added pixels will have \code{0}, \code{FALSE} means that will have \code{NA}.}
+\item{zero}{logical. By default is set as \code{TRUE} meaning that added
+pixels will be \code{0}, if \code{FALSE} added pixels will be \code{NA}.}
 }
 \value{
-x \code{\linkS4class{CanopyPhoto}}.
+\code{\linkS4class{CanopyPhoto}}.
 }
 \description{
-Expand a full frame hemispherical photograph to get the equivalent of a circular hemispherical photograph in which the added pixels have \code{0} or \code{NA} in the tree channels.
+Expand a full frame hemispherical photograph to get the
+  equivalent of a circular hemispherical photograph.
 }
 \examples{
 x <- loadPhoto()
@@ -33,7 +35,7 @@ plot(m)
 plot(x[m, drop = FALSE])
 
 # Making an artificially fullframe hemiphoto by cropping a non-fullframe
-# hemiphoto (just for making an example)
+# hemiphoto (just as an example)
 path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
 x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
 ## declaring it as a fullframe
@@ -52,4 +54,3 @@ plot(doMask(makeRimage(ncol(m))) + m, legend = FALSE)
 \seealso{
 \code{\link{doMask}}.
 }
-

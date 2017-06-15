@@ -3,7 +3,7 @@ x
 plot(x)
 
 path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
-# You also can set all or any slots
+# You can also set all or any slots
 x <- loadPhoto(path, equipment = "some string", fisheye = newFishEye(),
                   datetime = "2000/01/01 12:00:00",
                     geocode = SpatialPoints(cbind(-43, -71)),
