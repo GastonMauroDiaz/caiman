@@ -11,19 +11,26 @@ extractFeatures(x, ...)
 \S4method{extractFeatures}{RasterLayer}(x, segmentation, fun)
 }
 \arguments{
-\item{x}{\code{\linkS4class{RasterLayer}}. The image that you want extract feature from.}
+\item{x}{\code{\linkS4class{RasterLayer}}. The image that you want to extract
+feature from.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments (none implemented).}
 
-\item{segmentation}{\linkS4class{PolarSegmentation}. The segmentation that delimitate segments in \code{x}.  It must have the same extent and resolution of \code{x}.}
+\item{segmentation}{\linkS4class{PolarSegmentation}. The segmentation of
+\code{x}.}
 
-\item{fun}{function. It need to be able to take a single vector as input and return a one-length numeric or logical vector (e.g. mean).}
+\item{fun}{\code{function} that take a vector as input and return a one-length
+numeric or logical (e.g. mean).}
 }
 \value{
-Numeric.
+\code{numeric.}
 }
 \description{
-Given a single layer data, a segmentation and a function, this algorithm returns a numeric vector of length equal to the number of segment in the segmentation. Each value which is the return of processing all the pixels that belong to a segment with the aforementioned function.
+Given a single layer data, a segmentation and a function, this
+  algorithm returns a numeric vector of length equal to the number of
+  segments in the segmentation. Each value of the vector is the return
+  obtained if all pixels that belong to a segment are processed with the
+  aforementioned function.
 }
 \examples{
 x <- loadPhoto()
@@ -35,4 +42,3 @@ plot(fi)
 \seealso{
 \code{\link{getFeatureImage}}.
 }
-

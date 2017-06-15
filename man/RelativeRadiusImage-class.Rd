@@ -5,20 +5,31 @@
 \alias{RelativeRadiusImage-class}
 \title{An S4 class to represent Relative Radius as an image.}
 \description{
-An S4 class to represent Relative Radius as an image. This class was built on top of \code{\linkS4class{Raster}}. In circular fisheye image, all data is contained in a perfect circle. \code{RelativeRadiusImage} objects are square-form raster with a circle inscribed in. Use the helper function \code{\link{makeRimage}} to generate a new \code{RelativeRadiusImage}.
+An S4 class to represent Relative Radius as an image. Use the
+  helper function \code{\link{makeRimage}} to generate a new
+  \code{\linkS4class{RelativeRadiusImage}}.
 }
 \details{
-\code{raster package} offer a wide range of functionality to manipulate raster files efficiently. It uses georeferenced raster because was designed with a field-based conception of the geographical reality (Galton, 2011). To manipulate such data, \code{raster package} defines "S4 classes" grouped in the \code{\linkS4class{Raster}} family that has a complex hierarchical structure of inheritance. These classes have slots that help to precisely locate each cell over the earth because they were designed to represent georeferenced raster.
-
-\code{RelativeRadiusImage} was built on top of \code{RasterLayer} to take advantage of \code{raster package} functionality. However, \code{RelativeRadiusImage} require raster implementation but not georeferenced. That is why some inherited slots are meaningless for these class.
+\code{raster} package offer a wide range of functionalities to
+  manipulate raster files efficiently. It uses georeferenced raster because
+  was designed with a field-based conception of the geographical reality
+  (Galton, 2011). To manipulate such data, \code{raster} package defines "S4
+  classes" grouped in the \code{\linkS4class{Raster}} family that has a complex hierarchical
+  structure of inheritance. These classes have slots that help to precisely
+  locate each cell over the earth because they were designed to represent
+  georeferenced raster. \code{RelativeRadiusImage} was built on top of \code{RasterLayer}
+  to take advantage of \code{raster} package functionality. However,
+  \code{RelativeRadiusImage} requires raster implementation but not georeference.
+  That is why some inherited slots are meaningless for these class.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{diameter}}{integer.}
 
-\item{\code{...}}{Inhereted from \code{\linkS4class{RasterLayer}}.}
+\item{\code{...}}{Inherited from \code{\linkS4class{RasterLayer}}.}
 }}
+
 \examples{
 showClass("RelativeRadiusImage")
 
@@ -30,4 +41,3 @@ Galton, A., 2001. A Formal Theory of Objects and Fields, in:
 \seealso{
 \code{\link{makeRimage}}
 }
-

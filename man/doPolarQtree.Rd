@@ -13,26 +13,56 @@ doPolarQtree(x, z, a = makeAimage(z), scaleParameter, divisions = 1,
   divisions = 1, mnSize = 1000)
 }
 \arguments{
-\item{x}{\linkS4class{Raster}. The raster that you want to process. It could have one or more layer.}
+\item{x}{\code{\linkS4class{Raster}}. The raster to be processed. Single or
+multi-layer.}
 
-\item{z}{\code{\linkS4class{ZenithImage}}. This ZenithImage should match with the lens geometry of the picture linked with \code{x}.}
+\item{z}{\code{\linkS4class{ZenithImage}}.  Should match the lens geometry of
+the picture linked with \code{x}.}
 
 \item{a}{\code{\linkS4class{AzimuthImage}}.}
 
-\item{scaleParameter}{one-length numeric. It forms part of the stopping condition (see Detalis).}
+\item{scaleParameter}{one-length numeric. It is part of the stopping
+condition (see Detalis).}
 
-\item{divisions}{numeric. If it is 1, the segments could have a resolution of 30, 15, 7.5, 3.75 or 1.875 degrees. If it is 2, the segments could have a resolution of 15, 7.5, 3.75 or 1.875 degrees. If it is 3, the segments could have a resolution of 15, 7.5 or 3.75 degrees. If it is 4, the segments could have a resolution of 7.5 or 3.75 degrees.}
+\item{divisions}{numeric. See details}
 
-\item{mnSize}{numeric. This is an additional stoping criterion that avoids errors in segments near the zenith.}
+\item{mnSize}{numeric.  This is an additional stopping criterion to avoid
+errors in segments closed to zenith.}
 }
 \value{
 \linkS4class{PolarSegmentation}.
 }
 \description{
-The quad-tree segmentation algorithm is a top-down process that makes recursive divisions in four equal parts until a condition is satisfied and then stops locally. The usual implementation of the quad-tree algorithm is based on the raster structure, and this is why the resultant objects are squares of different sizes. This method implements the quad-tree segmentation but in a polar space.
+The quad-tree segmentation algorithm is a top-down process that
+  makes recursive divisions in four equal parts until a condition is
+  satisfied and then stops locally. The usual implementation of the quad-tree
+  algorithm is based on the raster structure and this is why the result are
+  squares of different sizes. This method implements the quad-tree
+  segmentation in a polar space.
 }
 \details{
-Depending on \code{divisions}, the algorithm starts with segments of a given resolution. Next, it selects one segment and split it into four segments of equal angular resolution. Then, use the standard deviation of \code{x} as homogeneous criterion. To that end, calculate it for the entire segment and for each four segments. To stop the process locally, the algorithms evaluate if the sum of the standard deviation of the subsegments minus the standard deviation of the segment (\emph{delta}) is less or equal than the \code{scaleParameter}. If \code{x} is multilayer delta is calculated separately and the delta mean is used to evaluate the stopping condition.
+Argument division could be 1, 2, 3 or 4 and it controls segment resolution.
+
+  value / resolution (degrees)
+
+  1 / 30, 15, 7.5, 3.75 or 1.875.
+
+  2 / 15, 7.5, 3.75 or 1.875.
+
+  3 / 15, 7.5 or 3.75.
+
+  4 / 7.5 or 3.75.
+
+  The algorithm starts with segments of a given resolution depending
+  on \code{divisions}. Next, it selects one segment and splits it into four
+  segments of equal angular resolution. Then, it uses the standard deviation
+  of \code{x} as homogeneous criterion. To that end, it calculates the standard
+  deviation for the entire segment and for each four segments. To stop the
+  process locally, the algorithm evaluates if the sum of the standard
+  deviation of the subsegments minus the standard deviation of the segment
+  (delta) is less or equal than the \code{scaleParameter}. If x is multilayer delta
+  is calculated separately and delta mean is used to evaluate the
+  stopping condition.
 }
 \examples{
 x <- loadPhoto()
@@ -44,16 +74,17 @@ seg <- doPolarQtree(x, z, a, scaleParameter = 1)
 seg
 plot(seg)
 }
-# Next lines open a result obtained with scaleParameter = 0.1, which takes
+# Next lines open a result obtained using scaleParameter = 0.1, which takes
 # too long for an example.
 seg <- raster(system.file("external/seg.tif", package="caiman"))
 seg <- as(seg, "PolarSegmentation")
 plot(seg)
 }
 \references{
-Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
+Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction
+Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett.
+12, 1784-1789.
 }
 \seealso{
 \code{\link{makeZimage}}, \code{\link{makeAimage}}.
 }
-

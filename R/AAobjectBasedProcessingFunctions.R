@@ -1,15 +1,12 @@
-###########################
-## ** getFeatureImage ** ##
-###########################
-
-#' @title Get an image that store object features.
+#### getFeatureImage ####
+#' @title Get an image that stores object features.
 #'
-#' @description Given a single layer data, a segmentation and a function, this algorithm returns a \code{RasterLayer} as segmentation but with its segment IDs replaced with the segment features, which is the return of processing all the pixels that belong to a segment with the aforementioned function.
+#' @description Given a single layer data, a segmentation and a function, this
+#'   algorithm returns \code{RasterLayer} like segmentation but with its segment-IDs
+#'   replaced with the segment-features, which are the return of processing all
+#'   the pixels that belong to a segment with the aforementioned function.
 #'
-#' @param x \code{\linkS4class{RasterLayer}}. The image that you want extract feature from.
-#' @param segmentation \linkS4class{PolarSegmentation}. The segmentation that delimitate segments in \code{x}.  It must have the same extent and resolution of \code{x}.
-#' @param fun function. It need to be able to take a single vector as input and return a one-length numeric or logical vector (e.g. mean).
-#' @inheritParams autoThr
+#' @inheritParams extractFeatures
 #'
 #' @return \code{\linkS4class{RasterLayer}}.
 #'
@@ -35,19 +32,23 @@ setMethod("getFeatureImage",
   }
 )
 
-###########################
-## ** extractFeatures ** ##
-###########################
-
+#### extractFeatures ####
 #' @title Extract object features.
-#' @description Given a single layer data, a segmentation and a function, this algorithm returns a numeric vector of length equal to the number of segment in the segmentation. Each value which is the return of processing all the pixels that belong to a segment with the aforementioned function.
+#' @description Given a single layer data, a segmentation and a function, this
+#'   algorithm returns a numeric vector of length equal to the number of
+#'   segments in the segmentation. Each value of the vector is the return
+#'   obtained if all pixels that belong to a segment are processed with the
+#'   aforementioned function.
 #'
-#' @param x \code{\linkS4class{RasterLayer}}. The image that you want extract feature from.
-#' @param segmentation \linkS4class{PolarSegmentation}. The segmentation that delimitate segments in \code{x}.  It must have the same extent and resolution of \code{x}.
-#' @param fun function. It need to be able to take a single vector as input and return a one-length numeric or logical vector (e.g. mean).
-#' @inheritParams autoThr
+#' @param x \code{\linkS4class{RasterLayer}}. The image that you want to extract
+#'   feature from.
+#' @param segmentation \linkS4class{PolarSegmentation}. The segmentation of
+#'   \code{x}.
+#' @param fun \code{function} that take a vector as input and return a one-length
+#'   numeric or logical (e.g. mean).
+#' @param ... Additional arguments (none implemented).
 #'
-#' @return Numeric.
+#' @return \code{numeric.}
 #'
 #' @seealso \code{\link{getFeatureImage}}.
 #'

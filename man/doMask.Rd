@@ -3,10 +3,10 @@
 \docType{methods}
 \name{doMask}
 \alias{doMask}
+\alias{doMask,ZenithImage-method}
 \alias{doMask,CanopyPhoto-method}
 \alias{doMask,RelativeRadiusImage-method}
-\alias{doMask,ZenithImage-method}
-\title{It does masks for hemispherical photographs.}
+\title{Do a mask for hemispherical photographs given angle restrictions.}
 \usage{
 doMask(x, previousMask = NULL, a = makeAimage(x), zlim = NULL,
   alim = NULL)
@@ -19,31 +19,40 @@ doMask(x, previousMask = NULL, a = makeAimage(x), zlim = NULL,
 \S4method{doMask}{RelativeRadiusImage}(x)
 }
 \arguments{
-\item{x}{\code{\linkS4class{ZenithImage}} or \code{\linkS4class{CanopyPhoto}}.}
+\item{x}{\code{\linkS4class{ZenithImage}} or
+\code{\linkS4class{CanopyPhoto}}.}
 
-\item{previousMask}{\code{\linkS4class{BinImage}}. Default is NULL.}
+\item{previousMask}{\code{\linkS4class{BinImage}}. Default is \code{NULL}.}
 
 \item{a}{\code{\linkS4class{AzimuthImage}}.}
 
-\item{zlim}{\code{\linkS4class{Angle}}. Set the zenith angle range with inclusive limits.}
+\item{zlim}{\code{\linkS4class{Angle}}. Set the zenith angle range with
+inclusive limits.}
 
-\item{alim}{\code{\linkS4class{Angle}}. Set the azimuth angle range with inclusive limits.}
+\item{alim}{\code{\linkS4class{Angle}}. Set the azimuth angle range with
+inclusive limits.}
 }
 \value{
 \code{\linkS4class{BinImage}}.
 }
 \description{
-It does masks for hemispherical photographs.
+Do a mask for hemispherical photographs given angle restrictions.
 }
 \details{
 The intervals are closed on the right and on the left.
+
+Todo: explain previousMask behavior.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{ZenithImage}: You can use angular limits to do a mask for hemispherical photographs.
+\item \code{ZenithImage}: You can use angular limits to do a mask for hemispherical
+photographs.
 
-\item \code{CanopyPhoto}: This feature is needed to further process fullframe photographs. It assumes that the diagonal of the frame has 180 degrees field of view. See references.
+\item \code{CanopyPhoto}: This feature is needed for further processing fullframe
+hemispherical photographs. It assumes that the diagonal of the frame has
+180 degrees field of view. See references.
 }}
+
 \examples{
 x <- loadPhoto()
 z <- makeZimage(ncol(x), lensPolyCoef(c(0.9192, -0.1792, -0.000443)))
@@ -56,7 +65,7 @@ plot(m)
 plot(x[m, drop = FALSE])
 
 # Making an artificially fullframe hemiphoto by cropping a non-fullframe
-# hemiphoto (just for making an example)
+# hemiphoto (just as an example)
 path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
 x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
 ## declaring it as a fullframe
@@ -73,9 +82,10 @@ plot(m)
 plot(doMask(makeRimage(ncol(m))) + m, legend = FALSE)
 }
 \references{
-Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of geometric models for fisheye lenses. ISPRS J. Photogramm. Remote Sens. 64, 259-266.
+Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of
+  geometric models for fisheye lenses. ISPRS J. Photogramm. Remote Sens. 64,
+  259-266.
 }
 \seealso{
 \code{\link{makeZimage}}, \code{\link{makeAimage}}.
 }
-

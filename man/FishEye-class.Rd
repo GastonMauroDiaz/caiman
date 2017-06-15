@@ -3,9 +3,9 @@
 \docType{class}
 \name{FishEye-class}
 \alias{FishEye-class}
-\title{An S4 class to represent metadata related with fisheye photographs.}
+\title{An S4 class to represent the metadata related with fisheye photographs.}
 \description{
-An S4 class to represent metadata related with fisheye photographs.
+An S4 class to represent the metadata related with fisheye photographs.
 }
 \section{Slots}{
 
@@ -18,6 +18,7 @@ An S4 class to represent metadata related with fisheye photographs.
 
 \item{\code{fullframe}}{logical.}
 }}
+
 \examples{
 showClass("FishEye")
 
@@ -25,4 +26,3 @@ showClass("FishEye")
 \seealso{
 \code{\link{newFishEye}}
 }
-

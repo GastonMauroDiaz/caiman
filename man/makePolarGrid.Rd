@@ -17,18 +17,28 @@ makePolarGrid(z, a = makeAimage(z), angleWidth = asAngle(1),
 
 \item{a}{\code{\linkS4class{AzimuthImage}}.}
 
-\item{angleWidth}{\code{\linkS4class{Angle}}. It must be 30, 15, 10, 7.5, 6, 5, 3.75, 3, 2.5, 1.875, 1 or 0.5 degrees. This values could divide both 0-360 and 0-90 into a whole number of segments.}
+\item{angleWidth}{\code{\linkS4class{Angle}}. It must be 30, 15, 10, 7.5, 6,
+5, 3.75, 3, 2.5, 1.875, 1 or 0.5 degrees. This values could divide both
+0-360 and 0-90 into a whole number of segments.}
 
-\item{sequential}{logical. If it is TRUE the segments are labeled with sequential numbers. By default (FALSE), labeling numbers are not sequential (see Details).}
+\item{sequential}{logical. If it is \code{TRUE} the segments are labeled with
+sequential numbers. By default (\code{FALSE}), labeling numbers are not
+sequential (see Details).}
 }
 \value{
 \code{\linkS4class{PolarSegmentation}}.
 }
 \description{
-Partitioning the hemisphere into segments of equal angular resolution for both zenith and azimuth angles.
+Partitioning the hemisphere into segments of equal angular
+  resolution for both zenith and azimuth angles.
 }
 \details{
-Intersecting rings with sectors makes a grid in which each segment is a portion of the hemisphere. Each pixel of the grid is labeled with an ID that codify both ring and sector ID. For example, a grid with a regular interval of 1 degree has segment from 1001 to 360090. This numbers are calculated with: \code{sector-ID# x 1000 + rings-ID#}, where \code{sector-ID#} is the ID number of the sector and \code{rings-ID#} is the ID number of the ring.
+Intersecting rings with sectors makes a grid in which each segment
+is a portion of the hemisphere. Each pixel of the grid is labeled with an ID
+that codify both ring and sector ID. For example, a grid with a regular
+interval of 1 degree has segment from 1001 to 360090. This numbers are
+calculated with: \code{sectorID x 1000 + ringsID}, where \code{sectorID} is
+the ID number of the sector and \code{ringsID} is the ID number of the ring.
 }
 \examples{
 z <- makeZimage(480, lensPolyCoef())
@@ -41,4 +51,3 @@ plot(g)
 \seealso{
 \code{\link{makeZimage}}, \code{\link{makeAimage}}, \code{\link{makePolarSectors}}, \code{\link{makeRings}}.
 }
-

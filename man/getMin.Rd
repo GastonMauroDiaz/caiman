@@ -2,10 +2,11 @@
 % Please edit documentation in R/AAutilityFunctions.R
 \docType{methods}
 \name{getMin}
+\alias{getMin}
+\alias{getMax}
+\alias{getMin,RasterAll-method}
 \alias{getMax}
 \alias{getMax,RasterAll-method}
-\alias{getMin}
-\alias{getMin,RasterAll-method}
 \title{Get the extreme values.}
 \usage{
 getMin(x)
@@ -23,7 +24,8 @@ getMax(x)
 A numeric vector.
 }
 \description{
-Get the maximum/minimum value of a \code{\linkS4class{Raster}}. If it has multiple layers get the maximums/minimums values of each one.
+Get the maximum/minimum value of a \code{\linkS4class{Raster}}.
+  If it is multilayer, then get the maximums/minimums values of each layer.
 }
 \examples{
 x <- loadPhoto()
@@ -34,4 +36,3 @@ x <- makeRimage(480)
 getMax(x)
 getMin(x)
 }
-

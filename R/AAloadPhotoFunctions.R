@@ -1,17 +1,25 @@
-###################
-## ** bearing ** ##
-###################
-
-#' @title Set or get bearing.
+#### bearing #####
+#' @title Set or get the bearing slot.
 #'
 #' @aliases bearing<-
 #'
-#' @description Set or get the \code{\linkS4class{Angle}} that represents the bearing of a \code{\linkS4class{CanopyPhoto}}.
+#' @description Set or get the \code{\linkS4class{Angle}} that represents the
+#'   bearing of a \code{\linkS4class{CanopyPhoto}}.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param value \code{\linkS4class{Angle}} that represents the bearing of \code{x}.
+#' @param value \code{\linkS4class{Angle}} that represents the bearing of
+#'   \code{x}.
 #'
-#' @details Bearing is a synonym for azimuth commonly used in geotagged photographs. Like azimuth, it is the angle between the North direction and the line of sight projected to the leveled plane. Because it is used for non-hemispherical-photographs, the line of sight refers to the centerline of the cone of vision (see details of \code{\link{lensPolyCoef}}). But if the photographs are taken looking directly to the zenith (90 degrees of elevation), bearing no make sense. In that case, bearing refer to the orientation of the top of the frame, which means taking photographs with the top of the camera facing the bearing. The same is valid for downward looking leveled hemispherical photographs.
+#' @details Bearing is a synonym for azimuth commonly used in geotagged
+#'   photographs. Like azimuth, it is the angle between the North direction and
+#'   the line of sight projected to the leveled plane. Since it is used for
+#'   non-hemispherical-photographs, the line of sight refers to the centerline
+#'   of the cone of vision (see details of \code{\link{lensPolyCoef}}). But if
+#'   the photographs have been taken looking directly to the zenith (90 degrees
+#'   of elevation), bearing does not make sense. In that case, bearing refers to
+#'   the orientation of the top of the frame, which means taking photographs
+#'   with the top of the camera facing the bearing. The same is valid for
+#'   downward looking leveled hemispherical photographs.
 #'
 #' @return \code{\linkS4class{Angle}}.
 #'
@@ -44,20 +52,20 @@ setMethod("bearing<-",
 )
 #' @export bearing<-
 
-#####################
-## ** elevation ** ##
-#####################
-
-#' @title Set or get elevation.
+#### elevation ######
+#' @title Set or get the elevation slot.
 #'
 #' @aliases elevation<-
 #'
-#' @description Set or get the \code{\linkS4class{Angle}} that represent the elevation of a \code{\linkS4class{CanopyPhoto}}.
+#' @description Set or get the \code{\linkS4class{Angle}} that represents the
+#'   elevation of a \code{\linkS4class{CanopyPhoto}}.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param value \code{\linkS4class{Angle}} that represents the elevation of \code{x}.
+#' @param value \code{\linkS4class{Angle}} that represents the elevation of
+#'   \code{x}.
 #'
-#' @details The elevation is the complement of the zenith angle of the line of sight. For zenith angle definition, see details of \code{\link{lensPolyCoef}}.
+#' @details The elevation is the complement of the line-of-sight zenith angle.
+#'   For zenith angle definition, see the details of \code{\link{lensPolyCoef}}.
 #'
 #' @return \code{\linkS4class{Angle}}.
 #'
@@ -90,20 +98,19 @@ setMethod("elevation<-",
 )
 #' @export elevation<-
 
-#####################
-## ** equipment ** ##
-#####################
-
-#' @title Set or get equipment.
+#### equipment #####
+#' @title Set or get the equipment slot.
 #'
 #' @aliases equipment<-
 #'
-#' @description Set or get the length-one character string that describe the equipment used to take the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+#' @description Set or get the length-one character string that describe the
+#'   equipment used to take the photograph represented by a
+#'   \code{\linkS4class{CanopyPhoto}}.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param value Character that describe the equipment used to take \code{x}.
+#' @param value character that describe the equipment used to take \code{x}.
 #'
-#' @return Character.
+#' @return \code{character}.
 #'
 #' @seealso \code{\link{loadPhoto}}.
 #'
@@ -134,20 +141,19 @@ setMethod("equipment<-",
 )
 #' @export equipment<-
 
-####################
-## ** datetime ** ##
-####################
-
-#' @title Set or get datetime.
+#### datetime #####
+#' @title Set or get the datetime slot.
 #'
 #' @aliases datetime<-
 #'
-#' @description Set or show the character string with date and time of shot for the photo represented by a \code{\linkS4class{CanopyPhoto}}.
+#' @description Set or get the character string with date and time when the
+#'   photograph was taken.
 #'
-#' @param x \code{\link{CanopyPhoto-class}}.
-#' @param value Character that represents the elevation of \code{x}.
+#' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param value Character. The only valid formats for the datetime slot are:
+#'   yyyy/mm/dd hh:mm:ss or yyyy-mm-dd hh:mm:ss
 #'
-#' @return Character.
+#' @return character.
 #'
 #' @seealso \code{\link{loadPhoto}}.
 #'
@@ -178,18 +184,18 @@ setMethod("datetime<-",
 )
 #' @export datetime<-
 
-###################
-## ** geocode ** ##
-###################
-
-#' @title Set or get geocode.
+#### geocode ####
+#' @title Set or get the geocode slot.
 #'
 #' @aliases geocode<-
 #'
-#' @description Set or get the \code{\link[sp]{SpatialPoints}} that represent the shot location for the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+#' @description Set or get the \code{\link[sp]{SpatialPoints}} that represent
+#'   the shot location for the photograph represented by a
+#'   \code{\linkS4class{CanopyPhoto}}.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param value \code{\link[sp]{SpatialPoints}} that represents the location of \code{x}.
+#' @param value \code{\link[sp]{SpatialPoints}} that represents the location of
+#'   \code{x}.
 #'
 #' @return \code{\link[sp]{SpatialPoints}}.
 #'
@@ -222,19 +228,23 @@ setMethod("geocode<-",
 )
 #' @export geocode<-
 
-######################
-## ** newFishEye ** ##
-######################
-
-#' @title Generate a new FishEye
+#### newFishEye #####
+#' @title Generate a new FishEye.
 #'
-#' @description Helper function to generate a \code{\linkS4class{FishEye}} needed to fill the slot \code{filsheye} of \code{\linkS4class{CanopyPhoto}}.
+#' @description Helper function to generate a \code{\linkS4class{FishEye}}
+#'   needed to fill the slot \code{fisheye} of a
+#'   \code{\linkS4class{CanopyPhoto}}.
 #'
-#' @param up missing or logical. Set \code{TRUE} if the photograph was taken looking up.
-#' @param  leveled missing or logical. Set \code{TRUE} if the camera was leveled and therefore its optical axis was aligned with a perfect vertical.
-#' @param  fullframe missing or logical. Set \code{TRUE} if all the pixels of the photograph have data. For circular fisheye, with hundreds of no-data pixels, set \code{FALSE}.
+#' @param up missing or logical. Set as \code{TRUE} if the photograph was taken
+#'   looking up.
+#' @param  leveled missing or logical. Set as \code{TRUE} if the camera was leveled
+#'   and therefore its optical axis was aligned with a perfect vertical.
+#' @param  fullframe missing or logical. Set as \code{TRUE} if all the pixels of
+#'   the photograph have data. For circular fisheye, with hundreds of no-data
+#'   pixels, set as \code{FALSE}.
 #'
-#' @details A call to \code{newFishEye()} return the prototype for \code{\linkS4class{FishEye}}.
+#' @details A call to \code{newFishEye()} returns the prototype for
+#'   \code{\linkS4class{FishEye}}.
 #'
 #' @return \code{\linkS4class{FishEye}}.
 #'
@@ -266,18 +276,16 @@ setMethod("newFishEye",
   }
 )
 
-###################
-## ** fisheye ** ##
-###################
-
-#' @title Set or get fisheye.
+#### fisheye #####
+#' @title Set or get the fisheye slot.
 #'
 #' @aliases fisheye<-
 #'
-#' @description Set or get fisheye attributes for the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+#' @description Set or get the fisheye object that describe the photograph
+#'   represented by a \code{\linkS4class{CanopyPhoto}}.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param value \code{\linkS4class{FishEye}} that contains the fisheye attributes of \code{x}.
+#' @param value \code{\linkS4class{FishEye}}.
 #'
 #' @return \code{\linkS4class{FishEye}}.
 #'
@@ -313,13 +321,12 @@ setMethod("fisheye<-",
 #' @export fisheye<-
 
 
-######################
-## ** cloneSlots ** ##
-######################
-
-#' @title Copy slots between CanopyPhoto objects.
+#### cloneSlots ####
+#' @title Copy some slots between CanopyPhoto objects.
 #'
-#' @description Take the slots \code{equipment, fisheye, datetime, geocode, bearing, elevation} and \code{names} from a CanopyPhoto and copy to another.
+#' @description Copy the slots equipment, fisheye, datetime, geocode,
+#'   bearing, elevation, aperture, ssDenominator, isoSpeed and names
+#'   from a \code{\linkS4class{CanopyPhoto}} to another.
 #'
 #' @param from \code{\linkS4class{CanopyPhoto}}.
 #' @param to \code{\linkS4class{CanopyPhoto}}.
@@ -343,8 +350,134 @@ setMethod("cloneSlots",
     geocode(to) <- geocode(from)
     bearing(to) <- bearing(from)
     elevation(to) <- elevation(from)
+    aperture(to) <- aperture(from)
+    ssDenominator(to) <- ssDenominator(from)
+    isoSpeed(to) <- isoSpeed(from)
     names(to) <- names(from)
+    rtitle(to) <- rtitle(from)
     return(to)
   }
 )
 
+#### ssDenominator ####
+#' @title Set or get the ssDenominator slot.
+#'
+#' @aliases ssDenominator<-
+#'
+#' @description Set or get the denominator of the shutter speed used to take the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+#'
+#' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param value numeric. Denominator of the shutter speed used to take \code{x}.
+#'
+#' @return numeric.
+#'
+#' @seealso \code{\link{loadPhoto}}.
+#'
+#' @example /inst/examples/ssDenominatorExample.R
+#'
+setGeneric("ssDenominator", function(x) standardGeneric("ssDenominator"))
+#' @export ssDenominator
+
+#' @rdname ssDenominator
+setMethod("ssDenominator",
+          signature(x = "CanopyPhoto"),
+          function (x) {
+            return(x@ssDenominator)
+          }
+)
+
+setGeneric("ssDenominator<-", function(x, value) standardGeneric("ssDenominator<-"),
+           useAsDefault = FALSE)
+
+#' @rdname ssDenominator
+setMethod("ssDenominator<-",
+          signature(x = "CanopyPhoto", value = "numeric"),
+          function (x, value) {
+            x@ssDenominator <- value
+            validObject(x)
+            return(x)
+          }
+)
+#' @export ssDenominator<-
+
+#### aperture ####
+#' @title Set or get the aperture slot.
+#'
+#' @aliases aperture<-
+#'
+#' @description Set or get the the aperture used to take the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+#'
+#' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param value Numeric. Aperture used to take \code{x}.
+#'
+#' @return numeric.
+#'
+#' @seealso \code{\link{loadPhoto}}.
+#'
+#' @example /inst/examples/apertureExample.R
+#'
+setGeneric("aperture", function(x) standardGeneric("aperture"))
+#' @export aperture
+
+#' @rdname aperture
+setMethod("aperture",
+          signature(x = "CanopyPhoto"),
+          function (x) {
+            return(x@aperture)
+          }
+)
+
+setGeneric("aperture<-", function(x, value) standardGeneric("aperture<-"),
+           useAsDefault = FALSE)
+
+#' @rdname aperture
+setMethod("aperture<-",
+          signature(x = "CanopyPhoto", value = "numeric"),
+          function (x, value) {
+            x@aperture <- value
+            validObject(x)
+            return(x)
+          }
+)
+#' @export aperture<-
+
+#### isoSpeed ####
+#' @title Set or get the isoSpeed slot.
+#'
+#' @aliases isoSpeed<-
+#'
+#' @description Set or get the ISO speed used to take the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+#'
+#' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param value numeric. ISO Speed used to take \code{x}.
+#'
+#' @return numeric.
+#'
+#' @seealso \code{\link{loadPhoto}}.
+#'
+#' @example /inst/examples/isoSpeedExample.R
+#'
+setGeneric("isoSpeed", function(x) standardGeneric("isoSpeed"))
+#' @export isoSpeed
+
+#' @rdname isoSpeed
+setMethod("isoSpeed",
+          signature(x = "CanopyPhoto"),
+          function (x) {
+            return(x@isoSpeed)
+          }
+)
+
+setGeneric("isoSpeed<-", function(x, value) standardGeneric("isoSpeed<-"),
+           useAsDefault = FALSE)
+
+#' @rdname isoSpeed
+setMethod("isoSpeed<-",
+          signature(x = "CanopyPhoto", value = "numeric"),
+          function (x, value) {
+            x@isoSpeed <- value
+            validObject(x)
+            return(x)
+          }
+)
+#' @export isoSpeed<-

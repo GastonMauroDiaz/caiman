@@ -3,9 +3,9 @@
 \docType{methods}
 \name{normalize}
 \alias{normalize}
-\alias{normalize,CanopyPhoto-method}
 \alias{normalize,Raster-method}
 \alias{normalize,RasterLayer-method}
+\alias{normalize,CanopyPhoto-method}
 \title{Normalize data in the range \code{0} to \code{1}.}
 \usage{
 normalize(x, mn, mx, ...)
@@ -29,14 +29,18 @@ normalize(x, mn, mx, ...)
 \linkS4class{CanopyPhoto} or \linkS4class{Raster}
 }
 \description{
-Normalize data lying between \code{mn} and \code{mx} in the range \code{0} to \code{1}. Data greater than mx get values greater than \code{1}, proportionally. Conversely, data less than \code{mn} get values less than \code{0}.
+Normalize data lying between mn and mx in the range \code{0} to \code{1}. Data
+  greater than \code{mx} get values greater than \code{1}, proportionally. Conversely, data
+  less than mn get values less than \code{0}.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{Raster}: Result is a \linkS4class{Raster} of the same type that \code{x}.
+\item \code{Raster}: Result is a \linkS4class{Raster} of the same type that
+\code{x}.
 
 \item \code{CanopyPhoto}: Result is a \linkS4class{CanopyPhoto}.
 }}
+
 \examples{
 x <- 0:100
 summary(normalize(x, 0, 100))
@@ -50,4 +54,3 @@ x <- normalize(loadPhoto(), 100, 200)
 getMin(x)
 getMax(x)
 }
-

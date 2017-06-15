@@ -1,14 +1,13 @@
-#####################
-## ** presetThr ** ##
-#####################
-
+#### presetThr ####
 #' @title Binarize images with a preset threshold.
 #'
-#' @description Given a single layer image and a global threshold value, it returns a binarized image. All pixels above the threshold are replaced with \code{1} and the rest with \code{0}.
+#' @description Given a single layer image and a global threshold value, it
+#'   returns a binarized image. All pixels above the threshold are replaced with
+#'   \code{1} and the rest with \code{0}.
 #'
 #' @param x \code{\linkS4class{RasterLayer}}.
 #' @param thr numeric. Threshold value. It should be between minimum and maximum layer value.
-#' @inheritParams autoThr
+#' @param ... Additional arguments (none implemented)
 #'
 #' @return \code{\linkS4class{BinImage}}.
 #'
@@ -35,24 +34,31 @@ setMethod("presetThr",
 )
 #' @export presetThr
 
-###################
-## ** autoThr ** ##
-###################
-
+#### autoThr ####
 #' @title Binarize images with an automatic threshold.
 #'
-#' @description Given a single layer image, a global threshold value is automatically obtained and a binarized image is returned. All pixels above the auto-threshold are replaced with \code{1} and the rest with \code{0}. On the other hand, only a threshold value is returned for numeric vector input.
+#' @description Given a single layer image, a global threshold value is
+#'   automatically obtained and a binarized image is returned. All pixels above
+#'   the auto-threshold are replaced by \code{1} and the rest by \code{0}.
+#'   On the other hand, only a threshold value is returned for numeric vector
+#'   input.
 #'
-#' @param x numeric, \code{\linkS4class{CanopyPhoto}} or \code{\linkS4class{RasterLayer}}.
-#' @param subset numeric or character. Should indicate the channel to process (represented as integer or by their name).
-#' @param ... Additional arguments.
+#' @param x numeric, \code{\linkS4class{CanopyPhoto}} or
+#'   \code{\linkS4class{RasterLayer}}.
+#' @param subset numeric or character. It indicates the channel to process
+#'   (represented as integer or by their name).
+#' @param ... Additional arguments (none implemented).
 #'
-#' @details Threshold value is obtained with the Ridler and Calvard (1978) method. The implementation is based on \href{http://fiji.sc/Auto_Threshold#IsoData}{the IsoData method of Auto Threshold ImageJ plugin by Gabriel Landini}.
+#' @details Threshold value is obtained with the Ridler and Calvard (1978)
+#'   method. The implementation is based on
+#'   \href{http://fiji.sc/Auto_Threshold#IsoData}{the IsoData method of Auto
+#'   Threshold ImageJ plugin by Gabriel Landini}.
 #'
 #' @references
-#' Ridler, T., Calvard, S., 1978. Picture thresholding using an iterative selection method. IEEE Trans. Syst. Man Cybern. 8, 260-263.
+#' Ridler, T., Calvard, S., 1978. Picture thresholding using an iterative
+#' selection method. IEEE Trans. Syst. Man Cybern. 8, 260-263.
 #'
-#' @return Numeric or \code{\linkS4class{BinImage}}.
+#' @return numeric or \code{\linkS4class{BinImage}}.
 #'
 #' @seealso \code{\link{presetThr}}.
 #'
@@ -61,13 +67,15 @@ setMethod("presetThr",
 setGeneric("autoThr", function(x, ...) standardGeneric("autoThr"))
 #' @export autoThr
 
-#' @describeIn autoThr Require a numeric vector of length greater than one and standard deviation greater than zero. This method returns the threshold value.
+#' @describeIn autoThr Require a numeric vector of length greater than \code{1} and
+#'   standard deviation greater than \code{0}. This method returns the threshold
+#'   value.
 setMethod("autoThr",
   signature(x = "numeric"),
   function (x)
   {
-    if (length(x) <= 1) stop("length(x) must be greater than one.")
-    if (stats::sd(x, na.rm = TRUE) == 0) stop("sd(x) must be greater than zero.")
+    if (length(x) <= 1) stop("length(x) must be greater than 1.")
+    if (stats::sd(x, na.rm = TRUE) == 0) stop("sd(x) must be greater than 0.")
     thr <- mean(x, na.rm = TRUE)
     thr.back <- 0
     while (thr != thr.back) {
@@ -80,7 +88,10 @@ setMethod("autoThr",
   }
 )
 
-#' @describeIn autoThr The argument \code{subset} will be passed to \code{\link[raster]{subset}} for selecting which channel of the \code{\linkS4class{CanopyPhoto}} will be processed. It computes the threshold of selected layer and return a \code{\linkS4class{BinImage}}.
+#' @describeIn autoThr The argument \code{subset} will be passed to
+#'   \code{\link[raster]{subset}} for selecting which channel of the
+#'   \code{\linkS4class{CanopyPhoto}} will be processed. It computes the
+#'   threshold of the selected layer and return a \code{\linkS4class{BinImage}}.
 setMethod("autoThr",
   signature(x = "CanopyPhoto"),
   function (x, subset = 3)
@@ -96,7 +107,8 @@ setMethod("autoThr",
   }
 )
 
-#' @describeIn autoThr Compute threshold and return a \code{\linkS4class{BinImage}}.
+#' @describeIn autoThr Compute the threshold and return a
+#'   \code{\linkS4class{BinImage}}.
 setMethod("autoThr",
   signature(x = "RasterLayer"),
   function (x)
@@ -107,15 +119,14 @@ setMethod("autoThr",
   }
 )
 
-#####################
-## ** normalize ** ##
-#####################
-
+#### normalize ####
 normalize <- function(x, mn, mx, ...) (x - mn) / (mx - mn)
 
 #' @title Normalize data in the range \code{0} to \code{1}.
 #'
-#' @description Normalize data lying between \code{mn} and \code{mx} in the range \code{0} to \code{1}. Data greater than mx get values greater than \code{1}, proportionally. Conversely, data less than \code{mn} get values less than \code{0}.
+#' @description Normalize data lying between mn and mx in the range \code{0} to \code{1}. Data
+#'   greater than \code{mx} get values greater than \code{1}, proportionally. Conversely, data
+#'   less than mn get values less than \code{0}.
 #'
 #' @param x \linkS4class{CanopyPhoto} or \code{\linkS4class{Raster}}.
 #' @param mn numeric. Minimum expected value.
@@ -129,7 +140,8 @@ normalize <- function(x, mn, mx, ...) (x - mn) / (mx - mn)
 setGeneric("normalize", normalize)
 #' @export normalize
 
-#' @describeIn normalize Result is a \linkS4class{Raster} of the same type that \code{x}.
+#' @describeIn normalize Result is a \linkS4class{Raster} of the same type that
+#'   \code{x}.
 setMethod("normalize",
   signature(x = "Raster"),
   function(x, mn, mx, ...) {
@@ -158,15 +170,14 @@ setMethod("normalize",
   }
 )
 
-####################
-## ** sRGB2LAB ** ##
-####################
-
+#### sRGB2LAB ####
 #' @title Convert sRGB to LAB.
 #'
-#' @description Wrapper function of \code{\link[colorspace]{sRGB}} and \code{\link[colorspace]{LAB}} that convert colors from sRGB to LAB.
+#' @description Wrapper function of \code{\link[colorspace]{sRGB}} and
+#'   \code{\link[colorspace]{LAB}} that convert colors from sRGB to LAB.
 #'
-#' @param x numeric, matrix or \code{\linkS4class{CanopyPhoto}}. Values must lying between \code{0} and {1}.
+#' @param x numeric, matrix or \code{\linkS4class{CanopyPhoto}}. Values must
+#'   lying between \code{0} and \code{1}.
 #' @param ... Additional arguments as for \code{\link[raster]{writeRaster}}.
 #'
 #' @return Matrix, or \code{\linkS4class{CanopyPhoto}}.
@@ -223,10 +234,7 @@ setMethod("sRGB2LAB",
   }
 )
 
-############################
-## ** membership2color ** ##
-############################
-
+#### membership2color ####
 .gaussian2d <- function(x, y, targetA, targetB, sigma) {
   stats::dnorm(x, targetA, sigma) * stats::dnorm(y, targetB, sigma)
 }
@@ -245,9 +253,11 @@ setMethod("sRGB2LAB",
   return(x)
 }
 
-#' @title Compute the membership value of a color to a color.
+#' @title Compute the membership value to a color.
 #'
-#' @description This algorithm models the degree of membership to a color with two Gaussian membership functions and the layer A and B of the CIE \emph{L*a*b*} color space. The lightness information is omitted.
+#' @description This algorithm models the degree of membership to a color with
+#'   two Gaussian membership functions and the layer \emph{A} and \emph{B} of the \emph{CIE L*a*b*}
+#'   color space. The lightness information is omitted.
 #'
 #' @param x \linkS4class{color} or \code{\linkS4class{RasterStack}} or \code{\linkS4class{RasterBrick}}.
 #' @param targetColor \linkS4class{color}.
@@ -314,27 +324,33 @@ setMethod("membership2color",
   }
 )
 
-##########################
-## ** fuzzyLightness ** ##
-##########################
-
+#### fuzzyLightness ####
 #' @title Compute a weighted membership value to lightness.
 #'
-#' @description This algorithm uses a threshold value as the location parameter of a logistic membership function whose scale parameter depend on a variable. This dependence can be explained as follows: if the variable is equal to \code{1}, then the membership function is as a threshold function because the scale parameter is zero; lowering the variable increases the scale parameter, thus blurring the threshold because it decreases the steepness of the curve.
+#' @description This algorithm uses a threshold value as the location parameter
+#'   of a logistic membership function whose scale parameter depends on a
+#'   variable. This dependence can be explained as follows: if the variable is
+#'   equal to \code{1}, then the membership function is as a threshold function
+#'   because the scale parameter is \code{0}; lowering the variable increases
+#'   the scale parameter, thus blurring the threshold because it decreases the
+#'   steepness of the curve.
 #'
 #' @param x numeric. The lightness value.
-#' @param m numeric lying between \code{0} and {1}. It must have the same lenght as x. It is the scale parameter of the logistic membership function.
-#' @param thr numeric of length one. Location parameter of the logistic membership function.
-#' @param fuzziness numeric of length one.
+#' @param m numeric lying between \code{0} and \code{1}, same length as
+#'   \code{x}. It is the scale parameter of the logistic membership function.
+#' @param thr numeric of length \code{1}. Location parameter of the logistic
+#'   membership function.
+#' @param fuzziness numeric of length \code{1}.
 #'
-#' @return Numeric.
+#' @return \code{numeric.}
 #'
 #' @seealso  \code{\link[stats]{plogis}}.
 #'
 #' @example /inst/examples/fuzzyLightnessExample.R
 #'
-#' @references
-#' Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
+#' @references Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction
+#' Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett.
+#' 12, 1784-1789.
 #'
 setGeneric("fuzzyLightness", function(x, m, thr, fuzziness) standardGeneric("fuzzyLightness"))
 #' @export fuzzyLightness
@@ -351,17 +367,23 @@ setMethod("fuzzyLightness",
   }
 )
 
-############################
-## ** enhanceHemiphoto ** ##
-############################
-
+#### enhanceHemiphoto ####
 .relativeBrightness <- function(x, wR, wB) {
   ((x[, 1] * wR + x[, 3] * wB) / 2) * x[, 4] + x[, 3] * (1 - x[, 4])
 }
 
 #' @title Enhance upward looking hemispherical photographs.
 #'
-#' @description This algorithm uses the color perceptual attributes to enhance the contrast between the sky and plants through fuzzy classification. Color has three different perceptual attributes: hue, lightness, and chroma. The algorithm was developed using this premise: the color of the sky is different from the color of plants. It performs the next classification rules, here expressed in natural language: clear sky is blue and clouds decrease its chroma; if clouds are highly dense, then the sky is achromatic, and, in such cases, it can be light or dark; everything that does not match this description is not sky. These linguistic rules were translated to math language by means of fuzzy logic.
+#' @description This algorithm uses the color perceptual attributes to enhance
+#'   the contrast between the sky and plants through fuzzy classification. Color
+#'   has three different perceptual attributes: hue, lightness, and chroma. The
+#'   algorithm was developed using the following premise: the color of the sky
+#'   is different from the color of plants. It performs the next classification
+#'   rules, here expressed in natural language: clear sky is blue and clouds
+#'   decrease its chroma; if clouds are highly dense, then the sky is
+#'   achromatic, and, in such cases, it can be light or dark; everything that
+#'   does not match this description is not sky. These linguistic rules were
+#'   translated to math language by means of fuzzy logic.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
 #' @param mask \code{\linkS4class{BinImage}}.
@@ -373,16 +395,31 @@ setMethod("fuzzyLightness",
 #' @param fuzziness numeric. By default, the algorithm will try to estimate it.
 #' @param ... Additional arguments as for \code{\link[raster]{writeRaster}}.
 #'
-#' @details This is a pixelwise algorithm that evaluates if pixels are sky blue colored, in such case it assigns a high score. When the pixels are achromatic, then it uses how bright or dark the pixel is. The algorithm internally uses \code{\link{membership2color}} an \code{\link{fuzzyLightness}}. The argument \code{skyBlue} is the \code{targetColor} of the former function, which output is the argument \code{m} of the other function. To evaluate how bright or dark is an achromatic pixel, the algorithm uses the feature \emph{Relative Brightness} (see references), which takes into account that the interface between the sky and the foliage pixels looks dark cyan colored instead of green and can be as bright as sky pixels. This color distortion observed should be linked with: color formation through color filter array and chromatic aberration.
+#' @details This is a pixelwise algorithm that evaluates if pixels are sky blue
+#'   colored. High score means high membership to Sky Blue. When a pixel are
+#'   achromatic, then it uses pixel brightness. The algorithm internally uses
+#'   \code{\link{membership2color}} and \code{\link{fuzzyLightness}}. The
+#'   argument skyBlue is the \code{targetColor} of the former function, which
+#'   output is the argument \code{m} of the latter function. To evaluate the
+#'   brightness of an achromatic pixel, the algorithm uses \strong{Relative
+#'   Brightness} (see references).
 #'
-#' If sharpen is set to TRUE (default), a sharpen filter is applied to the raster with the membership values. The kernel used is \code{matrix(c(rep(-1, 3), -1, 12, -1, rep(-1, 3)), ncol = 3)}.
+#'   Argument \code{mask} can be used to affect the estimation of two arguments
+#'   of \code{\link{fuzzyLightness}}. Affected arguments are \code{thr} and
+#'   \code{fuzziness}. The function \code{\link{autoThr}} is used to estimate
+#'   \code{thr}. To compute \code{fuzziness}, the algorithm takes the maximum
+#'   and the minimum values of the Relative Brightness and calculate its mean.
 #'
-#' A mask affects the estimation of two arguments of the function \code{\link{fuzzyLightness}} that is internally called by \code{enhanceHemiPhoto}. These arguments are \code{thr} and \code{fuzziness}. The function \code{\link{autoThr}} is used for estimate \code{thr}. \code{fuzziness} is the mean of the maximum and the minimum values of \emph{Relative Brightness}.
+#'   If sharpen is set as \code{TRUE} (default), a sharpen filter is applied to
+#'   the raster with the membership values. This kernel is used:
+#'   \code{matrix(c(rep(-1, 3), -1, 12, -1, rep(-1, 3)), ncol = 3)}.
 #'
-#' @references
-#' Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
 #'
-#' @return Numeric or \linkS4class{RasterLayer}.
+#' @references Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction
+#' Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett.
+#' 12, 1784-1789.
+#'
+#' @return numeric or \linkS4class{RasterLayer}.
 #'
 #' @seealso \code{\link{membership2color}}, \code{\link{fuzzyLightness}}.
 #'
@@ -504,34 +541,48 @@ setMethod("enhanceHemiPhoto",
   }
 )
 
-###################
-## ** outOfDR ** ##
-###################
-
-#' @title Get the percentages of pixels out of the dynamic range.
+#### outOfDR ####
+#' @title Get the percentages of pixels that are out of the dynamic range.
 #'
-#' @description Get the percentages of pixels out of the dynamic range, i.e., the under and overexposure pixels of an image.
+#' @description Get the percentages of pixels that are out of the dynamic range,
+#'   i.e., the under and overexposure pixels of an image.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param mask \linkS4class{BinImage}. The default of NULL means that all the pixels will be taking into account in the computations. If you provide a \code{BinImage}, it must have the same extent and resolution of \code{x}. All pixels from the image covered by pixels of the \code{mask} with value \code{1} will be taking into account in the computations.
-#' @param returnImages logical. The default is FALSE.
+#' @param channel One-length character, "Red", "Green" or "Blue".
+#' @param mask \linkS4class{BinImage}. Default value \code{NULL} means that all
+#'   the pixels will be taking into account in the computations. If you provide
+#'   a \linkS4class{BinImage}, it must have the same extent and resolution of
+#'   \code{x}. All pixels from the image covered by pixels of the mask with
+#'   value \code{1} will be taking into account in the computations.
+#' @param returnImages logical. Default is \code{FALSE}, see Value.
 #'
-#' @details This algorithm classifies the pixels of \code{x} that are in the limits of the dynamic range. These pixels are often called under or overexpose because is very probably that in such a case the energy that reach the sensor fall outside the range. If the energy is under the dynamic range, then the pixel adopt value 0 for the three channel. If the energy is over the dynamic range, then the pixel adopts the maximum value for the three channel. The maximum value depends of the data type used, for example, 8-bit image has 255 and 16-bit has 65536.
+#' @details This algorithm classifies the pixels of x that start and end the
+#'   dynamic range. These pixels are called under or overexposed because is
+#'   highly probable that they are out of the dynamic range and not just in the
+#'   limits.
 #'
-#' @return By default, it returns a vector of length tree with percentages for all the pixels outside the dynamic range, only the underexposure and only the overexposure. If you set \code{returnImages = TRUE}, it return a \code{\linkS4class{RasterStack}} that has two binary layers in which \code{1} means under or overexposure, respectively.
+#'   todo
 #'
-#' @seealso \code{link{normalize}}, \code{link{colorfulIndex}}.
+#' @return By default, it returns a vector of length \code{3}. If
+#'   \code{returnImages = TRUE}, then it returns a
+#'   \code{\linkS4class{RasterStack}} that has two binary layers in which \code{1}
+#'   means under/overexposure.
+#'
+#'   todo
+#'
+#' @seealso \code{\link{normalize}}, \code{\link{colorfulness}}.
 #'
 #' @example /inst/examples/outOfDRexample.R
 #'
-setGeneric("outOfDR", function(x, mask = NULL, returnImages = FALSE)
-                                                    standardGeneric("outOfDR"))
+setGeneric("outOfDR", function(x, channel = NULL, mask = NULL,
+  returnImages = FALSE)
+    standardGeneric("outOfDR"))
 #' @export outOfDR
 
 #' @rdname outOfDR
 setMethod("outOfDR",
   signature(x = "CanopyPhoto"),
-  function (x, mask, returnImages)
+  function (x, channel, mask, returnImages)
   {
     stopifnot(is.logical(returnImages))
     stopifnot(all(getMax(x) <= 1))
@@ -541,11 +592,24 @@ setMethod("outOfDR",
       stopifnot(any(is(mask) == "BinImage"))
     }
 
-    fun <- function(x, value, mask){
+    if (!is.null(channel)) {
+      stopifnot(is.character(channel))
+      stopifnot(length(channel) == 1)
+    }
 
-      x <- x == value
-      x[x == 0] <- NA
-      x <- raster::subset(x, 1) * raster::subset(x, 2) * raster::subset(x, 3)
+    fun <- function(x, value){
+
+      if (is.null(channel)) {
+        x <- x == value
+        x[x == 1] <- NA
+        x <- raster::subset(x, 1) + raster::subset(x, 2) + raster::subset(x, 3)
+        x <- is.na(x)
+      } else {
+        x <- raster::subset(x, channel)
+        x <- x == value
+        x[x == 1] <- NA
+        x <- is.na(x)
+      }
 
       if(!is.null(mask)){
         x[mask == 0] <- NA
@@ -554,23 +618,23 @@ setMethod("outOfDR",
       tmp <-  raster::freq(x, value = 1)
 
       if(is.null(mask)){
-        f <- tmp / ncell(x)
+        foo <- tmp / ncell(x)
       } else {
-        f <- tmp / (ncell(x) - raster::freq(mask, value = 0))
+        foo <- tmp / (ncell(x) - raster::freq(mask, value = 0))
       }
 
-      list(f * 100, x)
+      list(foo * 100, x)
     }
 
-    u <- fun(x, 0, mask)
-    o <- fun(x, 1, mask)
+    u <- fun(x, 0)
+    o <- fun(x, 1)
 
     iuo <- c(u[[1]] + o[[1]], u[[1]], o[[1]])
 
     names(iuo) <- c("Total", "Underexposure", "Overexposure")
 
     if(returnImages) {
-      ruo <- stack(!is.na(u[[2]]), !is.na(o[[2]]))
+      ruo <- stack(u[[2]], o[[2]])
       names(ruo) <- c("Underexposure", "Overexposure")
       return(ruo)
     } else {
@@ -579,34 +643,48 @@ setMethod("outOfDR",
   }
 )
 
-#########################
-## ** colorfulIndex ** ##
-#########################
-
-#' @title Quantify the colorful of an image.
+#### colorfulness ####
+#' @title Quantify the colorfulness of an image.
 #'
-#' @description Quantify the colorful of a sRGB image using a bidimensional space form by green/red and blue/yellow axes of the CIE \emph{L*a*b*} space, in other words, the lightness is excluded.  In that bidimensional space, this algorithm creates a square surface between -100 and 100 of both axes and see how much area of this square is covered by the image pixels. The index is the percentage of that covered area.
+#' @description Quantify the colorfulness of a sRGB image using a bidimensional
+#'   space form by the green/red and the blue/yellow axes of the CIE
+#'   \emph{L*a*b*} space, in other words, the lightness is excluded. In this
+#'   bidimensional space, the algorithm creates a square with sides of 200
+#'   and centered in 0. Next, it compute how much area of this square is covered
+#'   by the image pixels. The index is the percentage of cover.
 #'
-#' @param x \code{\linkS4class{CanopyPhoto}}. Is the image that you want to know how colorful is.
-#' @param mask \linkS4class{BinImage}. The default of NULL means that all the pixels will be taking into account in the computations. If you provide a \code{BinImage}, it must have the same extent and resolution of \code{x}. All pixels from the image covered by pixels of the \code{mask} with value \code{1} will be taking into account in the computations.
-#' @param plot logical. The default is \code{FALSE}, if it is \code{TRUE} a plot will be printed. See Details.
-#' @param returnRaster logical. The default is \code{FALSE}, if it is \code{TRUE} the raster that you can see when \code{plot} is \code{TRUE} is returned. See Details.
+#' @param x \code{\linkS4class{CanopyPhoto}}. Is the image that you want to know
+#'   how colorful is.
+#' @param mask \linkS4class{BinImage}. The default value \code{NULL} means that
+#'   all the pixels will be taking into account in the computations. If you
+#'   provide a \linkS4class{BinImage}, it must have the same extent and
+#'   resolution of \code{x}. All pixels from the image covered by pixels of the
+#'   mask with value \code{1} will be taking into account in the computations.
+#' @param plot logical. By default it is \code{FALSE}, if \code{TRUE} a plot
+#'   will be printed. See Details.
+#' @param returnRaster logical. By default it is \code{FALSE}, if \code{TRUE}
+#'   this method returns the raster that you can see when plot is \code{TRUE}.
+#'   See Details.
 #'
-#' @details When you request a plot with argument \code{plot = TRUE}, the colorful index is returned but also a plot is send to the active graphics Device. The plot shows the color of the image represented in a bidimensional space former by axis \emph{a} and \emph{b} of the CIE \emph{L*a*b* space}.
+#' @details When you request a plot with argument \code{plot = TRUE}, the
+#'   colorfulness is returned but also a plot is sent to the active graphics
+#'   Device. The plot shows the color of the image represented in a
+#'   bidimensional space made by the axis \emph{a} and \emph{b} of the CIE
+#'   \emph{L*a*b* space}.
 #'
-#' @return Numeric or \code{\linkS4class{Raster}}.
+#' @return numeric or \code{\linkS4class{Raster}}.
 #'
-#' @seealso \code{link{normalize}}, \code{link{outOfDR}}.
+#' @seealso \code{\link{normalize}}, \code{\link{outOfDR}}.
 #'
-#' @example /inst/examples/colorfulIndexExample.R
+#' @example /inst/examples/colorfulnessExample.R
 #'
-setGeneric("colorfulIndex",
+setGeneric("colorfulness",
   function(x, mask = NULL, plot = FALSE, returnRaster = FALSE)
-    standardGeneric("colorfulIndex"))
-#' @export colorfulIndex
+    standardGeneric("colorfulness"))
+#' @export colorfulness
 
-#' @rdname colorfulIndex
-setMethod("colorfulIndex",
+#' @rdname colorfulness
+setMethod("colorfulness",
   signature(x = "CanopyPhoto"),
   function (x, mask, plot, returnRaster)
   {

@@ -5,7 +5,7 @@
 \alias{newFishEye}
 \alias{newFishEye,logical,logical,logical-method}
 \alias{newFishEye,missing,missing,missing-method}
-\title{Generate a new FishEye}
+\title{Generate a new FishEye.}
 \usage{
 newFishEye(up, leveled, fullframe)
 
@@ -14,20 +14,27 @@ newFishEye(up, leveled, fullframe)
 \S4method{newFishEye}{missing,missing,missing}(up, leveled, fullframe)
 }
 \arguments{
-\item{up}{missing or logical. Set \code{TRUE} if the photograph was taken looking up.}
+\item{up}{missing or logical. Set as \code{TRUE} if the photograph was taken
+looking up.}
 
-\item{leveled}{missing or logical. Set \code{TRUE} if the camera was leveled and therefore its optical axis was aligned with a perfect vertical.}
+\item{leveled}{missing or logical. Set as \code{TRUE} if the camera was leveled
+and therefore its optical axis was aligned with a perfect vertical.}
 
-\item{fullframe}{missing or logical. Set \code{TRUE} if all the pixels of the photograph have data. For circular fisheye, with hundreds of no-data pixels, set \code{FALSE}.}
+\item{fullframe}{missing or logical. Set as \code{TRUE} if all the pixels of
+the photograph have data. For circular fisheye, with hundreds of no-data
+pixels, set as \code{FALSE}.}
 }
 \value{
 \code{\linkS4class{FishEye}}.
 }
 \description{
-Helper function to generate a \code{\linkS4class{FishEye}} needed to fill the slot \code{filsheye} of \code{\linkS4class{CanopyPhoto}}.
+Helper function to generate a \code{\linkS4class{FishEye}}
+  needed to fill the slot \code{fisheye} of a
+  \code{\linkS4class{CanopyPhoto}}.
 }
 \details{
-A call to \code{newFishEye()} return the prototype for \code{\linkS4class{FishEye}}.
+A call to \code{newFishEye()} returns the prototype for
+  \code{\linkS4class{FishEye}}.
 }
 \examples{
 newFishEye()
@@ -36,4 +43,3 @@ newFishEye(TRUE, TRUE, FALSE)
 \seealso{
 \code{\link{loadPhoto}}.
 }
-

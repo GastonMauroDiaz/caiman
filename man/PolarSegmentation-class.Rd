@@ -10,17 +10,18 @@ An S4 class to store polar segmentations.
 \section{Slots}{
 
 \describe{
-\item{\code{angleWidth}}{Angle}
+\item{\code{angleWidth}}{\code{\linkS4class{Angle}}}
 
 \item{\code{scaleParameter}}{numeric}
 
-\item{\code{...}}{Inhereted from \code{linkS4class{ZenithImage}}.}
+\item{\code{...}}{Inherited from \code{\linkS4class{ZenithImage}}.}
 }}
+
 \examples{
 showClass("PolarSegmentation")
 
 }
 \seealso{
-\code{\link{makeRings}}, \code{\link{makePolarSectors}}, \code{\link{makePolarGrid}}
+\code{\link{makeRings}}, \code{\link{makePolarSectors}},
+  \code{\link{makePolarGrid}}
 }
-

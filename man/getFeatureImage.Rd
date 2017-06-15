@@ -4,26 +4,32 @@
 \name{getFeatureImage}
 \alias{getFeatureImage}
 \alias{getFeatureImage,RasterLayer-method}
-\title{Get an image that store object features.}
+\title{Get an image that stores object features.}
 \usage{
 getFeatureImage(x, ...)
 
 \S4method{getFeatureImage}{RasterLayer}(x, segmentation, fun)
 }
 \arguments{
-\item{x}{\code{\linkS4class{RasterLayer}}. The image that you want extract feature from.}
+\item{x}{\code{\linkS4class{RasterLayer}}. The image that you want to extract
+feature from.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments (none implemented).}
 
-\item{segmentation}{\linkS4class{PolarSegmentation}. The segmentation that delimitate segments in \code{x}.  It must have the same extent and resolution of \code{x}.}
+\item{segmentation}{\linkS4class{PolarSegmentation}. The segmentation of
+\code{x}.}
 
-\item{fun}{function. It need to be able to take a single vector as input and return a one-length numeric or logical vector (e.g. mean).}
+\item{fun}{\code{function} that take a vector as input and return a one-length
+numeric or logical (e.g. mean).}
 }
 \value{
 \code{\linkS4class{RasterLayer}}.
 }
 \description{
-Given a single layer data, a segmentation and a function, this algorithm returns a \code{RasterLayer} as segmentation but with its segment IDs replaced with the segment features, which is the return of processing all the pixels that belong to a segment with the aforementioned function.
+Given a single layer data, a segmentation and a function, this
+  algorithm returns \code{RasterLayer} like segmentation but with its segment-IDs
+  replaced with the segment-features, which are the return of processing all
+  the pixels that belong to a segment with the aforementioned function.
 }
 \examples{
 x <- loadPhoto()
@@ -35,4 +41,3 @@ plot(fi)
 \seealso{
 \code{\link{extractFeatures}}.
 }
-

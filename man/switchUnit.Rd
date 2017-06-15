@@ -14,7 +14,8 @@ switchUnit(x)
 \item{x}{\code{\linkS4class{Angle}}.}
 }
 \description{
-Switch consistently the unit of an \code{\linkS4class{Angle}}. If it is in radians convert it to degrees and vice versa.
+Switch consistently the unit of an \code{\linkS4class{Angle}}.
+  If it is in radians convert it to degrees and vice versa.
 }
 \examples{
 a <- asAngle(90)
@@ -24,4 +25,3 @@ switchUnit(a)
 \seealso{
 \code{\link{asAngle}}.
 }
-

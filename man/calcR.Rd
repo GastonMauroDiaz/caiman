@@ -16,10 +16,12 @@ calcR(x, y)
 \item{y}{\code{\linkS4class{LensPolyCoef}}.}
 }
 \value{
-Numeric.
+numeric.
 }
 \description{
-Given a zenith angle, calculate \strong{relative radius} (R) taken into account the lens distortion. For definition of relative radius see details of \code{\link{lensPolyCoef}}.
+Given a zenith angle, it calculates the \strong{relative radius}
+  (R) taken into account the lens distortion. For a definition of relative
+  radius see details of \code{\link{lensPolyCoef}}.
 }
 \examples{
 calcR(asAngle(10), lensPolyCoef())
@@ -30,4 +32,3 @@ calcR(asAngle(1:90), lensPolyCoef())
 \seealso{
 \code{\link{makeRimage}}, \code{\link{makeZimage}}
 }
-

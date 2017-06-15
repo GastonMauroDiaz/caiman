@@ -3,10 +3,10 @@
 \docType{methods}
 \name{bearing}
 \alias{bearing}
-\alias{bearing,CanopyPhoto-method}
 \alias{bearing<-}
+\alias{bearing,CanopyPhoto-method}
 \alias{bearing<-,CanopyPhoto,Angle-method}
-\title{Set or get bearing.}
+\title{Set or get the bearing slot.}
 \usage{
 bearing(x)
 
@@ -17,16 +17,27 @@ bearing(x)
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{value}{\code{\linkS4class{Angle}} that represents the bearing of \code{x}.}
+\item{value}{\code{\linkS4class{Angle}} that represents the bearing of
+\code{x}.}
 }
 \value{
 \code{\linkS4class{Angle}}.
 }
 \description{
-Set or get the \code{\linkS4class{Angle}} that represents the bearing of a \code{\linkS4class{CanopyPhoto}}.
+Set or get the \code{\linkS4class{Angle}} that represents the
+  bearing of a \code{\linkS4class{CanopyPhoto}}.
 }
 \details{
-Bearing is a synonym for azimuth commonly used in geotagged photographs. Like azimuth, it is the angle between the North direction and the line of sight projected to the leveled plane. Because it is used for non-hemispherical-photographs, the line of sight refers to the centerline of the cone of vision (see details of \code{\link{lensPolyCoef}}). But if the photographs are taken looking directly to the zenith (90 degrees of elevation), bearing no make sense. In that case, bearing refer to the orientation of the top of the frame, which means taking photographs with the top of the camera facing the bearing. The same is valid for downward looking leveled hemispherical photographs.
+Bearing is a synonym for azimuth commonly used in geotagged
+  photographs. Like azimuth, it is the angle between the North direction and
+  the line of sight projected to the leveled plane. Since it is used for
+  non-hemispherical-photographs, the line of sight refers to the centerline
+  of the cone of vision (see details of \code{\link{lensPolyCoef}}). But if
+  the photographs have been taken looking directly to the zenith (90 degrees
+  of elevation), bearing does not make sense. In that case, bearing refers to
+  the orientation of the top of the frame, which means taking photographs
+  with the top of the camera facing the bearing. The same is valid for
+  downward looking leveled hemispherical photographs.
 }
 \examples{
 x <- loadPhoto()
@@ -40,4 +51,3 @@ bearing(x)
 \seealso{
 \code{\link{makeAimage}}
 }
-

@@ -4,7 +4,7 @@
 \name{cloneSlots}
 \alias{cloneSlots}
 \alias{cloneSlots,CanopyPhoto,CanopyPhoto-method}
-\title{Copy slots between CanopyPhoto objects.}
+\title{Copy some slots between CanopyPhoto objects.}
 \usage{
 cloneSlots(from, to)
 
@@ -19,7 +19,9 @@ cloneSlots(from, to)
 \code{\linkS4class{CanopyPhoto}}.
 }
 \description{
-Take the slots \code{equipment, fisheye, datetime, geocode, bearing, elevation} and \code{names} from a CanopyPhoto and copy to another.
+Copy the slots equipment, fisheye, datetime, geocode,
+  bearing, elevation, aperture, ssDenominator, isoSpeed and names
+  from a \code{\linkS4class{CanopyPhoto}} to another.
 }
 \examples{
 x <- loadPhoto()
@@ -33,4 +35,3 @@ equipment(x)
 \seealso{
 \code{\link{loadPhoto}}.
 }
-

@@ -3,9 +3,9 @@
 \docType{methods}
 \name{membership2color}
 \alias{membership2color}
-\alias{membership2color,RasterStackBrick-method}
 \alias{membership2color,color-method}
-\title{Compute the membership value of a color to a color.}
+\alias{membership2color,RasterStackBrick-method}
+\title{Compute the membership value to a color.}
 \usage{
 membership2color(x, ...)
 
@@ -27,7 +27,9 @@ membership2color(x, ...)
 Numeric or \code{\linkS4class{RasterLayer}}.
 }
 \description{
-This algorithm models the degree of membership to a color with two Gaussian membership functions and the layer A and B of the CIE \emph{L*a*b*} color space. The lightness information is omitted.
+This algorithm models the degree of membership to a color with
+  two Gaussian membership functions and the layer \emph{A} and \emph{B} of the \emph{CIE L*a*b*}
+  color space. The lightness information is omitted.
 }
 \examples{
 x <- loadPhoto()
@@ -38,11 +40,11 @@ plot(xe)
 z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
 
 m <- doMask(z, zlim = asAngle(c(30,60)), alim = asAngle(c(0, 45)))
-# mask affects the result but not crop it (see Details).
+# mask affects the result but does not crop it (see Details).
 plot(enhanceHemiPhoto(x, mask = m))
 
-# Making an artificially fullframe hemiphoto by cropping a non-fullframe
-# hemiphoto (just for making an example)
+# Making an artificiall fullframe hemiphoto by cropping a non-fullframe
+# hemiphoto (just as an example)
 path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
 x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
 ## declaring it as a fullframe
@@ -62,4 +64,3 @@ plot(enhanceHemiPhoto(x, mask = m) - enhanceHemiPhoto(x))
 \seealso{
 \code{\link{normalize}}, \code{\link{enhanceHemiPhoto}}.
 }
-

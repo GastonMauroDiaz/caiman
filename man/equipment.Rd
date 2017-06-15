@@ -3,10 +3,10 @@
 \docType{methods}
 \name{equipment}
 \alias{equipment}
-\alias{equipment,CanopyPhoto-method}
 \alias{equipment<-}
+\alias{equipment,CanopyPhoto-method}
 \alias{equipment<-,CanopyPhoto,character-method}
-\title{Set or get equipment.}
+\title{Set or get the equipment slot.}
 \usage{
 equipment(x)
 
@@ -17,13 +17,15 @@ equipment(x)
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{value}{Character that describe the equipment used to take \code{x}.}
+\item{value}{character that describe the equipment used to take \code{x}.}
 }
 \value{
-Character.
+\code{character}.
 }
 \description{
-Set or get the length-one character string that describe the equipment used to take the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+Set or get the length-one character string that describe the
+  equipment used to take the photograph represented by a
+  \code{\linkS4class{CanopyPhoto}}.
 }
 \examples{
 x <- loadPhoto()
@@ -36,4 +38,3 @@ equipment(x)
 \seealso{
 \code{\link{loadPhoto}}.
 }
-

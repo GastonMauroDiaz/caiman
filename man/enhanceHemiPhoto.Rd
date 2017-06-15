@@ -3,8 +3,8 @@
 \docType{methods}
 \name{enhanceHemiPhoto}
 \alias{enhanceHemiPhoto}
-\alias{enhanceHemiPhoto,CanopyPhoto-method}
 \alias{enhanceHemiPhoto,matrix-method}
+\alias{enhanceHemiPhoto,CanopyPhoto-method}
 \title{Enhance upward looking hemispherical photographs.}
 \usage{
 enhanceHemiPhoto(x, ...)
@@ -38,17 +38,39 @@ enhanceHemiPhoto(x, ...)
 \item{sharpen}{logical. The default is TRUE, see details.}
 }
 \value{
-Numeric or \linkS4class{RasterLayer}.
+numeric or \linkS4class{RasterLayer}.
 }
 \description{
-This algorithm uses the color perceptual attributes to enhance the contrast between the sky and plants through fuzzy classification. Color has three different perceptual attributes: hue, lightness, and chroma. The algorithm was developed using this premise: the color of the sky is different from the color of plants. It performs the next classification rules, here expressed in natural language: clear sky is blue and clouds decrease its chroma; if clouds are highly dense, then the sky is achromatic, and, in such cases, it can be light or dark; everything that does not match this description is not sky. These linguistic rules were translated to math language by means of fuzzy logic.
+This algorithm uses the color perceptual attributes to enhance
+  the contrast between the sky and plants through fuzzy classification. Color
+  has three different perceptual attributes: hue, lightness, and chroma. The
+  algorithm was developed using the following premise: the color of the sky
+  is different from the color of plants. It performs the next classification
+  rules, here expressed in natural language: clear sky is blue and clouds
+  decrease its chroma; if clouds are highly dense, then the sky is
+  achromatic, and, in such cases, it can be light or dark; everything that
+  does not match this description is not sky. These linguistic rules were
+  translated to math language by means of fuzzy logic.
 }
 \details{
-This is a pixelwise algorithm that evaluates if pixels are sky blue colored, in such case it assigns a high score. When the pixels are achromatic, then it uses how bright or dark the pixel is. The algorithm internally uses \code{\link{membership2color}} an \code{\link{fuzzyLightness}}. The argument \code{skyBlue} is the \code{targetColor} of the former function, which output is the argument \code{m} of the other function. To evaluate how bright or dark is an achromatic pixel, the algorithm uses the feature \emph{Relative Brightness} (see references), which takes into account that the interface between the sky and the foliage pixels looks dark cyan colored instead of green and can be as bright as sky pixels. This color distortion observed should be linked with: color formation through color filter array and chromatic aberration.
+This is a pixelwise algorithm that evaluates if pixels are sky blue
+  colored. High score means high membership to Sky Blue. When a pixel are
+  achromatic, then it uses pixel brightness. The algorithm internally uses
+  \code{\link{membership2color}} and \code{\link{fuzzyLightness}}. The
+  argument skyBlue is the \code{targetColor} of the former function, which
+  output is the argument \code{m} of the latter function. To evaluate the
+  brightness of an achromatic pixel, the algorithm uses \strong{Relative
+  Brightness} (see references).
 
-If sharpen is set to TRUE (default), a sharpen filter is applied to the raster with the membership values. The kernel used is \code{matrix(c(rep(-1, 3), -1, 12, -1, rep(-1, 3)), ncol = 3)}.
+  Argument \code{mask} can be used to affect the estimation of two arguments
+  of \code{\link{fuzzyLightness}}. Affected arguments are \code{thr} and
+  \code{fuzziness}. The function \code{\link{autoThr}} is used to estimate
+  \code{thr}. To compute \code{fuzziness}, the algorithm takes the maximum
+  and the minimum values of the Relative Brightness and calculate its mean.
 
-A mask affects the estimation of two arguments of the function \code{\link{fuzzyLightness}} that is internally called by \code{enhanceHemiPhoto}. These arguments are \code{thr} and \code{fuzziness}. The function \code{\link{autoThr}} is used for estimate \code{thr}. \code{fuzziness} is the mean of the maximum and the minimum values of \emph{Relative Brightness}.
+  If sharpen is set as \code{TRUE} (default), a sharpen filter is applied to
+  the raster with the membership values. This kernel is used:
+  \code{matrix(c(rep(-1, 3), -1, 12, -1, rep(-1, 3)), ncol = 3)}.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -56,6 +78,7 @@ A mask affects the estimation of two arguments of the function \code{\link{fuzzy
 
 \item \code{CanopyPhoto}: The output is a \linkS4class{RasterLayer}.
 }}
+
 \examples{
 x <- loadPhoto()
 x <- normalize(x, 0, 255)
@@ -65,11 +88,11 @@ plot(xe)
 z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
 
 m <- doMask(z, zlim = asAngle(c(30,60)), alim = asAngle(c(0, 45)))
-# mask affects the result but not crop it (see Details).
+# mask affects the result but does not crop it (see Details).
 plot(enhanceHemiPhoto(x, mask = m))
 
-# Making an artificially fullframe hemiphoto by cropping a non-fullframe
-# hemiphoto (just for making an example)
+# Making an artificiall fullframe hemiphoto by cropping a non-fullframe
+# hemiphoto (just as an example)
 path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
 x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
 ## declaring it as a fullframe
@@ -87,9 +110,10 @@ plot(m)
 plot(enhanceHemiPhoto(x, mask = m) - enhanceHemiPhoto(x))
 }
 \references{
-Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
+Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction
+Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett.
+12, 1784-1789.
 }
 \seealso{
 \code{\link{membership2color}}, \code{\link{fuzzyLightness}}.
 }
-

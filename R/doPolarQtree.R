@@ -1,18 +1,50 @@
 #' @title Quad-tree segmentation in a polar space.
 #'
-#' @description The quad-tree segmentation algorithm is a top-down process that makes recursive divisions in four equal parts until a condition is satisfied and then stops locally. The usual implementation of the quad-tree algorithm is based on the raster structure, and this is why the resultant objects are squares of different sizes. This method implements the quad-tree segmentation but in a polar space.
+#' @description The quad-tree segmentation algorithm is a top-down process that
+#'   makes recursive divisions in four equal parts until a condition is
+#'   satisfied and then stops locally. The usual implementation of the quad-tree
+#'   algorithm is based on the raster structure and this is why the result are
+#'   squares of different sizes. This method implements the quad-tree
+#'   segmentation in a polar space.
 #'
-#' @param x \linkS4class{Raster}. The raster that you want to process. It could have one or more layer.
-#' @param z \code{\linkS4class{ZenithImage}}. This ZenithImage should match with the lens geometry of the picture linked with \code{x}.
+#' @param x \code{\linkS4class{Raster}}. The raster to be processed. Single or
+#'   multi-layer.
+#' @param z \code{\linkS4class{ZenithImage}}.  Should match the lens geometry of
+#'   the picture linked with \code{x}.
 #' @param a \code{\linkS4class{AzimuthImage}}.
-#' @param scaleParameter one-length numeric. It forms part of the stopping condition (see Detalis).
-#' @param divisions numeric. If it is 1, the segments could have a resolution of 30, 15, 7.5, 3.75 or 1.875 degrees. If it is 2, the segments could have a resolution of 15, 7.5, 3.75 or 1.875 degrees. If it is 3, the segments could have a resolution of 15, 7.5 or 3.75 degrees. If it is 4, the segments could have a resolution of 7.5 or 3.75 degrees.
-#' @param mnSize numeric. This is an additional stoping criterion that avoids errors in segments near the zenith.
+#' @param scaleParameter one-length numeric. It is part of the stopping
+#'   condition (see Detalis).
+#' @param divisions numeric. See details
+#' @param mnSize numeric.  This is an additional stopping criterion to avoid
+#'   errors in segments closed to zenith.
 #'
-#' @details Depending on \code{divisions}, the algorithm starts with segments of a given resolution. Next, it selects one segment and split it into four segments of equal angular resolution. Then, use the standard deviation of \code{x} as homogeneous criterion. To that end, calculate it for the entire segment and for each four segments. To stop the process locally, the algorithms evaluate if the sum of the standard deviation of the subsegments minus the standard deviation of the segment (\emph{delta}) is less or equal than the \code{scaleParameter}. If \code{x} is multilayer delta is calculated separately and the delta mean is used to evaluate the stopping condition.
+#' @details
+#'   Argument division could be 1, 2, 3 or 4 and it controls segment resolution.
 #'
-#' @references
-#' Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett. 12, 1784-1789.
+#'   value / resolution (degrees)
+#'
+#'   1 / 30, 15, 7.5, 3.75 or 1.875.
+#'
+#'   2 / 15, 7.5, 3.75 or 1.875.
+#'
+#'   3 / 15, 7.5 or 3.75.
+#'
+#'   4 / 7.5 or 3.75.
+#'
+#'   The algorithm starts with segments of a given resolution depending
+#'   on \code{divisions}. Next, it selects one segment and splits it into four
+#'   segments of equal angular resolution. Then, it uses the standard deviation
+#'   of \code{x} as homogeneous criterion. To that end, it calculates the standard
+#'   deviation for the entire segment and for each four segments. To stop the
+#'   process locally, the algorithm evaluates if the sum of the standard
+#'   deviation of the subsegments minus the standard deviation of the segment
+#'   (delta) is less or equal than the \code{scaleParameter}. If x is multilayer delta
+#'   is calculated separately and delta mean is used to evaluate the
+#'   stopping condition.
+#'
+#' @references Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction
+#' Extraction From Hemispherical Photography. IEEE Geosci. Remote Sens. Lett.
+#' 12, 1784-1789.
 #'
 #' @return \linkS4class{PolarSegmentation}.
 #'

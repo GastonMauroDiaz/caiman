@@ -11,21 +11,21 @@ vignette: >
 
 Bath processing
 
-The main function of *caiman* package is *doOBIA* to get binarized images whit the aim of extract gap fraction and estimate forest structure or understory light transmission. The later will needs further process with a specific software as [CIMES]( http://jmnw.free.fr/).
+One of the main function of *caiman* package is *doOBIA*. It is used to get binarized images whit the aim of extract gap fraction and estimate forest structure or understory light transmission. After binarization you will need to continue the proccess with specific software as [CIMES]( http://jmnw.free.fr/).
 
-This document shows you how to use a simple script for processing all the hemispherical photographs of an input directory with doOBIA (batch processing).
+This document shows you how to use a simple script for processing all the hemispherical photographs that are in an folder using doOBIA (batch processing).
 
 If you are a frequently user of R probably you do not need to read this vignette.
 
 ## Script for batch processing
 
-I assume that you take upward looking hemispherical photographs, whit the optical axis aligned with the zenith (leveled). Also, I assume that the equipment gives you a circular picture inside the rectangular frame (i.e., is not a full-frame equipment) in JPEG format.
+I assume that you take upward looking hemispherical photographs whit the optical axis aligned with the zenith (leveled). Also, I assume that the equipment gives you a circular picture inside the rectangular frame (i.e., is not a full-frame equipment) in JPEG format.
 
 In the root of your *c* disk create a folder named *folder_in* and copy your photographs there. Also, create a folder named *folder_out*.
 
 Run this code:
 ```
-path_in <- "c:/folder_in" # Please edit it (Do not use / at the end of the string)
+path_in <- "c:/folder_in" # Edit it if you need to (Do not use / at the end of the string)
 path_out <- "c:/folder_out"
 
 listofpics <- list.files(path_in, pattern = ".jpg", ignore.case = TRUE)

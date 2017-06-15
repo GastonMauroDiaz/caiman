@@ -16,13 +16,14 @@ An S4 class to store binarized images.
 
 \item{\code{processedLayer}}{One-length integer    .}
 
-\item{\code{...}}{Inhereted from \code{\linkS4class{RasterLayer}}.}
+\item{\code{...}}{Inherited from \code{\linkS4class{RasterLayer}}.}
 }}
+
 \examples{
 showClass("BinImage")
 
 }
 \seealso{
-\code{\link{autoThr}}, \code{\link{presetThr}}, \code{\link{doMask}}, \code{\link{doOBIA}}
+\code{\link{autoThr}}, \code{\link{presetThr}},
+  \code{\link{doMask}}, \code{\link{doOBIA}}
 }
-

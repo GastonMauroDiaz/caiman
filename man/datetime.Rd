@@ -3,10 +3,10 @@
 \docType{methods}
 \name{datetime}
 \alias{datetime}
-\alias{datetime,CanopyPhoto-method}
 \alias{datetime<-}
+\alias{datetime,CanopyPhoto-method}
 \alias{datetime<-,CanopyPhoto,character-method}
-\title{Set or get datetime.}
+\title{Set or get the datetime slot.}
 \usage{
 datetime(x)
 
@@ -15,15 +15,17 @@ datetime(x)
 \S4method{datetime}{CanopyPhoto,character}(x) <- value
 }
 \arguments{
-\item{x}{\code{\link{CanopyPhoto-class}}.}
+\item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{value}{Character that represents the elevation of \code{x}.}
+\item{value}{Character. The only valid formats for the datetime slot are:
+yyyy/mm/dd hh:mm:ss or yyyy-mm-dd hh:mm:ss}
 }
 \value{
-Character.
+character.
 }
 \description{
-Set or show the character string with date and time of shot for the photo represented by a \code{\linkS4class{CanopyPhoto}}.
+Set or get the character string with date and time when the
+  photograph was taken.
 }
 \examples{
 x <- loadPhoto()
@@ -38,4 +40,3 @@ datetime(x)
 \seealso{
 \code{\link{loadPhoto}}.
 }
-

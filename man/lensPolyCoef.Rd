@@ -3,8 +3,8 @@
 \docType{methods}
 \name{lensPolyCoef}
 \alias{lensPolyCoef}
-\alias{lensPolyCoef,missing-method}
 \alias{lensPolyCoef,numeric-method}
+\alias{lensPolyCoef,missing-method}
 \title{Generate a LensPolyCoef.}
 \usage{
 lensPolyCoef(x)
@@ -14,26 +14,52 @@ lensPolyCoef(x)
 \S4method{lensPolyCoef}{missing}(x)
 }
 \arguments{
-\item{x}{numeric or missing. Coefficient of the polynomial function. First number correspond with the term powered to one, second with the term powered to two and so on. To ingest the coefficient to the first and third term, you need to input \code{c(a, 0, c)}, being \code{a} and \code{c} the coefficient. Missing return a perfect equidistant model.}
+\item{x}{numeric or missing. Coefficient of the polynomial function. First
+number corresponds to the term powered to \code{1}, the second with the
+term powered to \code{2} and so on. To input the coefficient to the first
+and third term, you need to input \code{c(a, 0, c)}, being \code{a} and
+\code{c} the coefficient. Missing returns a perfect equidistant model.}
 }
 \value{
 \code{\linkS4class{LensPolyCoef}}.
 }
 \description{
-Helper function to generate a \code{\linkS4class{LensPolyCoef}} needed to make a \code{\linkS4class{ZenithImage}}.
+Helper function to generate a \code{\linkS4class{LensPolyCoef}}
+  needed to make a \code{\linkS4class{ZenithImage}}.
 }
 \details{
-A projection method is required to visually represent the reality in a flat surface. A natural looking picture can be made with a central perspective projection model restricted to the cone of vision of an average person (looking with one eye), which has more or less 50 degrees. This is achieved using cameras with focal length of about 50 mm. For more detail see a good perspective drawing book.
+A projection method is required to visually represent the reality in
+  a flat surface. A natural looking picture can be made with a central
+  perspective projection model restricted to the cone of vision of an average
+  person (looking with one eye), which has more or less 50 degrees. This is
+  achieved using cameras with focal length of about 50 mm. For more detail
+  see a good perspective drawing book. In fisheye lens the focal length is
+  about 7-8 mm. The path of all the light rays that go through the camera
+  diaphragm can be barely imagined as a very wide cone, so the term field of
+  view is used instead of cone of vision. The standard fisheye lens has 180
+  degrees field of view, which represents a complete hemisphere. There is a
+  variety of models that can be used to mathematically project a 180 degrees
+  field of view into a plane, such as: orthographic, equisolid angle,
+  equidistant, stereographic and the previously mentioned central
+  perspective. This models relate zenith angle with relative radius. The
+  zenith is an imaginary point directly above a location. The location is
+  represented as a point in the tridimensional space. The straight line that
+  contains the location point and the zenith is a perfect vertical. The angle
+  between this vertical line and any other line that pass though the location
+  point is the zenith angle.
 
-In fisheye lens the focal length is about 7-8 mm. The path of all the light rays that go through the camera diaphragm can be barely imagined as a very wide cone, so the term field of view is used instead of cone of vision. The standard fisheye lens has 180 degrees field of view, which represents a complete hemisphere.
-
-There is a variety of models that can be used to mathematically project a 180 degrees field of view into a plane, such as: orthographic, equisolid angle, equidistant, stereographic and the lather mentioned central perspective. This models relate zenith angle with relative radius.
-
-The \strong{zenith} is an imaginary point directly above a location. The \strong{location} is represented as a point in the tridimensional space. The straight line that contain the location point and the zenith is a perfect vertical. The angle between this vertical line and any other line that pass though the location point is the \strong{zenith angle}.
-
-In looking upward leveled hemispherical photography, the zenith is the center of a circle which perimeter is the horizon. This is true only if the lens field of view is 180 degrees. The \strong{relative radius} is the radius of concentric circles expressed as a fraction of the radius that belong to the circle that has the horizon as perimeter.
-
-The equidistant model, also called polar, is the most widely used as a standard reference. Real lens can approximate the projection models but they always have some kind of distortion. In the equidistant model the relation between zenith angle and relative radius is modeled with a straight line. In caiman, a polynomial curve is used to model lens distortion. This kind of model is used by the software HemiView and Hemisphere, both are proprietary software currently available in the market.
+  In looking upward leveled hemispherical photography, the zenith is the
+  center of a circle which perimeter is the horizon. This is true only if the
+  lens field of view is 180 degrees. The relative radius is the radius of
+  concentric circles expressed as a fraction of the radius that belong to the
+  circle that has the horizon as perimeter. The equidistant model, also
+  called polar, is the most widely used as a standard reference. Real lens
+  can approximate the projection models but they always have some kind of
+  distortion. In the equidistant model the relation between zenith angle and
+  relative radius is modeled with a straight line. In \code{caiman}, a
+  polynomial curve is used to model lens distortion. This kind of model is
+  used by the software HemiView and Hemisphere, both are proprietary software
+  currently available in the market.
 }
 \examples{
 # polar projection
@@ -58,12 +84,23 @@ lensPolyCoef(c(1.0168, -0.0573, -0.117603))
 lensPolyCoef(c(0.677923, -0.029481, -0.022084, 0.041495, -0.016644))
 }
 \references{
-Inoue, A., Yamamoto, K., Mizoue, N., Kawahara, Y., 2004. Calibrating view angle and lens distortion of the Nikon fish-eye converter FC-E8. J. For. Res. 9, 177-181. DOI: 10.1007/s10310-003-0073-8
+Frazer, G. W., Fournier, R. A., Trofymow, J. A., & Hall, R. J. (2001). A
+comparison of digital and film fisheye photography for analysisof forest
+canopy structure and gap light transmission. Agricultural and Forest
+Meteorology, 109, 249-263.
 
-Kannala, J., Brandt, S.S., 2006. A generic camera model and calibration method for conventional, wide-angle, and fish-eye lenses. IEEE Trans. Pattern Anal. Mach. Intell. 28, 1335-1340. DOI: 10.1109/TPAMI.2006.153
+Inoue, A., Yamamoto, K., Mizoue, N., Kawahara, Y., 2004. Calibrating view
+angle and lens distortion of the Nikon fish-eye converter FC-E8. J. For. Res.
+9, 177-181. DOI: 10.1007/s10310-003-0073-8
 
-Roberson, S., Bertling, T., 2013. How to Draw: drawing and sketching objects and environments from your imagination. Design Studio Press.
+Kannala, J., Brandt, S.S., 2006. A generic camera model and calibration
+method for conventional, wide-angle, and fish-eye lenses. IEEE Trans. Pattern
+Anal. Mach. Intell. 28, 1335-1340. DOI: 10.1109/TPAMI.2006.153
 
-Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of geometric models for fisheye lenses. ISPRS J. Photogramm. Remote Sens. 64, 259-266. DOI: 10.1016/j.isprsjprs.2009.01.001
+Roberson, S., Bertling, T., 2013. How to Draw: drawing and sketching objects
+and environments from your imagination. Design Studio Press.
+
+Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of geometric
+models for fisheye lenses. ISPRS J. Photogramm. Remote Sens. 64, 259-266.
+DOI: 10.1016/j.isprsjprs.2009.01.001
 }
-

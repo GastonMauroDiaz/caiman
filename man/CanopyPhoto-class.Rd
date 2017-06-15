@@ -3,14 +3,17 @@
 \docType{class}
 \name{CanopyPhoto-class}
 \alias{CanopyPhoto-class}
-\title{An S4 class to store photographs of a vegetal canopy.}
+\title{An S4 class to store vegetal canopy photographs.}
 \description{
-An S4 class to store photographs of a vegetal canopy. Use the helper function \code{\link{loadPhoto}} to build new objects of this class from a file on disk.
+An S4 class to store vegetal canopy photographs. Use the
+  helper function \code{\link{loadPhoto}} to build new objects of this class
+  from a file.
 }
 \details{
-\code{CanopyPhoto} can store photographs with any visual content but methods were designed to process real-color-photographs of the vegetal canopy.
-
-\code{CanopyPhoto} was built on top of \code{RasterBrick} to take advantage of \code{raster package} functionality. However, \code{CanopyPhoto} require raster implementation but not georeferenced. That is why some inherited slots are meaningless for these class.
+\code{CanopyPhoto} was built on top of \code{RasterBrick} to take
+  advantage of the \code{raster package} functionalities. However,
+  \code{CanopyPhoto} requires raster implementation but not georeference and
+  this is why some inherited slots are meaningless for this class.
 }
 \section{Slots}{
 
@@ -27,8 +30,15 @@ An S4 class to store photographs of a vegetal canopy. Use the helper function \c
 
 \item{\code{elevation}}{\code{\linkS4class{Angle}}.}
 
-\item{\code{...}}{Inhereted from \code{\linkS4class{RasterBrick}}.}
+\item{\code{ssDenominator}}{numeric.}
+
+\item{\code{aperture}}{numeric.}
+
+\item{\code{isoSpeed}}{numeric.}
+
+\item{\code{...}}{Inherited from \code{\linkS4class{RasterBrick}}.}
 }}
+
 \examples{
 showClass("CanopyPhoto")
 
@@ -36,4 +46,3 @@ showClass("CanopyPhoto")
 \seealso{
 \code{\link{loadPhoto}}
 }
-

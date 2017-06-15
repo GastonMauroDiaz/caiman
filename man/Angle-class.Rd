@@ -5,7 +5,10 @@
 \alias{Angle-class}
 \title{An S4 class to represent angle values.}
 \description{
-An S4 class to represent angle values and made things easy for users because has a slot that set if it is in degrees or radians, so method and functions can adapt to it instead of users. Only allow positive values. Use the helper function \code{\link{asAngle}} to generate new objects of this class.
+An S4 class to represent angle values. It has a slot that sets
+  whether it is in degrees or radians, so the methods and functions can adapt
+  to it instead of users. Only allows positive values. Use the helper
+  function \code{\link{asAngle}} to generate new objects of this class.
 }
 \section{Slots}{
 
@@ -14,6 +17,7 @@ An S4 class to represent angle values and made things easy for users because has
 
 \item{\code{degrees}}{logical.}
 }}
+
 \examples{
 showClass("Angle")
 
@@ -21,4 +25,3 @@ showClass("Angle")
 \seealso{
 \code{\link{asAngle}}
 }
-

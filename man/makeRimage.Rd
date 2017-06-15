@@ -11,16 +11,29 @@ makeRimage(x)
 \S4method{makeRimage}{numeric}(x)
 }
 \arguments{
-\item{x}{numeric. Diameter of the circle in pixels expressed as one-length even integer.}
+\item{x}{numeric. Diameter of the circle in pixels expressed as one-length
+even integer.}
 }
 \value{
 \code{\linkS4class{RelativeRadiusImage}}.
 }
 \description{
-Helper function to generate a \code{\linkS4class{RelativeRadiusImage}}. Compute relative radius for each pixel that is needed to represent a circular hemispherical image with a 180 degrees field of view and a given diameter, expressed in pixels. For definition of relative radius see details of \code{\link{lensPolyCoef}}.
+Helper function to generate a
+  \code{\linkS4class{RelativeRadiusImage}}. Compute relative radius for each
+  pixes needed to represent a circular hemispherical image with a \code{180}
+  degrees field of view and a given diameter, expressed in pixels. For
+  definition of relative radius see details of \code{\link{lensPolyCoef}}.
 }
 \details{
-Most digital cameras take photos with an aspect ratio of 3:4, which means a rectangular frame. If all the circle area is in the picture frame, hundreds of pixels will have no-data. RelativeRadiusImage has 1:1 aspect ratio to minimize no-data pixels, so the circle is inscribed in a square. The size of the square equals the diameter of the circle. To represent the zenith as a point between pixels, the diameter of the circle must be even. In a high resolution image this restriction of snapping the zenith between pixels does not affect accuracy because half-pixel is less than the uncertainty in localizing the circle in the frame.
+Most digital cameras take photos with an aspect ratio of 3:4, which
+  means a rectangular frame. If all the circle area is in the picture frame,
+  hundreds of pixels will have no-data. \code{RelativeRadiusImage} has 1:1 aspect
+  ratio to minimize no-data pixels, so the circle is inscribed in a square.
+  The size of the square equals the diameter of the circle. To represent the
+  zenith as a point between pixels, the diameter of the circle must be even.
+  In a high resolution image this restriction of snapping the zenith between
+  pixels does not affect accuracy because half-pixel is less than the
+  uncertainty in localizing the circle in the frame.
 }
 \examples{
 x <- makeRimage(480)
@@ -28,6 +41,5 @@ plot(x)
 x
 }
 \seealso{
-code{\link{makeZimage}}.
+\code{\link{makeZimage}}.
 }
-

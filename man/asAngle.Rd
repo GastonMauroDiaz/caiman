@@ -13,13 +13,16 @@ asAngle(x, degrees = TRUE)
 \arguments{
 \item{x}{numeric}
 
-\item{degrees}{logical. The default of TRUE means that \code{x} it is in degrees, if it is FALSE \code{x} should be in radians.}
+\item{degrees}{logical. By default is set as TRUE, meaning x is in degrees.
+If FALSE x should be in radians.}
 }
 \value{
 \code{\linkS4class{Angle}}.
 }
 \description{
-Helper function for converting a numeric vector to an \code{\linkS4class{Angle}}. It is similar to coercing. For example, \code{as(45, "Angle")} return the same object than \code{asAngle(45)}.
+Helper function for converting a numeric vector to an
+  \code{\linkS4class{Angle}}. It is similar to coercing. For example,
+  \code{as(45, "Angle")} return the same object than \code{asAngle(45)}.
 }
 \examples{
 asAngle(90)
@@ -35,4 +38,3 @@ asAngle(pi, FALSE)
 \seealso{
 \code{\link{switchUnit}}
 }
-

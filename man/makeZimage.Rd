@@ -16,23 +16,32 @@ makeZimage(x, y)
 \arguments{
 \item{x}{numeric or \code{\linkS4class{RelativeRadiusImage}}.}
 
-\item{y}{\code{linkS4class{LensPolyCoef}}.}
+\item{y}{\code{\linkS4class{LensPolyCoef}}.}
 }
 \value{
 \code{\linkS4class{ZenithImage}}.
 }
 \description{
-Helper function to generate a \code{\linkS4class{ZenithImage}}. Compute zenith angle for each pixel that is needed to represent a circular hemispherical image with 180 degrees field of view. For definition of zenith angle see details of \code{\link{lensPolyCoef}}.
+Helper function to generate a \code{\linkS4class{ZenithImage}}. Compute zenith angle
+  for each pixel needed to represent a circular hemispherical image with \code{180}
+  degrees field of view. For definition of zenith angle see details of
+  \code{\link{lensPolyCoef}}.
 }
 \details{
-If the \code{x} argument of a call to makeZimage is numeric, the function internally calls to makeRimage.
+If the \code{x} argument of a call to \code{makeZimage} is numeric,
+  the function internally calls to \code{\link{makeRimage}}.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{x = RelativeRadiusImage,y = LensPolyCoef}: It is the most frequent use. You only need to provide the diameter in pixels of the circle that has data in the hemispherical photographs that you want to process.
+\item \code{x = RelativeRadiusImage,y = LensPolyCoef}: It is the most frequent use. You only need to provide
+the diameter in pixels of the circle that has data in the hemispherical
+photographs you want to process.
 
-\item \code{x = numeric,y = LensPolyCoef}: In certain processing chain, maybe it could help to decrease processing time. For example, in processing same resolution photo but taken with different lens.
+\item \code{x = numeric,y = LensPolyCoef}: In certains processing chain, maybe it could help to decrease
+processing time. For example, in processing photos with same resolution but
+taken with different lens.
 }}
+
 \examples{
 lens <- lensPolyCoef()
 z <- makeZimage(480, lens)
@@ -42,4 +51,3 @@ z
 \seealso{
 \code{\linkS4class{RelativeRadiusImage}}.
 }
-

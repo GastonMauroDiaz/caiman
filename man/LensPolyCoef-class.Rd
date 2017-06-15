@@ -5,13 +5,16 @@
 \alias{LensPolyCoef-class}
 \title{An S4 class to represent coefficients that models lens distortion.}
 \description{
-An S4 class to represent coefficients that models lens distortion of hemispherical photographs. Use the helper function \code{\link{lensPolyCoef}} to generate new objects of this class.
+An S4 class to represent coefficients that models lens
+  distortion of hemispherical photographs. Use the helper function
+  \code{\link{lensPolyCoef}} to generate new objects of this class.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{coef}}{numeric.}
 }}
+
 \examples{
 showClass("LensPolyCoef")
 
@@ -19,4 +22,3 @@ showClass("LensPolyCoef")
 \seealso{
 \code{\link{lensPolyCoef}}
 }
-

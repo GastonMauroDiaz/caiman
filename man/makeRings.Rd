@@ -13,18 +13,24 @@ makeRings(x, angleWidth, angleMean = FALSE)
 \arguments{
 \item{x}{\code{\linkS4class{ZenithImage}}.}
 
-\item{angleWidth}{\code{\linkS4class{Angle}}. AngleWidth must divide 0-90 into a whole number of segments.}
+\item{angleWidth}{\code{\linkS4class{Angle}}. It must divide 0-90
+into a whole number of segments.}
 
-\item{angleMean}{logical. If it is FALSE, all the pixels belong to a ring are labeled with an ID number. Otherwise, the angle mean of the ring are assigned to the pixels.}
+\item{angleMean}{logical. If \code{FALSE}, all the pixels that belong to a ring are
+labeled with an ID number. Otherwise, the angle mean of the ring is
+assigned to the pixels.}
 }
 \value{
 \code{\linkS4class{PolarSegmentation}}.
 }
 \description{
-Make rings by dividing the zenith angle from 0 to 90 in equals intervals.
+Make rings by dividing the zenith angle from \code{0} to
+  \code{90} in equals intervals.
 }
 \details{
-The intervals are closed on the right and open on the left. The first ring never contain \code{0} because zenith point is always in between two pixels (\code{\link{makeZimage}}).
+The intervals are closed on the right and open on the left. The
+  first ring never contains \code{0} because the zenith point is always in between
+  two pixels (see \code{\link{makeZimage}}).
 }
 \examples{
 z <- makeZimage(480, lensPolyCoef())
@@ -42,4 +48,3 @@ plot(r)
 \seealso{
 \code{\link{makeZimage}}, \code{\link{makePolarSectors}}, \code{\link{makePolarGrid}}.
 }
-

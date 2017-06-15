@@ -3,10 +3,10 @@
 \docType{methods}
 \name{elevation}
 \alias{elevation}
-\alias{elevation,CanopyPhoto-method}
 \alias{elevation<-}
+\alias{elevation,CanopyPhoto-method}
 \alias{elevation<-,CanopyPhoto,Angle-method}
-\title{Set or get elevation.}
+\title{Set or get the elevation slot.}
 \usage{
 elevation(x)
 
@@ -17,16 +17,19 @@ elevation(x)
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{value}{\code{\linkS4class{Angle}} that represents the elevation of \code{x}.}
+\item{value}{\code{\linkS4class{Angle}} that represents the elevation of
+\code{x}.}
 }
 \value{
 \code{\linkS4class{Angle}}.
 }
 \description{
-Set or get the \code{\linkS4class{Angle}} that represent the elevation of a \code{\linkS4class{CanopyPhoto}}.
+Set or get the \code{\linkS4class{Angle}} that represents the
+  elevation of a \code{\linkS4class{CanopyPhoto}}.
 }
 \details{
-The elevation is the complement of the zenith angle of the line of sight. For zenith angle definition, see details of \code{\link{lensPolyCoef}}.
+The elevation is the complement of the line-of-sight zenith angle.
+  For zenith angle definition, see the details of \code{\link{lensPolyCoef}}.
 }
 \examples{
 x <- loadPhoto()
@@ -41,4 +44,3 @@ elevation(x)
 \seealso{
 \code{\link{loadPhoto}}.
 }
-

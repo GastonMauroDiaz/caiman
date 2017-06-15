@@ -13,7 +13,7 @@ presetThr(x, ...)
 \arguments{
 \item{x}{\code{\linkS4class{RasterLayer}}.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments (none implemented)}
 
 \item{thr}{numeric. Threshold value. It should be between minimum and maximum layer value.}
 }
@@ -21,7 +21,9 @@ presetThr(x, ...)
 \code{\linkS4class{BinImage}}.
 }
 \description{
-Given a single layer image and a global threshold value, it returns a binarized image. All pixels above the threshold are replaced with \code{1} and the rest with \code{0}.
+Given a single layer image and a global threshold value, it
+  returns a binarized image. All pixels above the threshold are replaced with
+  \code{1} and the rest with \code{0}.
 }
 \examples{
 x <- loadPhoto()
@@ -33,4 +35,3 @@ plot(bin)
 \seealso{
 \code{\link{autoThr}}.
 }
-
