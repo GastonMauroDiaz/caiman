@@ -29,7 +29,7 @@ setMethod("extractSkyBrightness",
 
     bigFoo <- c()
     foo <- 1
-    print("Click on sky pixels. When you finish click on stop>stop locator.")
+    print("Click on sky pixels. When you finish click on finish.")
     while(!is.null(foo)) {
       foo <- click(x, xy = TRUE, n = 1, show = FALSE)
       if (!is.null(foo)) {
@@ -103,8 +103,47 @@ setMethod("extractSkyBrightness",
             old.wd <- getwd()
             on.exit(setwd(old.wd))
             setwd(x)
+            # # seguramente sea mejor usar on.exit() y setwd()
+            # # necesita optimizacion
+            #
+            # foo <- substr(x, nchar(x), nchar(x))
+            # if (any(foo == c(letters, LETTERS))) stop("Use the slash path at the end of x.")
+            #
+            # path <- x
 
             stopifnot(class(id$factor) == "factor")
+#
+#             ma <- c()
+#
+#             pb <- pbCreate(length(levels(id$factor)), "text")
+#             mycount <- 0
+#             for (i in levels(id$factor)) {
+#               mycount <- mycount + 1
+#               pbStep(pb, mycount)
+#
+#               index <- match(id$factor, i)
+#               index <- !is.na(index)
+#               photos <- as.character(id$photo[index])
+#
+#               ees <- c() # tengo que cambiar esto como recomienda advanced r
+#               for (u in photos) {
+#                 x <- loadPhoto(paste0(path, u), ...)
+#                 ees <- c(ees, calcExposure(ssDenominator(x), aperture(x)))
+#               }
+#
+#               x <- loadPhoto(paste0(path, photos[which.max(ees)]), ...)
+#               x <- normalize(x, mn, mx)
+#               x <- extractSkyBright(x, z)
+#
+#               if (!is.null(x)) {
+#                 for (u in photos) {
+#                   canopyPhoto <- loadPhoto(paste0(path, u), ...)
+#                   canopyPhoto <- normalize(canopyPhoto, mn, mx)
+#                   ma <- rbind(ma, cbind(extractSkyBright(x, z, canopyPhoto), factor = i))
+#                 }
+#               }
+#
+#             }
 
             ma <- c()
 
@@ -126,13 +165,13 @@ setMethod("extractSkyBrightness",
 
               x <- loadPhoto(photos[which.max(ees)], ...)
               x <- normalize(x, mn, mx)
-              x <- extractSkyBrightness(x, z)
+              x <- extractSkyBright(x, z)
 
               if (!is.null(x)) {
                 for (u in seq_along(photos)) {
                   canopyPhoto <- loadPhoto( photos[u], ...)
                   canopyPhoto <- normalize(canopyPhoto, mn, mx)
-                  ma <- rbind(ma, cbind(extractSkyBrightness(x, z, canopyPhoto),
+                  ma <- rbind(ma, cbind(extractSkyBright(x, z, canopyPhoto),
                                         factor = levels(id$factor)[i]))
                 }
               }
