@@ -1,7 +1,7 @@
 Package: caiman
 Type: Package
 Title: Canopy Image Analysis
-Version: 0.1.1.9000
+Version: 0.1.2.9000
 Date: 2017-10-02
 Author@R: person("Gaston Mauro", "Diaz", email =
     "gdiaz@ciefap.org.ar", role = c("aut", "cre"))

@@ -113,8 +113,9 @@ setMethod("doOBIA",
       if (!fisheye(x)@up) warning(msn)
       # if (fisheye(x)@fullframe) warning(msn)
     }
-stop("this need work")
-    isFullframe <-
+
+    # stop("this need work")
+    # isFullframe <-
 
     if (x@fisheye@fullframe) {
       bin <- autoThr(enhanceHemiPhoto(x))
