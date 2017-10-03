@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 
 # caiman
 
-## Canopy Image Analysis
+## CAnopy IMage ANalysis
 
 ###Description
 Caiman uses the functionalities of the packages *raster* and *EBImage* to provide algorithms specially developed to process photographs of the plant canopy.
@@ -27,11 +27,11 @@ On the other hand, we develop *extractSkyBrightness* and *modelBasedThresholding
 
 ---
 
-The main function of *caiman* package is *doOBIA* to get binarized images whit the aim of extract gap fraction and estimate forest structure or understory light transmission. After binarization you will need to continue the proccess with specific software as [CIMES]( http://jmnw.free.fr/).
+The main function of *caiman* package is *doOBIA*. Use it to get binarized images whit the aim of extract gap fraction and estimate forest structure or understory light transmission. After binarization, you will need to continue the proccess with specific software as [CIMES]( http://jmnw.free.fr/).
 
 This document shows you how to use a simple script for processing all the hemispherical photographs of an input directory with doOBIA (batch processing).
 
-If you are a frequently user of R probably you do not need to read this vignette.
+If you are a frequently user of R, probably you do not need to read this vignette.
 
 #### Script for batch processing
 
@@ -69,4 +69,13 @@ The result will be written in *c:/folder_out* whit the same name of the original
 
 ---
 
-You can install this package in your system using *devtools* package from CRAN. Run  `devtools::install_github("GastonMauroDiaz/caiman")` in the console.
+You can install *caiman* package in your system using *devtools* package from CRAN. Make sure you have *devtools* installed, if not run `install.packages("devtools")` in the console. Next, run `devtools::install_github("GastonMauroDiaz/caiman")`. 
+
+Probably, you do not have installed the dependent packages *EBImage* and *exif*. The former is a package in the BioConductor repository, follow the link to get full instruction about [how to install BioConductor packages](https://www.bioconductor.org/install/#install-bioconductor-packages) or run: 
+```
+source("https://bioconductor.org/biocLite.R")
+biocLite()
+biocLite(“EBImage”)
+```
+
+To install the *exif* package run `devtools::install_github("Ironholds/exif")`.
