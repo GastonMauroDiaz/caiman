@@ -8,19 +8,15 @@ plot(m)
 
 plot(x[m, drop = FALSE])
 
-# Making an artificially fullframe hemiphoto by cropping a non-fullframe
-# hemiphoto (just as an example)
-path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
-x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
-## declaring it as a fullframe
+# for fullframe hemispherical photos
+path <- system.file("external/DSC_2881.jpg", package="caiman")
+x <- loadPhoto(path)
+### declaring it as a fullframe
 fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
 
-m <- doMask(x)
+m <- doMask(x, z)
 plot(m)
 
 m <- doMask(z, previousMask = m, zlim = asAngle(c(30, 60)),
                                                     alim = asAngle(c(0, 90)))
 plot(m)
-
-## Diagonals of the rectangular frame are the radius of the circle:
-plot(doMask(makeRimage(ncol(m))) + m, legend = FALSE)

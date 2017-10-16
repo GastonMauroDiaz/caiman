@@ -8,13 +8,12 @@
 \alias{doMask,RelativeRadiusImage-method}
 \title{Do a mask for hemispherical photographs given angle restrictions.}
 \usage{
-doMask(x, previousMask = NULL, a = makeAimage(x), zlim = NULL,
+doMask(x, z, previousMask = NULL, a = makeAimage(x), zlim = NULL,
   alim = NULL)
 
-\S4method{doMask}{ZenithImage}(x, previousMask = NULL, a = makeAimage(x),
-  zlim = NULL, alim = NULL)
+\S4method{doMask}{ZenithImage}(x, previousMask, a, zlim, alim)
 
-\S4method{doMask}{CanopyPhoto}(x)
+\S4method{doMask}{CanopyPhoto}(x, z)
 
 \S4method{doMask}{RelativeRadiusImage}(x)
 }
@@ -31,6 +30,8 @@ inclusive limits.}
 
 \item{alim}{\code{\linkS4class{Angle}}. Set the azimuth angle range with
 inclusive limits.}
+
+\item{y}{todo}
 }
 \value{
 \code{\linkS4class{BinImage}}.
@@ -49,8 +50,7 @@ Todo: explain previousMask behavior.
 photographs.
 
 \item \code{CanopyPhoto}: This feature is needed for further processing fullframe
-hemispherical photographs. It assumes that the diagonal of the frame has
-180 degrees field of view. See references.
+hemispherical photographs.
 }}
 
 \examples{
@@ -64,22 +64,18 @@ plot(m)
 
 plot(x[m, drop = FALSE])
 
-# Making an artificially fullframe hemiphoto by cropping a non-fullframe
-# hemiphoto (just as an example)
-path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
-x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
-## declaring it as a fullframe
+# for fullframe hemispherical photos
+path <- system.file("external/DSC_2881.jpg", package="caiman")
+x <- loadPhoto(path)
+### declaring it as a fullframe
 fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
 
-m <- doMask(x)
+m <- doMask(x, z)
 plot(m)
 
 m <- doMask(z, previousMask = m, zlim = asAngle(c(30, 60)),
                                                     alim = asAngle(c(0, 90)))
 plot(m)
-
-## Diagonals of the rectangular frame are the radius of the circle:
-plot(doMask(makeRimage(ncol(m))) + m, legend = FALSE)
 }
 \references{
 Schneider, D., Schwalbe, E., Maas, H.-G., 2009. Validation of

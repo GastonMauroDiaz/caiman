@@ -470,7 +470,7 @@ setMethod("enhanceHemiPhoto",
   signature(x = "CanopyPhoto"),
   function (x, mask = NULL, wR = 0.5, wB = 1.5, sharpen = TRUE,
     skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255),
-     ncol = 3)), ...)
+     ncol = 3)), z = NULL, ...)
   {
     stopifnot(all(getMax(x) <= 1))
     stopifnot(all(getMin(x) >= 0))
@@ -479,8 +479,9 @@ setMethod("enhanceHemiPhoto",
     if (is.null(mask)) {
       userInputMask <- FALSE
       if (x@fisheye@fullframe) {
-        mask <- doMask(x)
-        x <- expandFullframe(x)
+
+        mask <- doMask(x, z)
+        x <- expandFullframe(x, z)
       } else {
         mask <- doMask(makeRimage(ncol(x)))
       }
@@ -499,7 +500,7 @@ setMethod("enhanceHemiPhoto",
         if (compareRaster(x, mask, stopiffalse = FALSE)) {
           stop("x and mask should have different number of pixels in this case. Check the examples in ?enhanceHemiPhoto.")
         }
-        x <- expandFullframe(x)
+        x <- expandFullframe(x, z)
       }
     }
 

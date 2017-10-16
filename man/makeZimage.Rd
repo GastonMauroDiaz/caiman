@@ -33,13 +33,13 @@ If the \code{x} argument of a call to \code{makeZimage} is numeric,
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{x = RelativeRadiusImage,y = LensPolyCoef}: It is the most frequent use. You only need to provide
-the diameter in pixels of the circle that has data in the hemispherical
-photographs you want to process.
-
-\item \code{x = numeric,y = LensPolyCoef}: In certains processing chain, maybe it could help to decrease
+\item \code{x = RelativeRadiusImage,y = LensPolyCoef}: In certains processing chain, maybe it could help to decrease
 processing time. For example, in processing photos with same resolution but
 taken with different lens.
+
+\item \code{x = numeric,y = LensPolyCoef}: It is the most frequent use. You only need to provide
+the diameter in pixels of the circle that has data in the circular hemispherical
+photographs you want to process.
 }}
 
 \examples{

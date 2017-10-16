@@ -3,25 +3,25 @@
 \docType{methods}
 \name{expandFullframe}
 \alias{expandFullframe}
-\alias{expandFullframe,CanopyPhoto-method}
+\alias{expandFullframe,CanopyPhoto,ZenithImage-method}
 \title{Expand full frame hemispherical photographs}
 \usage{
-expandFullframe(x, zero = TRUE)
+expandFullframe(x, z)
 
-\S4method{expandFullframe}{CanopyPhoto}(x, zero = TRUE)
+\S4method{expandFullframe}{CanopyPhoto,ZenithImage}(x, z)
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
 
-\item{zero}{logical. By default is set as \code{TRUE} meaning that added
-pixels will be \code{0}, if \code{FALSE} added pixels will be \code{NA}.}
+\item{z}{\code{\linkS4class{ZenithImage}}.}
 }
 \value{
 \code{\linkS4class{CanopyPhoto}}.
 }
 \description{
 Expand a full frame hemispherical photograph to get the
-  equivalent of a circular hemispherical photograph.
+  equivalent of a circular hemispherical photograph. Added
+  pixels will be \code{0}.
 }
 \examples{
 x <- loadPhoto()
@@ -34,22 +34,18 @@ plot(m)
 
 plot(x[m, drop = FALSE])
 
-# Making an artificially fullframe hemiphoto by cropping a non-fullframe
-# hemiphoto (just as an example)
-path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
-x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
-## declaring it as a fullframe
+# for fullframe hemispherical photos
+path <- system.file("external/DSC_2881.jpg", package="caiman")
+x <- loadPhoto(path)
+### declaring it as a fullframe
 fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
 
-m <- doMask(x)
+m <- doMask(x, z)
 plot(m)
 
 m <- doMask(z, previousMask = m, zlim = asAngle(c(30, 60)),
                                                     alim = asAngle(c(0, 90)))
 plot(m)
-
-## Diagonals of the rectangular frame are the radius of the circle:
-plot(doMask(makeRimage(ncol(m))) + m, legend = FALSE)
 }
 \seealso{
 \code{\link{doMask}}.

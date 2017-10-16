@@ -3,16 +3,21 @@
 \docType{methods}
 \name{makeRimage}
 \alias{makeRimage}
-\alias{makeRimage,numeric-method}
+\alias{makeRimage,numeric,missing-method}
+\alias{makeRimage,numeric,LensPolyCoef-method}
 \title{Generate a RelativeRadiusImage.}
 \usage{
-makeRimage(x)
+makeRimage(x, y)
 
-\S4method{makeRimage}{numeric}(x)
+\S4method{makeRimage}{numeric,missing}(x)
+
+\S4method{makeRimage}{numeric,LensPolyCoef}(x, y)
 }
 \arguments{
 \item{x}{numeric. Diameter of the circle in pixels expressed as one-length
 even integer.}
+
+\item{y}{\code{\linkS4class{LensPolyCoef}}.}
 }
 \value{
 \code{\linkS4class{RelativeRadiusImage}}.
@@ -35,6 +40,13 @@ Most digital cameras take photos with an aspect ratio of 3:4, which
   pixels does not affect accuracy because half-pixel is less than the
   uncertainty in localizing the circle in the frame.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{x = numeric,y = missing}: Assuming a polar projection.
+
+\item \code{x = numeric,y = LensPolyCoef}: Used to specified a projection different from the polar.
+}}
+
 \examples{
 x <- makeRimage(480)
 plot(x)

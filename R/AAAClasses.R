@@ -12,7 +12,6 @@ devtools::use_package("exif")
 devtools::use_package("imager")
 #devtools::use_package("testthat", type = "Suggests")
 
-
 #' @import raster
 #' @importFrom colorspace sRGB
 #' @importFrom methods as is new validObject
@@ -36,16 +35,18 @@ setClassUnion("RasterAll", c("RasterStackBrick", "RasterLayer"))
 setClass(Class = "LensPolyCoef",
   slots = c(coef = "numeric"),
   validity = function(object) {
-     tolerance = 0.00001
-     c1 <- all.equal(calcR(asAngle(90, degrees = TRUE), object), 1,
-       tolerance = tolerance)
-     c2 <- all.equal(calcR(asAngle(0, degrees = TRUE), object), 0,
-       tolerance = tolerance)
-     if (c1 & c2) {
-       return(TRUE)
-     } else {
-       stop("Polynomial function is out of range")
-     }
+
+    tolerance = 0.00001
+    foo <- all.equal(calcR(asAngle(0), object),
+                       0, tolerance = tolerance)
+
+    if (is.logical(foo)) { #the return of all.equal is tricky
+      return(TRUE)
+
+    } else {
+      stop("Polynomial function is out of range")
+    }
+
   },
   prototype = list(coef = 2 / pi)
 )
@@ -311,7 +312,7 @@ setClass(Class = "CanopyPhoto",
     c6 <- length(object@isoSpeed) == 1
     if (object@fisheye@is) {
       if (!object@fisheye@fullframe) stopifnot(nrow(object) == ncol(object))
-      if (round(nrow(object) / 2) != nrow(object) / 2)
+      if (!object@fisheye@fullframe & round(ncol(object) / 2) != ncol(object) / 2)
         stop("The diameter of the fisheye picture must be even.")
     }
     if (c1 & c2 & c3 & c4 & c5 & c6) {

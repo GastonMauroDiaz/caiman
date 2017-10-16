@@ -68,7 +68,7 @@ setMethod("doPolarQtree",
     stopifnot(class(z)[[1]] == "ZenithImage")
     stopifnot(class(a)[[1]] == "AzimuthImage")
 
-    if (x@fisheye@fullframe) x <- expandFullframe(x)
+    if (x@fisheye@fullframe) x <- expandFullframe(x, z)
 
     if (!raster::compareRaster(x, z, stopiffalse = FALSE))
       stop("Maybe you not declare your hemispherical photo as a fullframe. To do it, use fisheye(x) <- newFishEye(TRUE, TRUE, TRUE), for example.")

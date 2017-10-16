@@ -16,7 +16,7 @@ enhanceHemiPhoto(x, ...)
 \S4method{enhanceHemiPhoto}{CanopyPhoto}(x, mask = NULL, wR = 0.5,
   wB = 1.5, sharpen = TRUE,
   skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255), ncol
-  = 3)), ...)
+  = 3)), z = NULL, ...)
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
@@ -80,6 +80,7 @@ This is a pixelwise algorithm that evaluates if pixels are sky blue
 }}
 
 \examples{
+# for circular hemispherical photos
 x <- loadPhoto()
 x <- normalize(x, 0, 255)
 xe <- enhanceHemiPhoto(x)
@@ -91,23 +92,30 @@ m <- doMask(z, zlim = asAngle(c(30,60)), alim = asAngle(c(0, 45)))
 # mask affects the result but does not crop it (see Details).
 plot(enhanceHemiPhoto(x, mask = m))
 
-# Making an artificiall fullframe hemiphoto by cropping a non-fullframe
-# hemiphoto (just as an example)
-path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
-x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
+
+# for fullframe hemispherical photos
+
+path <- system.file("external/DSC_2881.jpg", package="caiman")
+x <- loadPhoto(path)
 ## declaring it as a fullframe
 fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
 
 x <- normalize(x, 0, 255)
-xe <- enhanceHemiPhoto(x)
+
+lens <- lensPolyCoef(c(1.13, 0.00798, -0.138))
+diameter <- calcDiameter(x, lens)
+r <- makeRimage(diameter, lens)
+z <- makeZimage(r, lens)
+
+xe <- enhanceHemiPhoto(x, z = z)
 plot(xe)
 
-# Using a mask for fullframe photos is tricky (see Details).
-m <- doMask(x)
+## Using a mask for fullframe photos is tricky (see Details).
+m <- doMask(x, z)
 m <- doMask(z, previousMask = m, zlim = asAngle(c(30, 40)),
                                                       alim = asAngle(c(20,130)))
 plot(m)
-plot(enhanceHemiPhoto(x, mask = m) - enhanceHemiPhoto(x))
+plot(enhanceHemiPhoto(x, z = z, mask = m) - enhanceHemiPhoto(x, z = z))
 }
 \references{
 Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction

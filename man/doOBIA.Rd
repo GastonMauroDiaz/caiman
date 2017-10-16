@@ -106,19 +106,26 @@ plot(out)
 
 # Fullframe
 
-## Making an artificiall fullframe hemiphoto by cropping a non-fullframe
-## hemiphoto (just as an example).
-path <- system.file("external/UnFavAutoE3.jpg", package="caiman")
-x <- loadPhoto(path, upperLeft = c(33, 120), width = 414, height = 240)
+path <- system.file("external/DSC_2881.jpg", package="caiman")
+x <- loadPhoto(path)
 ### declaring it as a fullframe
 fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
 
 x <- normalize(x, 0, 255)
 
+lens <- lensPolyCoef(c(1.13, 0.00798, -0.138))
+diameter <- calcDiameter(x, lens)
+r <- makeRimage(diameter, lens)
+z <- makeZimage(r, lens)
+
+# Because next line takes too long for an example...
 \dontrun{
-  seg <- doPolarQtree(x, z, scaleParameter = 0.1)
+  seg <- doPolarQtree(x, z, scaleParameter = 0.5)
 }
-### It is not exactly the same, but you can use the previous seg.
+# ... you can open the result with the following lines.
+seg <- raster(system.file("external/segFF.tif", package="caiman"))
+seg <- as(seg, "PolarSegmentation")
+
 \donttest{
 out <- doOBIA(x, z, seg, sampleSize = 20, calibration = TRUE)
 plot(out)

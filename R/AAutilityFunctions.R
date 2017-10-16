@@ -142,6 +142,7 @@ setMethod("rtitle<-",
 #'
 #' @param x \code{\linkS4class{ZenithImage}} or
 #'   \code{\linkS4class{CanopyPhoto}}.
+#' @param y todo
 #' @param previousMask \code{\linkS4class{BinImage}}. Default is \code{NULL}.
 #' @param a \code{\linkS4class{AzimuthImage}}.
 #' @param zlim \code{\linkS4class{Angle}}. Set the zenith angle range with
@@ -164,7 +165,7 @@ setMethod("rtitle<-",
 #' @example /inst/examples/doMaskExample.R
 #'
 setGeneric("doMask",
-  function (x, previousMask = NULL, a = makeAimage(x), zlim = NULL, alim = NULL)
+  function (x, z, previousMask = NULL, a = makeAimage(x), zlim = NULL, alim = NULL)
     standardGeneric("doMask"))
 #' @export doMask
 
@@ -243,31 +244,33 @@ setMethod("doMask",
 )
 
 #' @describeIn doMask This feature is needed for further processing fullframe
-#'   hemispherical photographs. It assumes that the diagonal of the frame has
-#'   180 degrees field of view. See references.
+#'   hemispherical photographs.
 setMethod("doMask",
   signature(x = "CanopyPhoto"),
-  function (x) {
+  function (x, z) {
+
+    stopifnot(class(z) == "ZenithImage")
+
     if (all(!fisheye(x)@fullframe, fisheye(x)@is))
       stop("Argument x should be a fullframe hemispherical photo, you need to declare this with the fisheye function.")
+
     x <- raster::subset(x, 1)
-    diameter <- round(sqrt(nrow(x)^2 + ncol(x)^2))
-    if (diameter / 2 != round(diameter / 2))
-            diameter <- diameter + 1
-    r <- makeRimage(diameter)
-    center <- ncol(r) / 2
+    x[] <- 255
+
+    center <- ncol(z) / 2
     xmn <- center - (ncol(x) / 2)
     xmx <- center + (ncol(x) / 2)
     ymn <- center - (nrow(x) / 2)
     ymx <- center + (nrow(x) / 2)
     e <- extent(xmn, xmx, ymn, ymx)
     extent(x) <- e
-    foo <- extend(x, r)
-    x <- !is.na(foo)
+    foo <- extend(x, z, value = 0)
+    e <- extent(0, ncol(foo), 0, nrow(foo))
+    extent(foo) <- e
+    x <- foo == 255
     as(x, "BinImage")
   }
 )
-
 
 #' @rdname doMask
 setMethod("doMask",
@@ -281,11 +284,11 @@ setMethod("doMask",
 #' @title Expand full frame hemispherical photographs
 #'
 #' @description Expand a full frame hemispherical photograph to get the
-#'   equivalent of a circular hemispherical photograph.
+#'   equivalent of a circular hemispherical photograph. Added
+#'   pixels will be \code{0}.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param zero logical. By default is set as \code{TRUE} meaning that added
-#'   pixels will be \code{0}, if \code{FALSE} added pixels will be \code{NA}.
+#' @param z \code{\linkS4class{ZenithImage}}.
 
 #' @return \code{\linkS4class{CanopyPhoto}}.
 #'
@@ -294,24 +297,35 @@ setMethod("doMask",
 #' @example /inst/examples/doMaskExample.R
 #'
 setGeneric("expandFullframe",
-  function (x, zero = TRUE)
+  function (x, z)
     standardGeneric("expandFullframe"))
 #' @export expandFullframe
 
 #' @rdname expandFullframe
 setMethod("expandFullframe",
-  signature(x = "CanopyPhoto"),
-  function (x, zero) {
+  signature(x = "CanopyPhoto", z = "ZenithImage"),
+  function (x, z) {
+
     if (all(!fisheye(x)@fullframe, fisheye(x)@is))
       stop("Argument x should be a fullframe hemispherical photo, you need to declare this with the fisheye function.")
-    m <- doMask(x)
-    y <- stack(m, m, m)
-    y[y == 1] <- values(x)
-    y <- as(y, "CanopyPhoto")
-    y <- cloneSlots(x, y)
-    y@fisheye@fullframe <- FALSE
-    if (!zero) y[m == 0] <- NA
-    return(y)
+
+    center <- ncol(z) / 2
+    xmn <- center - (ncol(x) / 2)
+    xmx <- center + (ncol(x) / 2)
+    ymn <- center - (nrow(x) / 2)
+    ymx <- center + (nrow(x) / 2)
+    e <- extent(xmn, xmx, ymn, ymx)
+    extent(x) <- e
+
+    foo <- extend(x, z, value = 0)
+
+    foo <- as(foo, "CanopyPhoto")
+    foo <- cloneSlots(x, foo)
+    foo@fisheye@fullframe <- FALSE
+    e <- extent(0, ncol(foo), 0, nrow(foo))
+    extent(foo) <- e
+    foo
+
   }
 )
 

@@ -151,6 +151,7 @@ setMethod("calcR",
 #'
 #' @param x numeric. Diameter of the circle in pixels expressed as one-length
 #'   even integer.
+#' @param y \code{\linkS4class{LensPolyCoef}}.
 #'
 #' @details Most digital cameras take photos with an aspect ratio of 3:4, which
 #'   means a rectangular frame. If all the circle area is in the picture frame,
@@ -168,12 +169,13 @@ setMethod("calcR",
 #'
 #' @example /inst/examples/makeRimageExample.R
 #'
-setGeneric("makeRimage", function(x) standardGeneric("makeRimage"))
+setGeneric("makeRimage", function(x, y) standardGeneric("makeRimage"))
 #' @export makeRimage
 
-#' @rdname makeRimage
+#' @describeIn makeRimage Assuming a polar projection.
+#'
 setMethod("makeRimage",
-  signature(x = "numeric"),
+  signature(x = "numeric", y = "missing"),
   function (x)
   {
     x <- as.integer(x)
@@ -197,6 +199,18 @@ setMethod("makeRimage",
   }
 )
 
+#' @describeIn makeRimage Used to specified a projection different from the polar.
+#'
+setMethod("makeRimage",
+          signature(x = "numeric", y = "LensPolyCoef"),
+          function (x, y)
+          {
+            r <- makeRimage(diameter)
+            foo <- r * calcR(asAngle(90), y)
+            values(r) <- values(foo)
+            return(r)
+          }
+)
 #### makeZimage ####
 #' @title Generate a ZenithImage.
 #'
@@ -220,9 +234,10 @@ setMethod("makeRimage",
 setGeneric("makeZimage", function(x, y) standardGeneric("makeZimage"))
 #' @export makeZimage
 
-#' @describeIn makeZimage It is the most frequent use. You only need to provide
-#'   the diameter in pixels of the circle that has data in the hemispherical
-#'   photographs you want to process.
+#' @describeIn makeZimage In certains processing chain, maybe it could help to decrease
+#'   processing time. For example, in processing photos with same resolution but
+#'   taken with different lens.
+#'
 setMethod("makeZimage",
   signature(x = "RelativeRadiusImage", y = "LensPolyCoef"),
   function (x, y)
@@ -232,7 +247,7 @@ setMethod("makeZimage",
 
     ## Calculation of the LUT
     r <- seq(0, 90,  length.out = nrow(x) + 1)
-    R <- calcR(x = asAngle(r, degrees = TRUE), y = y) #  relative radius -R-.
+    R <- calcR(x = asAngle(r), y = y) #  relative radius -R-.
 
     ## Perform the inversion
     rcl <- matrix(c(c(0, R[-length(R)]), R, r), ncol = 3)
@@ -247,11 +262,14 @@ setMethod("makeZimage",
       if (whatProblems < tolerance) {
         rcl[index, 2] <- rcl[index, 1]
         warning(
-          paste0("Relative radius around ", problemsAreHere, " degrees of zenith angle were rectified adding or subtracting around ", whatProblems, ". Tolerance is ", tolerance, ".")
+          paste0("Relative radius around ", problemsAreHere,
+                 " degrees of zenith angle were rectified adding or subtracting around ",
+                 whatProblems, ". Tolerance is ", tolerance, ".")
         )
       } else {
         stop(
-          paste0("Relative radius around ", problemsAreHere, " degrees of zenith angle has unexpected values.")
+          paste0("Relative radius around ", problemsAreHere,
+                 " degrees of zenith angle has unexpected values.")
         )
       }
     }
@@ -274,9 +292,9 @@ setMethod("makeZimage",
   }
 )
 
-#' @describeIn makeZimage In certains processing chain, maybe it could help to decrease
-#'   processing time. For example, in processing photos with same resolution but
-#'   taken with different lens.
+#' @describeIn makeZimage It is the most frequent use. You only need to provide
+#'   the diameter in pixels of the circle that has data in the circular hemispherical
+#'   photographs you want to process.
 #'
 setMethod("makeZimage",
   signature(x = "numeric", y = "LensPolyCoef"),
@@ -348,4 +366,47 @@ setMethod("makeAimage",
 
     return(a)
   }
+)
+
+
+#### calcDiameter ####
+#' Calculate diameter corresponding to a circular fisheye photography.
+#'
+#' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param y \code{\linkS4class{LensPolyCoef}}.
+#'
+#' @return numeric.
+#' @examples /inst/examples/calcDiameterExample.R
+setGeneric("calcDiameter", function(x, y) standardGeneric("calcDiameter"))
+#' @export calcDiameter
+
+#' @rdname calcDiameter
+setMethod("calcDiameter",
+          signature(x = "CanopyPhoto", y = "LensPolyCoef"),
+          function (x, y)
+          {
+            if(fisheye(x)@fullframe) {
+
+              Rfor90 <- calcR(asAngle(90), y)
+
+              # angle4R1 <- 0
+              # R <- 0
+              # while(R <= 1) {
+              #   angle4R1 <- angle4R1 + 0.1
+              #   R <- calcR(asAngle(angle4R1), y)
+              # }
+
+              diameter <- round(calcR(asAngle(90), y) * ncol(x))
+              if (diameter/2 != round(diameter/2)) {
+                diameter <- diameter + 1
+              }
+
+            } else {
+              diameter <- ncol(x)
+              warning("Make sure you used loadPhoto correctly.")
+            }
+
+            return(diameter)
+
+          }
 )
