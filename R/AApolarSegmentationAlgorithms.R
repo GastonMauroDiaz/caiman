@@ -43,6 +43,7 @@ setMethod("makeRings",
     intervals <- seq(0, 90, angleWidth@values)
     c1 <- intervals[1:(length(intervals) - 1)]
     c2  <- intervals[2:length(intervals)]
+
     if (angleMean) {
       c3 <- (c1 + c2) / 2
     } else {

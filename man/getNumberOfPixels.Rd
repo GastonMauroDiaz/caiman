@@ -4,26 +4,38 @@
 \name{getNumberOfPixels}
 \alias{getNumberOfPixels}
 \alias{getNumberOfPixels,PolarSegmentation-method}
-\title{todo}
+\title{Get the number of pixels per segment}
 \usage{
 getNumberOfPixels(x, m, onlyMin = TRUE)
 
 \S4method{getNumberOfPixels}{PolarSegmentation}(x, m, onlyMin = TRUE)
 }
 \arguments{
-\item{x}{todo}
+\item{x}{\code{\linkS4class{PolarSegmentation}}}
 
-\item{m}{todo}
+\item{m}{\code{\linkS4class{PolarSegmentation}}. Mask.}
 
-\item{onlyMin}{todo}
+\item{onlyMin}{logical. The default TRUE meant that only the number of pixels
+of the smallest segment is returned.}
 }
 \value{
-todo
+numeric
 }
 \description{
-todo
+Get the number of pixels per segment given a
+  \code{\linkS4class{PolarSegmentation}}.
+}
+\details{
+A criterion for selecting a proper segmentation is the number of
+  pixel of the smallest segment. Gonsamo et al. (2010) suggest a minimum
+  number of pixels greater or equal than 10 pixels.
 }
 \examples{
 #/inst/examples/ Example.R
 
+}
+\references{
+Gonsamo, A., Walter, J.-M.N., Pellikka, P., 2010. Sampling gap fraction and
+size for estimating leaf area and clumping indices from hemispherical
+photographs. Can. J. For. Res. 40, 1588–1603. doi:10.1139/X10-085
 }

@@ -7,10 +7,10 @@
 \title{Quad-tree segmentation in a polar space.}
 \usage{
 doPolarQtree(x, z, a = makeAimage(z), scaleParameter, divisions = 1,
-  mnSize = 1000)
+  mnSize = 1000, parallel = FALSE, freeThreads = 2)
 
 \S4method{doPolarQtree}{Raster}(x, z, a = makeAimage(z), scaleParameter,
-  divisions = 1, mnSize = 1000)
+  divisions = 1, mnSize = 1000, parallel = FALSE, freeThreads = 2)
 }
 \arguments{
 \item{x}{\code{\linkS4class{Raster}}. The raster to be processed. Single or
@@ -28,6 +28,16 @@ condition (see Detalis).}
 
 \item{mnSize}{numeric.  This is an additional stopping criterion to avoid
 errors in segments closed to zenith.}
+
+\item{parallel}{logical. Go parallel.}
+
+\item{freeThreads}{numeric. The number of threads that remain free for other
+tasks. Defaul \code{2} avoid the computer comes to a standstill until the R
+task has finished. Using \code{1} could be a good idea. Use \code{0} at
+your own risk. If you run out of memory, increase \code{freeThreads}.}
+
+\item{memoryUseFactor}{numeric. Increase to use less memory when
+\code{parallel} is set to TRUE.}
 }
 \value{
 \linkS4class{PolarSegmentation}.
@@ -70,7 +80,7 @@ z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
 a <- makeAimage(z)
 x <- normalize(x, 0, 255)
 \donttest{
-seg <- doPolarQtree(x, z, a, scaleParameter = 1)
+seg <- doPolarQtree(x, z, a, scaleParameter = 0.1, parallel = TRUE)
 seg
 plot(seg)
 }

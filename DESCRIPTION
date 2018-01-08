@@ -1,7 +1,7 @@
 Package: caiman
 Type: Package
 Title: Canopy Image Analysis
-Version: 0.1.5.9000
+Version: 0.2.2.9000
 Date: 2017-10-12
 Author@R: person("Gaston Mauro", "Diaz", email =
     "gdiaz@ciefap.org.ar", role = c("aut", "cre"))
@@ -23,7 +23,9 @@ Imports:
     colorspace,
     rgdal,
     exif,
-    imager
+    imager,
+    conicfit,
+    akima
 Depends:
     raster
 RoxygenNote: 6.0.1

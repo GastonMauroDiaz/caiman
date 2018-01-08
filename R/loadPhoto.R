@@ -131,17 +131,18 @@ setMethod("loadPhoto",
         if (all(length(width) != 1, as.integer(width) == width))
           stop("width should be one-lenght integer")
 
-        xmn <- xFromCol(r, upperLeft[1])
-        xmx <- xFromCol(r, upperLeft[1] + width)
-        ymx <- yFromRow(r, upperLeft[2])
-        ymn <- yFromRow(r, upperLeft[2] + height)
+        baz <- 0
+        xmn <- xFromCol(r, upperLeft[1] - baz)
+        xmx <- xFromCol(r, upperLeft[1] + width - baz)
+        ymx <- yFromRow(r, upperLeft[2] - baz)
+        ymn <- yFromRow(r, upperLeft[2] + height - baz)
 
         if(any(is.na(xmn), is.na(xmx), is.na(ymn), is.na(ymx))) {
           stop("Your selection goes out of the picture, please review upperLeft, heigth and width.")
         }
 
         e <- extent(xmn, xmx, ymn, ymx)
-        r <- crop(r, e)
+        r <- crop(r, e) # crop seems unprecise
         extent(r) <- extent(0, ncol(r), 0, nrow(r))
         r <- as(r, "CanopyPhoto")
     }

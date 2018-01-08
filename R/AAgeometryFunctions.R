@@ -205,7 +205,7 @@ setMethod("makeRimage",
           signature(x = "numeric", y = "LensPolyCoef"),
           function (x, y)
           {
-            r <- makeRimage(diameter)
+            r <- makeRimage(x)
             foo <- r * calcR(asAngle(90), y)
             values(r) <- values(foo)
             return(r)
@@ -313,7 +313,6 @@ setMethod("makeZimage",
 #'   degrees field of view. North is oriented up and West is oriented left.
 #'
 #' @param x \code{\linkS4class{ZenithImage}}.
-#' @param cwRotAngle numeric. Angle in degrees.
 #'
 #' @details Azimuth angle is the angle between the North direction and the line
 #'   of sight projected to the leveled plane. The angle increases in clockwise
@@ -326,14 +325,14 @@ setMethod("makeZimage",
 #'
 #' @example /inst/examples/makeAimageExample.R
 #'
-setGeneric("makeAimage", function(x, cwRotAngle = NULL)
+setGeneric("makeAimage", function(x)
             standardGeneric("makeAimage"))
 #' @export makeAimage
 
 #' @rdname makeAimage
 setMethod("makeAimage",
   signature(x = "ZenithImage"),
-  function (x, cwRotAngle)
+  function (x)
   {
     mask <- is.na(x)
 
@@ -353,15 +352,6 @@ setMethod("makeAimage",
     values(a) <- sph[, 1] * 180 / pi
     values(a) <- values(abs(t(a) - 180)) # to orient North up and West left
 
-    if (!is.null(cwRotAngle)) {
-
-      foo <- as.matrix(a)
-      foo <- imager::as.cimg(foo)
-      foo <- imager::rotate_xy(foo, -cwRotAngle,
-                                ncol(a) / 2, nrow(a) / 2, interpolation = 0)
-      values(a) <- as.matrix(foo)
-    }
-
     a[is.na(x)] <- NA
 
     return(a)
@@ -369,44 +359,181 @@ setMethod("makeAimage",
 )
 
 
+
+
+#### calcOpticalCenter ####
+#' todo
+#'
+#' @param x \code{\linkS4class{CanopyPhoto}}.
+#'
+#' @return numeric. todo
+#' @examples /inst/examples/calcOpticalCenterExample.R
+setGeneric("calcOpticalCenter",
+           function(x, y) standardGeneric("calcOpticalCenter"))
+#' @export calcOpticalCenter
+
+#' @rdname calcOpticalCenter
+setMethod("calcOpticalCenter",
+          signature(x = "data.frame"),
+          function (x)
+          {
+            # each tracked hole have two columns
+            stopifnot(ncol(x)/2 == round(ncol(x)/2))
+
+            nHoles <- ncol(x) / 2
+
+            index <- seq(1, ncol(x), 2)
+
+            circle <- list()
+            for (i in 1:nHoles) {
+              theIndex <- index[i]
+              theData <- x[, c(theIndex, theIndex+1)]
+              theData <- theData[!is.na(theData[,1]),]
+              theData <- as.matrix(theData)
+              foo <- conicfit::CircleFitByKasa(theData)
+              circle[[i]] <- foo
+            }
+
+            circle <- unlist(circle)
+            circle <- matrix(circle, ncol = 3, byrow = TRUE)
+            colnames(circle) <- c("x", "y", "radius")
+
+            upperLeft <- cbind(circle[,"x"] - circle[,"radius"],
+                           circle[,"y"] - circle[,"radius"])
+            side <- circle[,"radius"] * 2
+
+            circle <- cbind(circle, upperLeft, side)
+            colnames(circle) <- cbind("x", "y", "radius",
+                                      "upperLeftX", "upperLeftY", "side")
+            row.names(circle) <- NULL
+
+            circle
+          }
+)
+
 #### calcDiameter ####
 #' Calculate diameter corresponding to a circular fisheye photography.
 #'
-#' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param y \code{\linkS4class{LensPolyCoef}}.
+#' @param x \code{\linkS4class{LensPolyCoef}}.
+#' @param pix todo
+#' @param angle todo
 #'
 #' @return numeric.
 #' @examples /inst/examples/calcDiameterExample.R
-setGeneric("calcDiameter", function(x, y) standardGeneric("calcDiameter"))
+setGeneric("calcDiameter", function(x, pix, angle) standardGeneric("calcDiameter"))
 #' @export calcDiameter
 
 #' @rdname calcDiameter
 setMethod("calcDiameter",
-          signature(x = "CanopyPhoto", y = "LensPolyCoef"),
-          function (x, y)
+          signature(x = "LensPolyCoef"),
+          function (x, pix, angle)
           {
-            if(fisheye(x)@fullframe) {
 
-              Rfor90 <- calcR(asAngle(90), y)
+            stopifnot(length(pix) == length(angle@values))
 
-              # angle4R1 <- 0
-              # R <- 0
-              # while(R <= 1) {
-              #   angle4R1 <- angle4R1 + 0.1
-              #   R <- calcR(asAngle(angle4R1), y)
-              # }
+            Rfor90 <- calcR(asAngle(90), x)
+            RforMyAngle <- calcR(angle, x)
 
-              diameter <- round(calcR(asAngle(90), y) * ncol(x))
-              if (diameter/2 != round(diameter/2)) {
-                diameter <- diameter + 1
-              }
+            fun <- function(pix, RforMyAngle) {
+              Rfor90 * pix / RforMyAngle * 2
+            }
+
+            if(length(pix) == 1) {
+              diameter <- round(fun(pix, RforMyAngle))
 
             } else {
-              diameter <- ncol(x)
-              warning("Make sure you used loadPhoto correctly.")
+
+              diameters <- unlist(Map(fun, pix, RforMyAngle))
+              diameter <- round(median(diameters))
+              attr(diameter, "IQR") <- IQR(diameters)
+            }
+
+            if (diameter/2 != round(diameter/2)) {
+              diameter <- diameter + 1
             }
 
             return(diameter)
 
           }
 )
+
+
+##### rotAzim ####
+#' @title Rotate Azimuth
+#'
+#' @description Rotate an \code{\linkS4class{AzimuthImage}} or a
+#' similar \code{\linkS4class{RasterLayer}}.
+#'
+#' @param x \code{\linkS4class{RasterLayer}}.
+#' @return cwRotAngle \code{\linkS4class{Angle}}.
+#'
+#' @export rotAzim
+#'
+#' @examples #todo
+setGeneric("rotAzim",
+           function(x, cwRotAngle)
+             standardGeneric("rotAzim"))
+
+#' @rdname rotAzim
+setMethod("rotAzim",
+          signature(x = "RasterLayer"),
+          function (x, cwRotAngle) {
+
+            if (!cwRotAngle@degrees) {
+              cwRotAngle <- switchUnit(cwRotAngle)
+            }
+            cwRotAngle <- cwRotAngle@values
+
+            m <- is.na(x)
+
+            if (cwRotAngle != 0) {
+              foo <- as.matrix(x)
+              foo <- imager::as.cimg(foo)
+              foo <- imager::rotate_xy(foo, -cwRotAngle,
+                                       ncol(x) / 2, nrow(x) / 2, interpolation = 0)
+              values(x) <- as.matrix(foo)
+            }
+
+            x[m] <- NA
+            x
+
+          }
+)
+
+#' @rdname rotAzim
+setMethod("rotAzim",
+          signature(x = "PolarSegmentation"),
+          function (x, cwRotAngle) {
+
+            x <- as(x, "RasterLayer")
+            x <- rotAzim(x, cwRotAngle)
+            as(x, "PolarSegmentation")
+
+          }
+)
+
+#' @rdname rotAzim
+setMethod("rotAzim",
+          signature(x = "BinImage"),
+          function (x, cwRotAngle) {
+
+            x <- as(x, "RasterLayer")
+            x <- rotAzim(x, cwRotAngle)
+            as(x, "BinImage")
+
+          }
+)
+
+#' @rdname rotAzim
+setMethod("rotAzim",
+          signature(x = "AzimuthImage"),
+          function (x, cwRotAngle) {
+
+            x <- as(x, "RasterLayer")
+            x <- rotAzim(x, cwRotAngle)
+            x[x == 0] <- 0.001
+            as(x, "AzimuthImage")
+
+          }
+)
+

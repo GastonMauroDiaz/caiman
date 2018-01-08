@@ -19,9 +19,9 @@ normalize(x, mn, mx, ...)
 \arguments{
 \item{x}{\linkS4class{CanopyPhoto} or \code{\linkS4class{Raster}}.}
 
-\item{mn}{numeric. Minimum expected value.}
+\item{mn}{One-length numeric. Minimum expected value.}
 
-\item{mx}{numeric. Maximum expected value.}
+\item{mx}{One-length numeric. Maximum expected value.}
 
 \item{...}{Additional arguments as for \code{\link[raster]{writeRaster}}.}
 }

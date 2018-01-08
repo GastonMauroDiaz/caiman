@@ -1,1 +1,8 @@
-#todo
+# Nikon D50 Fisheye Nikkor 10.5 mm lens
+lens <- lensPolyCoef(c(1.13, 0.00798, -0.138))
+lens <- lensPolyCoef(c(0.71553, 0.01146, -0.03928))
+
+angle <- asAngle(c(53))
+pix <- c(1202)
+
+calcDiameter(lens, pix, angle)

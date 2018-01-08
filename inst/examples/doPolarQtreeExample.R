@@ -3,7 +3,7 @@ z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
 a <- makeAimage(z)
 x <- normalize(x, 0, 255)
 \donttest{
-seg <- doPolarQtree(x, z, a, scaleParameter = 1)
+seg <- doPolarQtree(x, z, a, scaleParameter = 0.1, parallel = TRUE)
 seg
 plot(seg)
 }

@@ -22,13 +22,14 @@ setMethod("presetThr",
   signature(x = "RasterLayer"),
   function (x, thr)
   {
-    tmp <- values(x)
-    if (thr < min(tmp, na.rm = TRUE)) stop("thr must be greater than or equal to minimum layer value")
-    if (thr >= max(tmp, na.rm = TRUE)) stop("thr must be lower than maximum layer value")
-    x[x > thr] <- NA
-    x <- is.na(x)
+    if (class(thr) == "numeric") {
+      tmp <- values(x)
+      if (thr < min(tmp, na.rm = TRUE)) stop("thr must be greater than or equal to minimum layer value")
+      if (thr >= max(tmp, na.rm = TRUE)) stop("thr must be lower than maximum layer value")
+    }
+    x <- x > thr
     x <- as(x, "BinImage")
-    x@threshold <- thr
+    if (class(thr) == "numeric") x@threshold <- thr
     return(x)
   }
 )
@@ -120,7 +121,11 @@ setMethod("autoThr",
 )
 
 #### normalize ####
-normalize <- function(x, mn, mx, ...) (x - mn) / (mx - mn)
+normalize <- function(x, mn, mx, ...) {
+  stopifnot(length(mn) == 1)
+  stopifnot(length(mx) == 1)
+  (x - mn) / (mx - mn)
+}
 
 #' @title Normalize data in the range \code{0} to \code{1}.
 #'
@@ -129,8 +134,8 @@ normalize <- function(x, mn, mx, ...) (x - mn) / (mx - mn)
 #'   less than mn get values less than \code{0}.
 #'
 #' @param x \linkS4class{CanopyPhoto} or \code{\linkS4class{Raster}}.
-#' @param mn numeric. Minimum expected value.
-#' @param mx numeric. Maximum expected value.
+#' @param mn One-length numeric. Minimum expected value.
+#' @param mx One-length numeric. Maximum expected value.
 #' @param ... Additional arguments as for \code{\link[raster]{writeRaster}}.
 #'
 #' @return \linkS4class{CanopyPhoto} or \linkS4class{Raster}
@@ -266,9 +271,9 @@ setMethod("sRGB2LAB",
 #'
 #' @return Numeric or \code{\linkS4class{RasterLayer}}.
 #'
-#' @seealso \code{\link{normalize}}, \code{\link{enhanceHemiPhoto}}.
+#' @seealso \code{\link{normalize}}, \code{\link{enhanceHP}}.
 #'
-#' @example /inst/examples/enhanceHemiPhotoExample.R
+#' @example /inst/examples/enhanceHPExample.R
 #'
 setGeneric("membership2color", function(x, ...) standardGeneric("membership2color"))
 #' @export membership2color
@@ -367,7 +372,7 @@ setMethod("fuzzyLightness",
   }
 )
 
-#### enhanceHemiphoto ####
+#### enhanceHP ####
 .relativeBrightness <- function(x, wR, wB) {
   ((x[, 1] * wR + x[, 3] * wB) / 2) * x[, 4] + x[, 3] * (1 - x[, 4])
 }
@@ -423,14 +428,18 @@ setMethod("fuzzyLightness",
 #'
 #' @seealso \code{\link{membership2color}}, \code{\link{fuzzyLightness}}.
 #'
-#' @example /inst/examples/enhanceHemiPhotoExample.R
+#' @example /inst/examples/enhanceHPExample.R
 #'
-setGeneric("enhanceHemiPhoto", function(x, ...)
-  standardGeneric("enhanceHemiPhoto"))
-#' @export enhanceHemiPhoto
+setGeneric("enhanceHP", function(x, ...)
+  standardGeneric("enhanceHP"))
+#' @export enhanceHP
 
-#' @describeIn enhanceHemiPhoto The output is a numeric vector.
-setMethod("enhanceHemiPhoto",
+#' @export enhanceHemiPhoto
+#' @rdname enhanceHP
+enhanceHemiPhoto <- function(x, ...) print("use enhanceHP")
+
+#' @describeIn enhanceHP The output is a numeric vector.
+setMethod("enhanceHP",
   signature(x = "matrix"),
   function (x, thr = NULL, fuzziness = NULL, wR = 0.5, wB = 1.5,
     skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255),
@@ -465,8 +474,8 @@ setMethod("enhanceHemiPhoto",
   }
 )
 
-#' @describeIn enhanceHemiPhoto The output is a \linkS4class{RasterLayer}.
-setMethod("enhanceHemiPhoto",
+#' @describeIn enhanceHP The output is a \linkS4class{RasterLayer}.
+setMethod("enhanceHP",
   signature(x = "CanopyPhoto"),
   function (x, mask = NULL, wR = 0.5, wB = 1.5, sharpen = TRUE,
     skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255),
@@ -498,7 +507,7 @@ setMethod("enhanceHemiPhoto",
 
       if (x@fisheye@fullframe) {
         if (compareRaster(x, mask, stopiffalse = FALSE)) {
-          stop("x and mask should have different number of pixels in this case. Check the examples in ?enhanceHemiPhoto.")
+          stop("x and mask should have different number of pixels in this case. Check the examples in ?enhanceHP.")
         }
         x <- expandFullframe(x, z)
       }
@@ -524,7 +533,7 @@ setMethod("enhanceHemiPhoto",
     fuzziness <- (max(reBr[as.logical(values(mask))]) -
                                         min(reBr[as.logical(values(mask))])) / 2
 
-    foo <- function(x, ...) enhanceHemiPhoto(x, thr=thr, fuzziness=fuzziness)
+    foo <- function(x, ...) enhanceHP(x, thr=thr, fuzziness=fuzziness)
 
     fun <- .makeF8single(foo, ...)
 

@@ -3,17 +3,19 @@
 \docType{methods}
 \name{calcDiameter}
 \alias{calcDiameter}
-\alias{calcDiameter,CanopyPhoto,LensPolyCoef-method}
+\alias{calcDiameter,LensPolyCoef-method}
 \title{Calculate diameter corresponding to a circular fisheye photography.}
 \usage{
-calcDiameter(x, y)
+calcDiameter(x, pix, angle)
 
-\S4method{calcDiameter}{CanopyPhoto,LensPolyCoef}(x, y)
+\S4method{calcDiameter}{LensPolyCoef}(x, pix, angle)
 }
 \arguments{
-\item{x}{\code{\linkS4class{CanopyPhoto}}.}
+\item{x}{\code{\linkS4class{LensPolyCoef}}.}
 
-\item{y}{\code{\linkS4class{LensPolyCoef}}.}
+\item{pix}{todo}
+
+\item{angle}{todo}
 }
 \value{
 numeric.

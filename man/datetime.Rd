@@ -5,6 +5,7 @@
 \alias{datetime}
 \alias{datetime<-}
 \alias{datetime,CanopyPhoto-method}
+\alias{datetime,character-method}
 \alias{datetime<-,CanopyPhoto,character-method}
 \title{Set or get the datetime slot.}
 \usage{
@@ -12,10 +13,12 @@ datetime(x)
 
 \S4method{datetime}{CanopyPhoto}(x)
 
+\S4method{datetime}{character}(x)
+
 \S4method{datetime}{CanopyPhoto,character}(x) <- value
 }
 \arguments{
-\item{x}{\code{\linkS4class{CanopyPhoto}}.}
+\item{x}{\code{\linkS4class{CanopyPhoto}} or character.}
 
 \item{value}{Character. The only valid formats for the datetime slot are:
 yyyy/mm/dd hh:mm:ss or yyyy-mm-dd hh:mm:ss}
@@ -27,6 +30,14 @@ character.
 Set or get the character string with date and time when the
   photograph was taken.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{character}: \code{x} character. The names of the photographs
+(extension included) of the canopy models. If your working directory is the
+one that contains the photographs, use just the file name, otherwise, use
+the full path to the file.
+}}
+
 \examples{
 x <- loadPhoto()
 datetime(x)

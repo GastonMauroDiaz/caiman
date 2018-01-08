@@ -149,7 +149,7 @@ setMethod("equipment<-",
 #' @description Set or get the character string with date and time when the
 #'   photograph was taken.
 #'
-#' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param x \code{\linkS4class{CanopyPhoto}} or character.
 #' @param value Character. The only valid formats for the datetime slot are:
 #'   yyyy/mm/dd hh:mm:ss or yyyy-mm-dd hh:mm:ss
 #'
@@ -168,6 +168,22 @@ setMethod("datetime",
   function (x) {
     return(x@datetime)
   }
+)
+
+#' @describeIn  datetime \code{x} character. The names of the photographs
+#'   (extension included) of the canopy models. If your working directory is the
+#'   one that contains the photographs, use just the file name, otherwise, use
+#'   the full path to the file.
+setMethod("datetime",
+          signature(x = "character"),
+          function(x) {
+            evs <- c()
+            for (i in 1:length(x)) {
+              cp <- loadPhoto(x[i])
+              evs[i] <- datetime(cp)
+            }
+            evs
+          }
 )
 
 setGeneric("datetime<-", function(x, value) standardGeneric("datetime<-"),
@@ -481,3 +497,36 @@ setMethod("isoSpeed<-",
           }
 )
 #' @export isoSpeed<-
+
+
+
+#### getHour ####
+#' @title Get hour of a day from datetime character
+#'
+#' @description Get hour of a day from datetime character.
+#'
+#' @param x character.
+#'
+#' @return numeric.
+#'
+#' @seealso \code{\link{datetime}}.
+#'
+#' @example /inst/examples/getHourExample.R
+#'
+setGeneric("getHour", function(x) standardGeneric("getHour"))
+#' @export getHour
+
+#' @rdname getHour
+setMethod("getHour",
+          signature(x = "character"),
+          function (x) {
+            datetime <- substr(x, 12, 19)
+            hour <- strsplit(as.character(datetime), "\\:")
+            hour <- unlist(hour)
+            hour  <- as.numeric(hour)
+            foo <- t(matrix(hour, nrow = 3))
+            hour <- foo[,1] + foo[,2]/60 + foo[,3] / (60*60)
+            hour
+          }
+)
+

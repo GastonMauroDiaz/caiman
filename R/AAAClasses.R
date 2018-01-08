@@ -4,12 +4,14 @@ devtools::use_package("class")
 devtools::use_package("EBImage")
 devtools::use_package("rgdal")
 devtools::use_package("sp")
-#devtools::use_package("HistogramTools", type = "Depends")
 devtools::use_package("raster", type = "Depends")
 devtools::use_package("methods")
 devtools::use_package("colorspace")
 devtools::use_package("exif")
 devtools::use_package("imager")
+devtools::use_package("conicfit")
+# devtools::use_package("akima")
+
 #devtools::use_package("testthat", type = "Suggests")
 
 #' @import raster
@@ -161,19 +163,19 @@ setClass(Class = "Angle",
   prototype = list(values = seq(0, 90), degrees = TRUE),
   validity = function(object) {
 
-    error <- TRUE
-    if (!object@degrees & min(object@values) >= 0 & max(object@values) < 2 * pi)
-      error <- FALSE
-    if (object@degrees & min(object@values) >= 0 & max(object@values) < 360)
-      error <- FALSE
-
-    if (error)
-    {
-      stop(
-          "\nAngle in degrees must be equal or greater than 0 and less than 360.\nAngle in radians must be equal or greater than 0 and less than 2pi.")
-    } else {
-      return(TRUE)
-    }
+    # error <- TRUE
+    # if (!object@degrees & min(object@values) >= 0 & max(object@values) < 2 * pi)
+    #   error <- FALSE
+    # if (object@degrees & min(object@values) >= 0 & max(object@values) < 360)
+    #   error <- FALSE
+    #
+    # if (error)
+    # {
+    #   stop(
+    #       "\nAngle in degrees must be equal or greater than 0 and less than 360.\nAngle in radians must be equal or greater than 0 and less than 2pi.")
+    # } else {
+    #   return(TRUE)
+    # }
   }
 )
 

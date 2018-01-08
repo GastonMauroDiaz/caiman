@@ -6,14 +6,12 @@
 \alias{makeAimage,ZenithImage-method}
 \title{Generate an AzimuthImage.}
 \usage{
-makeAimage(x, cwRotAngle = NULL)
+makeAimage(x)
 
-\S4method{makeAimage}{ZenithImage}(x, cwRotAngle = NULL)
+\S4method{makeAimage}{ZenithImage}(x)
 }
 \arguments{
 \item{x}{\code{\linkS4class{ZenithImage}}.}
-
-\item{cwRotAngle}{numeric. Angle in degrees.}
 }
 \value{
 \code{\linkS4class{AzimuthImage}}.

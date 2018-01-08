@@ -6,12 +6,12 @@
 \alias{doOBIA,CanopyPhoto-method}
 \title{Do an Object-based image analysis to classify plant.}
 \usage{
-doOBIA(x, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
+doOBIA(x, bin, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
   g1 = makePolarGrid(z), sampleSize = 50, k = 1, zlim = asAngle(c(30,
   60)), calibration = FALSE)
 
-\S4method{doOBIA}{CanopyPhoto}(x, z, seg = doPolarQtree(x, z, scaleParameter =
-  0.2), g1 = makePolarGrid(z), sampleSize = 50, k = 1,
+\S4method{doOBIA}{CanopyPhoto}(x, bin, z, seg = doPolarQtree(x, z,
+  scaleParameter = 0.2), g1 = makePolarGrid(z), sampleSize = 50, k = 1,
   zlim = asAngle(c(30, 60)), calibration = FALSE)
 }
 \arguments{
@@ -34,6 +34,9 @@ batch processing of photos token with the same camera, you can compute
 zenith angle, see Details.}
 
 \item{calibration}{logical. Default is \code{FALSE}, see Details.}
+
+\item{x}{\code{\linkS4class{BinImage}}. The standard is a call to
+\code{\link{enhanceHP}} followed by a call to \code{\link{autoThr}}}
 }
 \value{
 A \code{\linkS4class{BinImage}} by default. If \code{calibrate} is
@@ -44,31 +47,28 @@ Do an Object-based image analysis with the aim of classify
   plants in full-color-upward-looking hemispherical photographs.
 }
 \details{
-This algorithm uses color transformations, fuzzy logic, and
-  object-based image analysis (OBIA). Internally, this algorithm makes a call
-  to \code{\link{enhanceHemiPhoto}} which result is binarized calling
-  \code{\link{autoThr}}. The class \emph{Gap-candidate} is assigned to pixels
-  above the threshold and the class \emph{Plant} to the rest of the
-  unclassified pixels. Next, the algorithm uses this result and \code{g1} to
-  isolate hemisphere segments with \code{1} degree of resolution that are not
-  fully cover by \emph{Plant} (i.e., Gap Fraction > 0), which are classified
-  as \emph{Mix-OR-Gap}. Next, the algorithm get a binary mask from this
-  result and intersect it with the argument \code{seg}. At this point, the
-  algorithms achieve the identification of all segments of \code{seg} that
-  could have some gaps at pixel level (i.e., \emph{Mix-OR-Gap}). Next, the
-  algorithm classified all this segments in \emph{Gap} or \emph{Mix} in a two
-  stage process: (1) automatic selection of samples and (2) sample-based
-  classification. The argument \code{sampleSize} controls the sample size for
-  both targeted classes. The algorithm uses the brightness of the blue
-  channel to select the samples. It assumes that brighter objects belong to
-  \emph{Gap} and objects with middle brightness belong to \emph{Mix}. The
-  argument \code{k} is for the knn used in the second stage of the
-  sample-based classification. Processing continues on Mix-segments in order
-  to unmix them at pixel level (see references for more details). The
-  arguments \code{mnZ} and \code{mxZ} can be used to delimitate the range of
-  zenith angle in which the aforementioned process is computed. In the rest
-  of the image the result will be the same as using \code{\link{autoThr}} to
-  binarize the result of calling \code{\link{enhanceHemiPhoto}}.
+This algorithm uses object-based image analysis (OBIA). The class
+  \emph{Gap-candidate} is assigned to pixels that are white in \code{bin} and
+  the class \emph{Plant} to the rest of the pixels. Next, the algorithm uses
+  this result and \code{g1} to isolate hemisphere segments with \code{1}
+  degree of resolution that are not fully cover by \emph{Plant} (i.e., Gap
+  Fraction > 0), which are classified as \emph{Mix-OR-Gap}. Next, the
+  algorithm get a binary mask from this result and intersect it with the
+  argument \code{seg}. At this point, the algorithms achieve the
+  identification of all segments of \code{seg} that could have some gaps at
+  pixel level (i.e., \emph{Mix-OR-Gap}). Next, the algorithm classified all
+  this segments in \emph{Gap} or \emph{Mix} in a two stage process: (1)
+  automatic selection of samples and (2) sample-based classification. The
+  argument \code{sampleSize} controls the sample size for both targeted
+  classes. The algorithm uses the brightness of the blue channel to select
+  the samples. It assumes that brighter objects belong to \emph{Gap} and
+  objects with middle brightness belong to \emph{Mix}. The argument \code{k}
+  is for the knn used in the second stage of the sample-based classification.
+  Processing continues on Mix-segments in order to unmix them at pixel level
+  (see references for more details). The arguments \code{mnZ} and \code{mxZ}
+  can be used to delimitate the range of zenith angle in which the
+  aforementioned process is computed. In the rest of the image the result
+  will be the same as \code{bin}.
 
   If calibrate is set as \code{TRUE}, the process stops just after the
   sample-based classification described in the previous paragraph and returns

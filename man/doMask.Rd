@@ -49,8 +49,8 @@ Todo: explain previousMask behavior.
 \item \code{ZenithImage}: You can use angular limits to do a mask for hemispherical
 photographs.
 
-\item \code{CanopyPhoto}: This feature is needed for further processing fullframe
-hemispherical photographs.
+\item \code{CanopyPhoto}: This feature could be needed for further processing
+fullframe hemispherical photographs.
 }}
 
 \examples{

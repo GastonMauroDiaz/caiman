@@ -235,16 +235,14 @@ setMethod("doMask",
     # fix inclusion of the area outside the circle if zmin is 0
     out[noDataArea] <- 0
     #
-    out <- as(out, "BinImage")
-
     if (!is.null(previousMask)) out <- out * previousMask
-
+    out <- as(out, "BinImage")
     return(out)
   }
 )
 
-#' @describeIn doMask This feature is needed for further processing fullframe
-#'   hemispherical photographs.
+#' @describeIn doMask This feature could be needed for further processing
+#'   fullframe hemispherical photographs.
 setMethod("doMask",
   signature(x = "CanopyPhoto"),
   function (x, z) {
@@ -334,7 +332,7 @@ setMethod("expandFullframe",
 #'
 #' @description Calculate the exposure for a given shutter speed an aperture.
 #'
-#' @param ssDenominator numeric. Denominator of the shutter speed.
+#' @param x numeric or character.
 #' @param aperture numeric. The aperture or f number.
 #'
 #' @references Allen, E., & Triantaphillidou, S. (2010). The manual of
@@ -345,18 +343,47 @@ setMethod("expandFullframe",
 #'
 #' @example /inst/examples/calcExposureExample.R
 #'
-setGeneric("calcExposure", function(ssDenominator, aperture)
+setGeneric("calcExposure", function(x, aperture)
               standardGeneric("calcExposure"))
 #' @export calcExposure
 
-#' @rdname calcExposure
+#' @describeIn  calcExposure \code{x} numeric. is the denominator of the shutter
+#'   speed, see \code{\link{"ssDenominator"}}.
 setMethod("calcExposure",
-          signature(ssDenominator = "numeric", aperture = "numeric"),
-          function (ssDenominator, aperture) {
-            log2(aperture^2 * ssDenominator)
+          signature(x = "numeric"),
+
+          function (x, aperture) {
+            stopifnot(class(aperture) == "numeric")
+
+            log2(aperture^2 * x)
           }
 )
 
+
+#' @describeIn  calcExposure Probably, this will be the most used.
+setMethod("calcExposure",
+          signature(x = "CanopyPhoto"),
+
+          function (x) {
+            log2(aperture(x)^2 * ssDenominator(x))
+          }
+)
+
+#' @describeIn  calcExposure \code{x} character. The names of the photographs
+#'   (extension included) of the canopy models. If your working directory is the
+#'   one that contains the photographs, use just the file name, otherwise, use
+#'   the full path to the file.
+setMethod("calcExposure",
+          signature(x = "character"),
+          function(x) {
+            evs <- c()
+            for (i in 1:length(x)) {
+              cp <- loadPhoto(x[i])
+              evs[i] <- calcExposure(ssDenominator(cp), aperture(cp))
+            }
+            evs
+          }
+)
 
 #### addMasks ####
 #' @title todo
@@ -387,30 +414,86 @@ setMethod("addMasks",
 
 
 #### getNumberOfPixels ####
+#' @title Get the number of pixels per segment
+#'
+#' @description Get the number of pixels per segment given a
+#'   \code{\linkS4class{PolarSegmentation}}.
+#'
+#' @param x \code{\linkS4class{PolarSegmentation}}
+#' @param m \code{\linkS4class{PolarSegmentation}}. Mask.
+#' @param onlyMin logical. The default TRUE meant that only the number of pixels
+#'   of the smallest segment is returned.
+#'
+#' @details A criterion for selecting a proper segmentation is the number of
+#'   pixel of the smallest segment. Gonsamo et al. (2010) suggest a minimum
+#'   number of pixels greater or equal than 10 pixels.
+#' @return numeric
+#'
+#' @references
+#' Gonsamo, A., Walter, J.-M.N., Pellikka, P., 2010. Sampling gap fraction and
+#' size for estimating leaf area and clumping indices from hemispherical
+#' photographs. Can. J. For. Res. 40, 1588–1603. doi:10.1139/X10-085
+#'
+#' @examples #/inst/examples/ Example.R
+#'
+setGeneric("getNumberOfPixels", function(x, m, onlyMin = TRUE)
+  standardGeneric("getNumberOfPixels"))
+#' @export getNumberOfPixels
+
+#' @rdname getNumberOfPixels
+setMethod("getNumberOfPixels",
+          signature(x = "PolarSegmentation"),
+          function (x, m, onlyMin) {
+            x[!m] <- NA
+            out <- tapply(x[], x[], length)
+            if (onlyMin) out <- min(out)
+            return(out)
+          }
+)
+
+#### masking ####
 #' @title todo
 #'
 #' @description todo
 #'
 #' @param x todo
 #' @param m todo
-#' @param onlyMin todo
+#' @param col todo
 #'
 #' @return todo
 #'
 #' @examples #/inst/examples/ Example.R
 #'
-setGeneric("getNumberOfPixels", function(x, m, onlyMin = TRUE)
-  standardGeneric("getNumberOfPixels"))
-#' @export addMasks
+setGeneric("masking", function(x, m, col = c(1,0,0))
+  standardGeneric("masking"))
+#' @export masking
 
-#' @rdname getNumberOfPixels
-setMethod("getNumberOfPixels",
-          signature(x = "PolarSegmentation"),
-          function (x, m, onlyMin) {
-            p[!m] <- NA
-            out <- tapply(p[], p[], length)
-            if (onlyMin) out <- min(out)
-            return(out)
+.masking <- function(red, green, blue, m, col) {
+  red[!m] <- col[1]
+  green[!m] <- col[2]
+  blue[!m] <- col[3]
+  raster::stack(red, green, blue)
+}
+
+#' @rdname masking
+setMethod("masking",
+          signature(x = "RasterLayer"),
+          function (x, m, col) {
+            raster::compareRaster(x, m)
+            red = green = blue <- x
+            .masking(red, green, blue, m, col)
+          }
+)
+
+#' @rdname masking
+setMethod("masking",
+          signature(x = "RasterStackBrick"),
+          function (x, m, col) {
+            stopifnot(raster::nlayers(x) == 3)
+            red <- raster::subset(x, 1)
+            green <- raster::subset(x, 2)
+            blue <- raster::subset(x, 3)
+            .masking(red, green, blue, m, col)
           }
 )
 

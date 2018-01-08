@@ -40,6 +40,8 @@
 #'   plants in full-color-upward-looking hemispherical photographs.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param x \code{\linkS4class{BinImage}}. The standard is a call to
+#'   \code{\link{enhanceHP}} followed by a call to \code{\link{autoThr}}
 #' @param z \code{\linkS4class{ZenithImage}}.
 #' @param seg \code{\linkS4class{PolarSegmentation}}.
 #' @param g1 \code{\linkS4class{PolarSegmentation}}. The default option is a
@@ -52,31 +54,28 @@
 #'   zenith angle, see Details.
 #' @param calibration logical. Default is \code{FALSE}, see Details.
 #'
-#' @details This algorithm uses color transformations, fuzzy logic, and
-#'   object-based image analysis (OBIA). Internally, this algorithm makes a call
-#'   to \code{\link{enhanceHemiPhoto}} which result is binarized calling
-#'   \code{\link{autoThr}}. The class \emph{Gap-candidate} is assigned to pixels
-#'   above the threshold and the class \emph{Plant} to the rest of the
-#'   unclassified pixels. Next, the algorithm uses this result and \code{g1} to
-#'   isolate hemisphere segments with \code{1} degree of resolution that are not
-#'   fully cover by \emph{Plant} (i.e., Gap Fraction > 0), which are classified
-#'   as \emph{Mix-OR-Gap}. Next, the algorithm get a binary mask from this
-#'   result and intersect it with the argument \code{seg}. At this point, the
-#'   algorithms achieve the identification of all segments of \code{seg} that
-#'   could have some gaps at pixel level (i.e., \emph{Mix-OR-Gap}). Next, the
-#'   algorithm classified all this segments in \emph{Gap} or \emph{Mix} in a two
-#'   stage process: (1) automatic selection of samples and (2) sample-based
-#'   classification. The argument \code{sampleSize} controls the sample size for
-#'   both targeted classes. The algorithm uses the brightness of the blue
-#'   channel to select the samples. It assumes that brighter objects belong to
-#'   \emph{Gap} and objects with middle brightness belong to \emph{Mix}. The
-#'   argument \code{k} is for the knn used in the second stage of the
-#'   sample-based classification. Processing continues on Mix-segments in order
-#'   to unmix them at pixel level (see references for more details). The
-#'   arguments \code{mnZ} and \code{mxZ} can be used to delimitate the range of
-#'   zenith angle in which the aforementioned process is computed. In the rest
-#'   of the image the result will be the same as using \code{\link{autoThr}} to
-#'   binarize the result of calling \code{\link{enhanceHemiPhoto}}.
+#' @details This algorithm uses object-based image analysis (OBIA). The class
+#'   \emph{Gap-candidate} is assigned to pixels that are white in \code{bin} and
+#'   the class \emph{Plant} to the rest of the pixels. Next, the algorithm uses
+#'   this result and \code{g1} to isolate hemisphere segments with \code{1}
+#'   degree of resolution that are not fully cover by \emph{Plant} (i.e., Gap
+#'   Fraction > 0), which are classified as \emph{Mix-OR-Gap}. Next, the
+#'   algorithm get a binary mask from this result and intersect it with the
+#'   argument \code{seg}. At this point, the algorithms achieve the
+#'   identification of all segments of \code{seg} that could have some gaps at
+#'   pixel level (i.e., \emph{Mix-OR-Gap}). Next, the algorithm classified all
+#'   this segments in \emph{Gap} or \emph{Mix} in a two stage process: (1)
+#'   automatic selection of samples and (2) sample-based classification. The
+#'   argument \code{sampleSize} controls the sample size for both targeted
+#'   classes. The algorithm uses the brightness of the blue channel to select
+#'   the samples. It assumes that brighter objects belong to \emph{Gap} and
+#'   objects with middle brightness belong to \emph{Mix}. The argument \code{k}
+#'   is for the knn used in the second stage of the sample-based classification.
+#'   Processing continues on Mix-segments in order to unmix them at pixel level
+#'   (see references for more details). The arguments \code{mnZ} and \code{mxZ}
+#'   can be used to delimitate the range of zenith angle in which the
+#'   aforementioned process is computed. In the rest of the image the result
+#'   will be the same as \code{bin}.
 #'
 #'   If calibrate is set as \code{TRUE}, the process stops just after the
 #'   sample-based classification described in the previous paragraph and returns
@@ -96,7 +95,7 @@
 #' @example /inst/examples/doOBIAexample.R
 #'
 setGeneric("doOBIA",
-  function(x, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
+  function(x, bin, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
     g1 = makePolarGrid(z), sampleSize = 50, k = 1, zlim = asAngle(c(30, 60)),
        calibration = FALSE) standardGeneric("doOBIA"))
 #' @export doOBIA
@@ -104,7 +103,7 @@ setGeneric("doOBIA",
 #' @rdname doOBIA
 setMethod("doOBIA",
   signature(x = "CanopyPhoto"),
-  function (x, z, seg, g1, sampleSize, k, zlim, calibration) {
+  function (x, bin, z, seg, g1, sampleSize, k, zlim, calibration) {
 
     msn <- "This algorithm was designed to process upward looking hemispherical photographs."
     if (!fisheye(x)@is) {
@@ -114,13 +113,16 @@ setMethod("doOBIA",
       # if (fisheye(x)@fullframe) warning(msn)
     }
 
-    if (x@fisheye@fullframe) {
-      bin <- autoThr(enhanceHemiPhoto(x, z = z))
-      x <- expandFullframe(x, z)
-    } else {
-      bin <- autoThr(enhanceHemiPhoto(x))
-    }
+    # if (x@fisheye@fullframe) {
+    #   bin <- autoThr(enhanceHP(x, z = z))
+    #   x <- expandFullframe(x, z)
+    # } else {
+    #   bin <- autoThr(enhanceHP(x))
+    # }
 
+    stopifnot(class(bin) == "BinImage")
+
+    stopifnot(compareRaster(x, bin))
     stopifnot(compareRaster(x, z))
     stopifnot(compareRaster(x, seg))
     stopifnot(compareRaster(x, g1))
