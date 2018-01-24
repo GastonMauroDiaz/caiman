@@ -419,7 +419,7 @@ setMethod("calcOpticalCenter",
 #' @param angle todo
 #'
 #' @return numeric.
-#' @examples /inst/examples/calcDiameterExample.R
+#' @example /inst/examples/calcDiameterExample.R
 setGeneric("calcDiameter", function(x, pix, angle) standardGeneric("calcDiameter"))
 #' @export calcDiameter
 

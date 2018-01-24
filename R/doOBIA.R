@@ -34,13 +34,13 @@
   }
 
 
-#' @title Do an Object-based image analysis to classify plant.
+#' @title Do an Object-based image analysis to classify gaps.
 #'
 #' @description Do an Object-based image analysis with the aim of classify
-#'   plants in full-color-upward-looking hemispherical photographs.
+#'   gaps in full-color-upward-looking hemispherical photographs.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param x \code{\linkS4class{BinImage}}. The standard is a call to
+#' @param bin \code{\linkS4class{BinImage}}. The standard is a call to
 #'   \code{\link{enhanceHP}} followed by a call to \code{\link{autoThr}}
 #' @param z \code{\linkS4class{ZenithImage}}.
 #' @param seg \code{\linkS4class{PolarSegmentation}}.

@@ -45,10 +45,12 @@ Run this code:
       x <- normalize(x, 0, 255)
       # Here, I assume that your lens has perfect polor projection.
       z <- makeZimage(ncol(x), lensPolyCoef())
+      m <- doMask(z)
+      bin <- autoThr(enhanceHP(x, m, sharpen = FALSE))
       # This takes a while but you can see the progres
       seg <- doPolarQtree(x, z, scaleParameter = 0.2)
       name <- strsplit(i, "\\.")[[1]][1]
-      out <- doOBIA(x, z, seg, zlim = asAngle(c(20, 80)))
+      out <- doOBIA(x, bin, z, seg, zlim = asAngle(c(20, 80)))
       writeRaster(out * 255, paste0(path_out, "/", name, ".TIF"), datatype = "INT1U", overwrite = TRUE)
     }
 

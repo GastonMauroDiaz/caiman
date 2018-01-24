@@ -4,7 +4,7 @@
 \name{doOBIA}
 \alias{doOBIA}
 \alias{doOBIA,CanopyPhoto-method}
-\title{Do an Object-based image analysis to classify plant.}
+\title{Do an Object-based image analysis to classify gaps.}
 \usage{
 doOBIA(x, bin, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
   g1 = makePolarGrid(z), sampleSize = 50, k = 1, zlim = asAngle(c(30,
@@ -16,6 +16,9 @@ doOBIA(x, bin, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
+
+\item{bin}{\code{\linkS4class{BinImage}}. The standard is a call to
+\code{\link{enhanceHP}} followed by a call to \code{\link{autoThr}}}
 
 \item{z}{\code{\linkS4class{ZenithImage}}.}
 
@@ -34,9 +37,6 @@ batch processing of photos token with the same camera, you can compute
 zenith angle, see Details.}
 
 \item{calibration}{logical. Default is \code{FALSE}, see Details.}
-
-\item{x}{\code{\linkS4class{BinImage}}. The standard is a call to
-\code{\link{enhanceHP}} followed by a call to \code{\link{autoThr}}}
 }
 \value{
 A \code{\linkS4class{BinImage}} by default. If \code{calibrate} is
@@ -44,7 +44,7 @@ A \code{\linkS4class{BinImage}} by default. If \code{calibrate} is
 }
 \description{
 Do an Object-based image analysis with the aim of classify
-  plants in full-color-upward-looking hemispherical photographs.
+  gaps in full-color-upward-looking hemispherical photographs.
 }
 \details{
 This algorithm uses object-based image analysis (OBIA). The class
@@ -80,6 +80,9 @@ This algorithm uses object-based image analysis (OBIA). The class
 x <- loadPhoto()
 x <- normalize(x, 0, 255)
 z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
+m <- doMask(z)
+bin <- autoThr(enhanceHP(x, m, sharpen = FALSE))
+
 
 # Because next line takes too long for an example...
 \dontrun{
@@ -92,14 +95,14 @@ seg <- as(seg, "PolarSegmentation")
 g1 <- makePolarGrid(z)
 zlim <- asAngle(c(20, 80))
 \donttest{
-out <- doOBIA(x, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = FALSE)
+out <- doOBIA(x, bin, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = FALSE)
 plot(out)
-out <- doOBIA(x, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = TRUE)
+out <- doOBIA(x, bin, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = TRUE)
 plot(out)
 
 zlim <- asAngle(c(30, 60))
 
-out <- doOBIA(x, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = TRUE)
+out <- doOBIA(x, bin, z, seg, g1, zlim = zlim, sampleSize = 20, calibration = TRUE)
 plot(out)
 }
 
@@ -113,21 +116,20 @@ fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
 
 x <- normalize(x, 0, 255)
 
-lens <- lensPolyCoef(c(1.13, 0.00798, -0.138))
-diameter <- calcDiameter(x, lens)
-r <- makeRimage(diameter, lens)
-z <- makeZimage(r, lens)
+lens <- lensPolyCoef(c(0.71553, 0.01146, -0.03928))
+angle <- asAngle(c(53))
+pix <- c(224)
+diameter <- calcDiameter(lens, pix, angle)
+z <- makeZimage(diameter, lens)
 
-# Because next line takes too long for an example...
-\dontrun{
-  seg <- doPolarQtree(x, z, scaleParameter = 0.5)
-}
-# ... you can open the result with the following lines.
-seg <- raster(system.file("external/segFF.tif", package="caiman"))
-seg <- as(seg, "PolarSegmentation")
+m <- doMask(x, z)
+x <- expandFullframe(x, z)
+
+bin <- autoThr(enhanceHP(x, m, sharpen = FALSE))
 
 \donttest{
-out <- doOBIA(x, z, seg, sampleSize = 20, calibration = TRUE)
+seg <- doPolarQtree(x, z, scaleParameter = 0.2, mnSize = 1000)
+out <- doOBIA(x, bin, z, seg, sampleSize = 20, calibration = TRUE)
 plot(out)
 out <- doOBIA(x, z, seg, sampleSize = 20, calibration = FALSE)
 plot(out)

@@ -1,8 +1,8 @@
 Package: caiman
 Type: Package
 Title: Canopy Image Analysis
-Version: 0.2.3.9000
-Date: 2018-01-23
+Version: 0.2.4.9000
+Date: 2018-01-24
 Author@R: person("Gaston Mauro", "Diaz", email =
     "gdiaz@ciefap.org.ar", role = c("aut", "cre"))
 Description: Caiman uses the functionalities of the packages raster and
