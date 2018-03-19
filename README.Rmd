@@ -77,7 +77,8 @@ Probably, you do not have installed the dependent packages *EBImage* and *exif*.
 ```
 source("https://bioconductor.org/biocLite.R")
 biocLite()
-biocLite(“EBImage”)
+biocLite("EBImage")
 ```
 
-To install the *exif* package run `devtools::install_github("Ironholds/exif")`.
+To install the *exif* package run `devtools::install_github("Ironholds/exif")`. There is a chance that this not work, in such case run `devtools::install_github("ironholds/exif", ref = "3fc8319554fa15ffac4bfbf91bed3fd5205df45d")` .
+
