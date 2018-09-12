@@ -12,15 +12,15 @@ Caiman uses the functionalities of the packages *raster* and *EBImage* to provid
 
 Canopy structure can be estimated using gap fraction (GF) data, which can be directly measured with hemispherical photography. However, GF data accuracy is affected by sunlit canopy, multiple scattering, vignetting, blooming, and chromatic aberration. The caiman package implement the algorithm presented in [IEEE Geoscience and Remote Sensing Letters](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7103294), whose aim is to reduce errors in the extraction of Gap Fraction data. The target errors are those that are produced by sunlit canopy, multiple scattering, vignetting, blooming, and chromatic aberration.
 
-On the other hand, we develop *extractSkyBrightness* and *modelBasedThresholding* to obtain unbiased estimation of GF with high angle resolution in carefully acquired hemispherical photographs. This development are currently being reviewed as part of a submitted scientific paper. The documentation for these methods are under development.
+On the other hand, this package has functions to obtain unbiased estimation of GF with high angle resolution in carefully acquired hemispherical photographs. You can read the research here: <http://www.nrcresearchpress.com/doi/full/10.1139/cjfr-2018-0006>.
 
 ### How to use caiman
 
 ------------------------------------------------------------------------
 
-The main function of *caiman* package is *doOBIA*. Use it to get binarized images whit the aim of extract gap fraction and estimate forest structure or understory light transmission. After binarization, you will need to continue the proccess with specific software as [CIMES](http://jmnw.free.fr/).
+The main function of *caiman* package is *doOBIA*. Use it to get binarized images for extracting gap fraction, and estimating forest structure or understory light transmission. After binarization, you will need to continue the proccess with specific software as [CIMES](http://jmnw.free.fr/).
 
-This document shows you how to use a simple script for processing all the hemispherical photographs of an input directory with doOBIA (batch processing).
+This document shows you how to use a simple script for processing all the hemispherical photographs in an input directory with doOBIA (batch processing).
 
 If you are a frequently user of R, probably you do not need to read this vignette.
 
@@ -62,10 +62,10 @@ Wait… The result will be written in *c:/folder\_out* whit the same name of the
 
 You can install *caiman* package in your system using *devtools* package from CRAN. Make sure you have *devtools* installed, if not run `install.packages("devtools")` in the console. Next, run `devtools::install_github("GastonMauroDiaz/caiman")`.
 
-Probably, you do not have installed the dependent packages *EBImage* and *exif*. The former is a package in the BioConductor repository, follow the link to get full instruction about [how to install BioConductor packages](https://www.bioconductor.org/install/#install-bioconductor-packages) or run:
+Probably, you do not have installed the dependent packages *EBImage*. This is a package in the BioConductor repository, follow the link to get full instruction about [how to install BioConductor packages](https://www.bioconductor.org/install/#install-bioconductor-packages) or run:
 
     source("https://bioconductor.org/biocLite.R")
     biocLite()
-    biocLite(“EBImage”)
+    biocLite("EBImage")
 
-To install the *exif* package run `devtools::install_github("Ironholds/exif")`.
+If you have any problem, please contact me: gastonmaurodiaz\[at\]gmail.com
