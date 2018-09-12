@@ -5,7 +5,6 @@
 \alias{getMin}
 \alias{getMax}
 \alias{getMin,RasterAll-method}
-\alias{getMax}
 \alias{getMax,RasterAll-method}
 \title{Get the extreme values.}
 \usage{

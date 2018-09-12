@@ -415,7 +415,7 @@ setMethod("fuzzyLightness",
 #'   \code{thr}. To compute \code{fuzziness}, the algorithm takes the maximum
 #'   and the minimum values of the Relative Brightness and calculate its mean.
 #'
-#'   If sharpen is set as \code{TRUE} (default), a sharpen filter is applied to
+#'   If sharpen is set as \code{TRUE}, a sharpen filter is applied to
 #'   the raster with the membership values. This kernel is used:
 #'   \code{matrix(c(rep(-1, 3), -1, 12, -1, rep(-1, 3)), ncol = 3)}.
 #'
@@ -477,53 +477,24 @@ setMethod("enhanceHP",
 #' @describeIn enhanceHP The output is a \linkS4class{RasterLayer}.
 setMethod("enhanceHP",
   signature(x = "CanopyPhoto"),
-  function (x, mask = NULL, wR = 0.5, wB = 1.5, sharpen = TRUE,
+  function (x, mask = NULL, wR = 0.5, wB = 1.5, sharpen = FALSE,
     skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255),
-     ncol = 3)), z = NULL, ...)
+     ncol = 3)), ...)
   {
+
     stopifnot(all(getMax(x) <= 1))
     stopifnot(all(getMin(x) >= 0))
 
-    userInputMask <- TRUE # I use it later
+
     if (is.null(mask)) {
-      userInputMask <- FALSE
-      if (x@fisheye@fullframe) {
-
-        mask <- doMask(x, z)
-        x <- expandFullframe(x, z)
-      } else {
-        mask <- doMask(makeRimage(ncol(x)))
-      }
-
-    } else {
-
-      if (class(mask)[[1]] == "RasterLayer") {
-        mask <- as(mask, "BinImage")
-        validObject(mask)
-      } else {
-        if (class(mask)[[1]] != "BinImage")
-          stop("Invalid object class for argument mask.")
-      }
-
-      if (x@fisheye@fullframe) {
-        if (compareRaster(x, mask, stopiffalse = FALSE)) {
-          stop("x and mask should have different number of pixels in this case. Check the examples in ?enhanceHP.")
-        }
-        x <- expandFullframe(x, z)
-      }
+      mask <- raster(x)
+      mask[] <- 1
     }
 
     x <- as(x, "RasterBrick")
 
-    if (!compareRaster(x, mask, stopiffalse = FALSE)) {
-
-      if (userInputMask) {
+    if (!compareRaster(x, mask, stopiffalse = FALSE))
         stop("x should match pixel by pixel whit mask.")
-      } else {
-        stop("Maybe you not declare your hemispherical photo as a fullframe. To do it, use fisheye(x) <- newFishEye(TRUE, TRUE, TRUE), for example.")
-      }
-
-    }
 
     x <- stack(x, mask)
 

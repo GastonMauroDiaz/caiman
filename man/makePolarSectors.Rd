@@ -8,7 +8,8 @@
 \usage{
 makePolarSectors(x, angleWidth, angleMean = FALSE)
 
-\S4method{makePolarSectors}{AzimuthImage}(x, angleWidth, angleMean = FALSE)
+\S4method{makePolarSectors}{AzimuthImage}(x, angleWidth,
+  angleMean = FALSE)
 }
 \arguments{
 \item{x}{\code{\linkS4class{AzimuthImage}}.}

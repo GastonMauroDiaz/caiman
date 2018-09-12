@@ -1,3 +1,3 @@
 x <- loadPhoto()
-calcExposure(ssDenominator(x), aperture(x))
+calcExposure(fNumber(x), exposureTime(x))
 calcExposure(x)

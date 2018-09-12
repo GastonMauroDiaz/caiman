@@ -8,8 +8,8 @@
 \usage{
 getReady4ECM(files, keyPhotos, openPipePhotos, openness, path)
 
-\S4method{getReady4ECM}{character}(files, keyPhotos, openPipePhotos, openness,
-  path)
+\S4method{getReady4ECM}{character}(files, keyPhotos, openPipePhotos,
+  openness, path)
 }
 \arguments{
 \item{files}{character. The names of the photographs (extension included) of

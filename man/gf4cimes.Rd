@@ -33,6 +33,9 @@ gf4cimes(x, ...)
 \value{
 todo
 }
+\description{
+todo
+}
 \examples{
 todo
 }

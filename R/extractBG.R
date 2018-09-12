@@ -1,10 +1,10 @@
 .getDataFrame <- function(x, ma, brightness, cells, z, a) {
   title <- rtitle(x)
 
-  meta.data <- c(ssDenominator(x), aperture(x), isoSpeed(x))
+  meta.data <- c(exposureTime(x), fNumber(x), isoSpeed(x))
 
   ma <- data.frame(title, ma, Brightness = brightness,
-                   ssDenominator = meta.data[1], aperture = meta.data[2],
+                   exposureTime = meta.data[1], fNumber = meta.data[2],
                    isoSpeed = meta.data[3], hour = getHour(datetime(x)))
   if (!is.null(z)) ma <- data.frame(ma, Zenith = z[cells])
   if (!is.null(a)) ma <- data.frame(ma, Azimuth = a[cells])
@@ -19,7 +19,7 @@
 #' @param x \code{\linkS4class{CanopyPhoto}}, data.frame or character.
 #' @param z \code{\linkS4class{ZenithImage}}. Optional.
 #' @param a \code{\linkS4class{AzimuthImage}}. Optional.
-#' @param canopyPhoto \code{\link{CanopyPhoto}}.
+#' @param canopyPhoto \code{\linkS4class{CanopyPhoto}}.
 #' @param id Two columns data.frame. The first column is the name of the
 #'   photographs (extension included) and must be named \emph{photo}, the second
 #'   column is a factor and must be named \code{factor}.
@@ -149,7 +149,7 @@ setMethod("extractBG",
               ees <- numeric(length(photos))
               for (u in seq_along(photos)) {
                 x <- loadPhoto(photos[u], ...)
-                ees[u] <- calcExposure(ssDenominator(x), aperture(x))
+                ees[u] <- calcExposure(x)
               }
 
               x <- loadPhoto(photos[which.max(ees)], ...)

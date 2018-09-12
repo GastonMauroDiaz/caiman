@@ -112,8 +112,9 @@ setMethod("getReady4ECM",
 #'   file name, otherwise, use the full path to the file.
 #' @param df data.frame.
 #' @param mask \code{\linkS4class{BinImage}}. See \code{\link{doMask}}.
-#' @param percentE numeric or NULL. Song et al. (2010) used 1 %.
+#' @param percentE numeric or NULL. Song et al. (2010) used 1 percent.
 #' @param absoluteE numeric of NULL.
+#' @param fun function. See \code{\link[raster]{calc}}
 #' @param ... aditionals arguments for \code{\link{loadPhoto}}.
 #'
 #' @references Song, G.-Z.M., Doley, D., Yates, D., Chao, K.-J., Hsieh, C.-F.,
@@ -126,7 +127,7 @@ setMethod("getReady4ECM",
 #'
 #' @examples #TODO
 setGeneric("findOTRs",
-           function(files, df, mask, percentE = NULL, absoluteE = 0.001, ...)
+           function(files, df, mask, percentE = NULL, absoluteE = 0.001, fun = mean, ...)
              standardGeneric("findOTRs"))
 
 #' @rdname findOTRs
@@ -149,11 +150,15 @@ setMethod("findOTRs",
 
             stopifnot(class(mask) == "BinImage")
 
+
             .calcDiscrepancy <- function(x, refValue, mask, percentE) {
 
-              x <- raster::calc(x, mean)
+              length.out <- max(getMax(x) - getMin(x))
+
+              x <- raster::calc(x, fun)
               x[!mask] <- NA
-              thrs <- (round(getMin(x)) + 1):(round(getMax(x)) - 1)
+
+              thrs <- seq(getMin(x) + 1, getMax(x) - 1, length.out = length.out)
 
               countWhite <- function(x, thr) sum(x > thr, na.rm = TRUE)
 

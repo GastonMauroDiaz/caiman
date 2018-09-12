@@ -22,13 +22,14 @@ Imports:
     methods,
     colorspace,
     rgdal,
-    exif,
+    exifr,
     imager,
-    conicfit,
-    akima
+    conicfit
 Depends:
     raster
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    exifr
 VignetteBuilder: knitr
+Encoding: UTF-8

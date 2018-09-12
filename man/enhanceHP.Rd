@@ -12,13 +12,14 @@ enhanceHP(x, ...)
 
 enhanceHemiPhoto(x, ...)
 
-\S4method{enhanceHP}{matrix}(x, thr = NULL, fuzziness = NULL, wR = 0.5,
-  wB = 1.5, skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0,
-  255), ncol = 3)), ...)
+\S4method{enhanceHP}{matrix}(x, thr = NULL, fuzziness = NULL,
+  wR = 0.5, wB = 1.5,
+  skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206, 235), 0, 255),
+  ncol = 3)), ...)
 
 \S4method{enhanceHP}{CanopyPhoto}(x, mask = NULL, wR = 0.5, wB = 1.5,
-  sharpen = TRUE, skyBlue = colorspace::sRGB(matrix(normalize(c(135, 206,
-  235), 0, 255), ncol = 3)), z = NULL, ...)
+  sharpen = FALSE, skyBlue = colorspace::sRGB(matrix(normalize(c(135,
+  206, 235), 0, 255), ncol = 3)), ...)
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}
@@ -70,7 +71,7 @@ This is a pixelwise algorithm that evaluates if pixels are sky blue
   \code{thr}. To compute \code{fuzziness}, the algorithm takes the maximum
   and the minimum values of the Relative Brightness and calculate its mean.
 
-  If sharpen is set as \code{TRUE} (default), a sharpen filter is applied to
+  If sharpen is set as \code{TRUE}, a sharpen filter is applied to
   the raster with the membership values. This kernel is used:
   \code{matrix(c(rep(-1, 3), -1, 12, -1, rep(-1, 3)), ncol = 3)}.
 }
@@ -93,31 +94,6 @@ z <- makeZimage(ncol(x), lensPolyCoef(c(0.6427, 0.0346, -0.024491)))
 m <- doMask(z, zlim = asAngle(c(30,60)), alim = asAngle(c(0, 45)))
 # mask affects the result but does not crop it (see Details).
 plot(enhanceHP(x, mask = m))
-
-
-# for fullframe hemispherical photos
-
-path <- system.file("external/DSC_2881.jpg", package="caiman")
-x <- loadPhoto(path)
-## declaring it as a fullframe
-fisheye(x) <- newFishEye(TRUE, TRUE, TRUE)
-
-x <- normalize(x, 0, 255)
-
-lens <- lensPolyCoef(c(1.13, 0.00798, -0.138))
-diameter <- calcDiameter(x, lens)
-r <- makeRimage(diameter, lens)
-z <- makeZimage(r, lens)
-
-xe <- enhanceHP(x, z = z)
-plot(xe)
-
-## Using a mask for fullframe photos is tricky (see Details).
-m <- doMask(x, z)
-m <- doMask(z, previousMask = m, zlim = asAngle(c(30, 40)),
-                                                      alim = asAngle(c(20,130)))
-plot(m)
-plot(enhanceHP(x, z = z, mask = m) - enhanceHP(x, z = z))
 }
 \references{
 Diaz, G.M., Lencinas, J.D., 2015. Enhanced Gap Fraction

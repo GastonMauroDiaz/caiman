@@ -7,12 +7,12 @@
 \title{Do an Object-based image analysis to classify gaps.}
 \usage{
 doOBIA(x, bin, z, seg = doPolarQtree(x, z, scaleParameter = 0.2),
-  g1 = makePolarGrid(z), sampleSize = 50, k = 1, zlim = asAngle(c(30,
-  60)), calibration = FALSE)
+  g1 = makePolarGrid(z), sampleSize = 50, k = 1,
+  zlim = asAngle(c(30, 60)), calibration = FALSE)
 
 \S4method{doOBIA}{CanopyPhoto}(x, bin, z, seg = doPolarQtree(x, z,
-  scaleParameter = 0.2), g1 = makePolarGrid(z), sampleSize = 50, k = 1,
-  zlim = asAngle(c(30, 60)), calibration = FALSE)
+  scaleParameter = 0.2), g1 = makePolarGrid(z), sampleSize = 50,
+  k = 1, zlim = asAngle(c(30, 60)), calibration = FALSE)
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}

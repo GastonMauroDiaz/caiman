@@ -30,5 +30,5 @@ Rotate an \code{\linkS4class{AzimuthImage}} or a
 similar \code{\linkS4class{RasterLayer}}.
 }
 \examples{
-#todo
+/inst/examples/rotAzimExample.R
 }

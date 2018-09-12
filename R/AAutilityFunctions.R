@@ -330,10 +330,11 @@ setMethod("expandFullframe",
 #### calcExposure ####
 #' @title Calculate exposure
 #'
-#' @description Calculate the exposure for a given shutter speed an aperture.
+#' @description Calculate the exposure for a given aperture (fNumber) and
+#'   exposure time (shutter speed).
 #'
 #' @param x numeric or character.
-#' @param aperture numeric. The aperture or f number.
+#' @param exposureTime numeric. The shutter speed.
 #'
 #' @references Allen, E., & Triantaphillidou, S. (2010). The manual of
 #'   photography. (E. Allen & S. Triantaphillidou, Eds.) (10th ed.). Amsterdam:
@@ -343,19 +344,18 @@ setMethod("expandFullframe",
 #'
 #' @example /inst/examples/calcExposureExample.R
 #'
-setGeneric("calcExposure", function(x, aperture)
+setGeneric("calcExposure", function(x, exposureTime)
               standardGeneric("calcExposure"))
 #' @export calcExposure
 
-#' @describeIn  calcExposure \code{x} numeric. is the denominator of the shutter
-#'   speed, see \code{\link{"ssDenominator"}}.
+#' @describeIn  calcExposure \code{x} numeric. fNumbar, see
+#'   \code{\link{fNumber}}.
 setMethod("calcExposure",
           signature(x = "numeric"),
 
-          function (x, aperture) {
-            stopifnot(class(aperture) == "numeric")
-
-            log2(aperture^2 * x)
+          function (x, exposureTime) {
+            stopifnot(class(exposureTime) == "numeric")
+            log2(x^2 / exposureTime)
           }
 )
 
@@ -365,21 +365,21 @@ setMethod("calcExposure",
           signature(x = "CanopyPhoto"),
 
           function (x) {
-            log2(aperture(x)^2 * ssDenominator(x))
+            calcExposure(fNumber(x), exposureTime(x))
           }
 )
 
 #' @describeIn  calcExposure \code{x} character. The names of the photographs
-#'   (extension included) of the canopy models. If your working directory is the
-#'   one that contains the photographs, use just the file name, otherwise, use
-#'   the full path to the file.
+#'   (extension included). If your working directory is the one that contains
+#'   the photographs, use just the file name, otherwise, use the full path to
+#'   the file.
 setMethod("calcExposure",
           signature(x = "character"),
           function(x) {
             evs <- c()
             for (i in 1:length(x)) {
               cp <- loadPhoto(x[i])
-              evs[i] <- calcExposure(ssDenominator(cp), aperture(cp))
+              evs[i] <- calcExposure(fNumber(cp), exposureTime(cp))
             }
             evs
           }

@@ -133,90 +133,6 @@ setMethod("getBgbfun",
 )
 
 
-
-##### findBias ####
-#' @title Find optimal bias
-#'
-#' @description Find optimal bias for get a gap on a given zenit angle.
-#'
-#' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param z \code{\linkS4class{ZenithImage}}.
-#' @param a \code{\linkS4class{AzimuthImage}}.
-#' @param mapBg \code{\linkS4class{RasterLayer}}.
-#' @param thrFun function.
-#' @param maxZ \code{\linkS4class{Angle}}.
-#'
-#' @return \code{\linkS4class{BinImage}}
-#' @export findBias
-#'
-#' @examples #todo
-setGeneric("findBias",
-           function(x, z, a, mapBg, thrFun, maxZ = asAngle(70))
-             standardGeneric("findBias"))
-
-#' @rdname findBias
-setMethod("findBias",
-          signature(x = "CanopyPhoto"),
-          function(x, z, a, mapBg, thrFun, maxZ) {
-            stopifnot(class(thrFun) == "function")
-            compareRaster(z, a)
-            compareRaster(x, z)
-            compareRaster(x, mapBg)
-
-            if (!maxZ@degrees) {
-              maxZ <- switchUnit(maxZ)
-            }
-            maxZ <- maxZ@values
-
-            ring <- round(maxZ / 5) + 1
-            if (nchar(ring) == 1) {
-              ring <- paste0("00", ring)
-            } else {
-              ring <- paste0("0", ring)
-            }
-            rings <- c(paste0("00", 1:9), paste0("0", 10:18))
-            ring <- rings[grep(ring, rings)]
-
-            blue <- raster::subset(x, "Blue")
-
-            # segment
-            rings <- makeRings(z, asAngle(5))
-            sectors <- makePolarSectors(a, asAngle(90))
-            segments <- sectors * 1000 + rings
-            rm(rings, sectors)
-            segments <- as(segments, "PolarSegmentation")
-
-            .testBias <- function(bias) {
-              ring
-              thr <- calc(mapBg, function(x) thrFun(x - bias))
-              bin <- blue > thr
-              foo <- extractFeatures(bin, segments, max)
-              index <- grep(ring, names(foo))
-              all(as.logical(foo[index]))
-            }
-
-            .findOptimalBySplitting <- function(x) {
-              bias <- x[1] + (x[2] - x[1]) / 2
-              padlook <- .testBias(bias)
-              if (padlook) .findOptimalBySplitting(c(x[1], bias))
-              else if((x[2] - bias) > 1) .findOptimalBySplitting(c(bias, x[2]))
-              else round(mean(c(bias, x[2])))
-
-            }
-
-            if (.testBias(0)) {
-              bias <- 0
-            } else {
-              bias <- .findOptimalBySplitting(c(0,255))
-            }
-            bias
-          }
-)
-
-
-
-
-
 ##### bgModel ####
 #' @title Background modelling
 #'
@@ -227,7 +143,7 @@ setMethod("findBias",
 #' @param a \code{\linkS4class{AzimuthImage}}.
 #' @param bin \code{\linkS4class{BinImage}}.
 #' @param filling \code{\linkS4class{RasterLayer}}.
-#' @param prob numeric. Probability for \code[stats]{\link{quantile}}.
+#' @param prob numeric. Probability for \code{\link[stats]{quantile}}.
 #' @param erode logical.
 #' @param ZA logical.
 #' @param parallel logical.
@@ -387,9 +303,11 @@ setMethod("bgModel",
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
 #' @param bin \code{\linkS4class{BinImage}}.
-#' @param filling \code{\linkS4class{RasterLayer}} or \code{\linkS4class{RasterStack}}
-#' @param prob numeric. Probability for \code[stats]{\link{quantile}}.
+#' @param filling \code{\linkS4class{RasterLayer}} or \code{\linkS4class{RasterStack}}.
 #' @param erode logical.
+#' @inheritParams raster::aggregate
+#' @inheritParams stats::quantile
+#' @inheritParams spatial::surf.ls
 #'
 #' @return \code{\linkS4class{BinImage}}
 #' @export bgInterpol2

@@ -8,9 +8,9 @@
 \alias{calcExposure,character-method}
 \title{Calculate exposure}
 \usage{
-calcExposure(x, aperture)
+calcExposure(x, exposureTime)
 
-\S4method{calcExposure}{numeric}(x, aperture)
+\S4method{calcExposure}{numeric}(x, exposureTime)
 
 \S4method{calcExposure}{CanopyPhoto}(x)
 
@@ -19,30 +19,31 @@ calcExposure(x, aperture)
 \arguments{
 \item{x}{numeric or character.}
 
-\item{aperture}{numeric. The aperture or f number.}
+\item{exposureTime}{numeric. The shutter speed.}
 }
 \value{
 numeric
 }
 \description{
-Calculate the exposure for a given shutter speed an aperture.
+Calculate the exposure for a given aperture (fNumber) and
+  exposure time (shutter speed).
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{numeric}: \code{x} numeric. is the denominator of the shutter
-speed, see \code{\link{"ssDenominator"}}.
+\item \code{numeric}: \code{x} numeric. fNumbar, see
+\code{\link{fNumber}}.
 
 \item \code{CanopyPhoto}: Probably, this will be the most used.
 
 \item \code{character}: \code{x} character. The names of the photographs
-(extension included) of the canopy models. If your working directory is the
-one that contains the photographs, use just the file name, otherwise, use
-the full path to the file.
+(extension included). If your working directory is the one that contains
+the photographs, use just the file name, otherwise, use the full path to
+the file.
 }}
 
 \examples{
 x <- loadPhoto()
-calcExposure(ssDenominator(x), aperture(x))
+calcExposure(fNumber(x), exposureTime(x))
 calcExposure(x)
 }
 \references{

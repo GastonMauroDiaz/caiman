@@ -59,7 +59,8 @@ A projection method is required to visually represent the reality in
   relative radius is modeled with a straight line. In \code{caiman}, a
   polynomial curve is used to model lens distortion. This kind of model is
   used by the software HemiView and Hemisphere, both are proprietary software
-  currently available in the market.
+  currently available in the market. A third-order polynomial is sufficient
+  in most cases (Frazer et al., 2001).
 }
 \examples{
 # polar projection

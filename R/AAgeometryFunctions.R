@@ -41,7 +41,8 @@
 #'   relative radius is modeled with a straight line. In \code{caiman}, a
 #'   polynomial curve is used to model lens distortion. This kind of model is
 #'   used by the software HemiView and Hemisphere, both are proprietary software
-#'   currently available in the market.
+#'   currently available in the market. A third-order polynomial is sufficient
+#'   in most cases (Frazer et al., 2001).
 #'
 #' @references
 #' Frazer, G. W., Fournier, R. A., Trofymow, J. A., & Hall, R. J. (2001). A
@@ -469,7 +470,7 @@ setMethod("calcDiameter",
 #'
 #' @export rotAzim
 #'
-#' @examples #todo
+#' @examples /inst/examples/rotAzimExample.R
 setGeneric("rotAzim",
            function(x, cwRotAngle)
              standardGeneric("rotAzim"))

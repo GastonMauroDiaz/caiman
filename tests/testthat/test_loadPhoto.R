@@ -25,19 +25,33 @@ test_that("Test loadPhotoFunctions.", {
   expect_is(fisheye(x), "FishEye")
   expect_is(newFishEye(TRUE, TRUE, TRUE), "FishEye")
   expect_is(datetime(x), "character")
-  expect_is(geocode(x), "SpatialPoints")
+  expect_is(geoLocation(x), "SpatialPoints")
   expect_is(bearing(x), "Angle")
   expect_is(elevation(x), "Angle")
+  expect_is(slope(x), "Angle")
+  expect_is(fNumber(x), "numeric")
+  expect_is(exposureTime(x), "numeric")
+  expect_is(isoSpeed(x), "numeric")
 })
 
 to <- loadPhoto(paste0(path, "/UnFavAutoE3.jpg"))
 from <- loadPhoto()
 to <- cloneSlots(from, to)
+
+mySlots <- slotNames(to)
+index <-
+  mySlots == "legend" |
+  mySlots == "rotated" |
+  mySlots == "rotation" |
+  mySlots == "data" |
+  mySlots == "file" |
+  mySlots == "extent" |
+  mySlots == "ncols" |
+  mySlots == "nrows" |
+  mySlots == "crs" | mySlots == "history" | mySlots == "z"
+mySlots <- mySlots[!index]
+
 test_that("loadPhoto() return an object of CanopyPhoto class.", {
-  expect_equal(equipment(from), equipment(to))
-  expect_equal(fisheye(from), fisheye(to))
-  expect_equal(datetime(from), datetime(to))
-  expect_equal(geocode(from), geocode(to))
-  expect_equal(bearing(from), bearing(to))
-  expect_equal(elevation(from), elevation(to))
+  expect_equal(Map(function(x) slot(from, x), mySlots),
+               Map(function(x) slot(to, x), mySlots))
 })

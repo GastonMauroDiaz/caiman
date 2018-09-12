@@ -6,10 +6,11 @@
 \alias{findOTRs,character-method}
 \title{Find optimal threholding range}
 \usage{
-findOTRs(files, df, mask, percentE = NULL, absoluteE = 0.001, ...)
+findOTRs(files, df, mask, percentE = NULL, absoluteE = 0.001,
+  fun = mean, ...)
 
 \S4method{findOTRs}{character}(files, df, mask, percentE = NULL,
-  absoluteE = 0.001, ...)
+  absoluteE = 0.001, fun = mean, ...)
 }
 \arguments{
 \item{files}{character. The names of the canopy model photographs (extension
@@ -21,9 +22,11 @@ file name, otherwise, use the full path to the file.}
 
 \item{mask}{\code{\linkS4class{BinImage}}. See \code{\link{doMask}}.}
 
-\item{percentE}{numeric or NULL. Song et al. (2010) used 1 %.}
+\item{percentE}{numeric or NULL. Song et al. (2010) used 1 percent.}
 
 \item{absoluteE}{numeric of NULL.}
+
+\item{fun}{function. See \code{\link[raster]{calc}}}
 
 \item{...}{aditionals arguments for \code{\link{loadPhoto}}.}
 }

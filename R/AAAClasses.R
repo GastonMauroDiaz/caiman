@@ -7,7 +7,7 @@ devtools::use_package("sp")
 devtools::use_package("raster", type = "Depends")
 devtools::use_package("methods")
 devtools::use_package("colorspace")
-devtools::use_package("exif")
+devtools::use_package("exifr", type = "Suggests")
 devtools::use_package("imager")
 devtools::use_package("conicfit")
 # devtools::use_package("akima")
@@ -16,7 +16,7 @@ devtools::use_package("conicfit")
 
 #' @import raster
 #' @importFrom colorspace sRGB
-#' @importFrom methods as is new validObject
+#' @importFrom methods as is new validObject setClass setGeneric setMethod
 NULL
 
 setClassUnion("RasterAll", c("RasterStackBrick", "RasterLayer"))
@@ -273,11 +273,12 @@ setClass(Class = "FishEye",
 #' @slot equipment character.
 #' @slot fisheye \code{\linkS4class{FishEye}}.
 #' @slot datetime character.
-#' @slot geocode \code{\link[sp]{SpatialPoints}}.
+#' @slot geoLocation \code{\link[sp]{SpatialPoints}}.
 #' @slot bearing \code{\linkS4class{Angle}}.
 #' @slot elevation \code{\linkS4class{Angle}}.
-#' @slot ssDenominator numeric.
-#' @slot aperture numeric.
+#' @slot slope \code{\linkS4class{Angle}}.
+#' @slot exposureTime numeric.
+#' @slot fNumber numeric.
 #' @slot isoSpeed numeric.
 #' @slot ... Inherited from \code{\linkS4class{RasterBrick}}.
 #'
@@ -295,44 +296,47 @@ setClass(Class = "CanopyPhoto",
     equipment = "character",
     fisheye = "FishEye",
     datetime = "character",
-    geocode = "SpatialPoints",
+    geoLocation = "SpatialPoints",
     bearing = "Angle",
     elevation = "Angle",
-    ssDenominator = "numeric",
-    aperture = "numeric",
+    slope = "Angle",
+    exposureTime = "numeric",
+    fNumber = "numeric",
     isoSpeed = "numeric"
     ),
   validity = function(object) {
 
     .elevationValidation(object@elevation)
-#    .datetimeCharacterValidation(object@datetime)
-    c1 <- length(object@geocode) == 1
+    .datetimeCharacterValidation(object@datetime)
+    c1 <- length(object@geoLocation) == 1
     c2 <- length(object@bearing@values) == 1
     c3 <- length(object@elevation@values) == 1
-    c4 <- length(object@ssDenominator) == 1
-    c5 <- length(object@aperture) == 1
-    c6 <- length(object@isoSpeed) == 1
+    c4 <- length(object@slope@values) == 1
+    c5 <- length(object@exposureTime) == 1
+    c6 <- length(object@fNumber) == 1
+    c7 <- length(object@isoSpeed) == 1
     if (object@fisheye@is) {
       if (!object@fisheye@fullframe) stopifnot(nrow(object) == ncol(object))
       if (!object@fisheye@fullframe & round(ncol(object) / 2) != ncol(object) / 2)
         stop("The diameter of the fisheye picture must be even.")
     }
-    if (c1 & c2 & c3 & c4 & c5 & c6) {
+    if (c1 & c2 & c3 & c4 & c5 & c6 & c7) {
       return(TRUE)
     } else {
-      stop("At lest one of this slots have length greater than one: geocode, bearing, elevation, ssDenominator, aperture or isoSpeed")
+      stop("At lest one of this slots have length greater than one: geoLocation, bearing, elevation, slope, exposureTime, slope, fNumber, or isoSpeed")
     }
   },
   prototype = list(
     fisheye = new("FishEye"),
     datetime = "1980/11/20 14:00:00",
-    geocode =
+    geoLocation =
       SpatialPoints(coords = matrix(c(-57.95, -34.93333), ncol = 2),
         proj4string = CRS("+init=epsg:4326")),
     bearing = new("Angle", values = 0, degrees = TRUE),
     elevation = new("Angle", values = 0, degrees = TRUE),
-    ssDenominator = 0,
-    aperture = 0,
+    slope = new("Angle", values = 0, degrees = TRUE),
+    exposureTime = 0,
+    fNumber = 0,
     isoSpeed = 0
   ),
   contains = "RasterBrick"

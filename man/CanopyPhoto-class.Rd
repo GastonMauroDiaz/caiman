@@ -24,15 +24,17 @@ An S4 class to store vegetal canopy photographs. Use the
 
 \item{\code{datetime}}{character.}
 
-\item{\code{geocode}}{\code{\link[sp]{SpatialPoints}}.}
+\item{\code{geoLocation}}{\code{\link[sp]{SpatialPoints}}.}
 
 \item{\code{bearing}}{\code{\linkS4class{Angle}}.}
 
 \item{\code{elevation}}{\code{\linkS4class{Angle}}.}
 
-\item{\code{ssDenominator}}{numeric.}
+\item{\code{slope}}{\code{\linkS4class{Angle}}.}
 
-\item{\code{aperture}}{numeric.}
+\item{\code{exposureTime}}{numeric.}
+
+\item{\code{fNumber}}{numeric.}
 
 \item{\code{isoSpeed}}{numeric.}
 

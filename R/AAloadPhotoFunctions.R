@@ -200,10 +200,10 @@ setMethod("datetime<-",
 )
 #' @export datetime<-
 
-#### geocode ####
-#' @title Set or get the geocode slot.
+#### geoLocation ####
+#' @title Set or get the geoLocation slot.
 #'
-#' @aliases geocode<-
+#' @aliases geoLocation<-
 #'
 #' @description Set or get the \code{\link[sp]{SpatialPoints}} that represent
 #'   the shot location for the photograph represented by a
@@ -217,32 +217,32 @@ setMethod("datetime<-",
 #'
 #' @seealso \code{\link{loadPhoto}}.
 #'
-#' @example /inst/examples/geocodeExample.R
+#' @example /inst/examples/geoLocationExample.R
 #'
-setGeneric("geocode", function(x) standardGeneric("geocode"))
-#' @export geocode
+setGeneric("geoLocation", function(x) standardGeneric("geoLocation"))
+#' @export geoLocation
 
-#' @rdname geocode
-setMethod("geocode",
+#' @rdname geoLocation
+setMethod("geoLocation",
   signature(x = "CanopyPhoto"),
   function (x) {
-    return(x@geocode)
+    return(x@geoLocation)
   }
 )
 
-setGeneric("geocode<-", function(x, value) standardGeneric("geocode<-"),
+setGeneric("geoLocation<-", function(x, value) standardGeneric("geoLocation<-"),
   useAsDefault = FALSE)
 
-#' @rdname geocode
-setMethod("geocode<-",
+#' @rdname geoLocation
+setMethod("geoLocation<-",
   signature(x = "CanopyPhoto", value = "SpatialPoints"),
   function (x, value) {
-    x@geocode <- value
+    x@geoLocation <- value
     validObject(x)
     return(x)
   }
 )
-#' @export geocode<-
+#' @export geoLocation<-
 
 #### newFishEye #####
 #' @title Generate a new FishEye.
@@ -340,8 +340,8 @@ setMethod("fisheye<-",
 #### cloneSlots ####
 #' @title Copy some slots between CanopyPhoto objects.
 #'
-#' @description Copy the slots equipment, fisheye, datetime, geocode,
-#'   bearing, elevation, aperture, ssDenominator, isoSpeed and names
+#' @description Copy the slots equipment, fisheye, datetime, geoLocation,
+#'   bearing, elevation, fNumber, exposureTime, isoSpeed and names
 #'   from a \code{\linkS4class{CanopyPhoto}} to another.
 #'
 #' @param from \code{\linkS4class{CanopyPhoto}}.
@@ -363,11 +363,12 @@ setMethod("cloneSlots",
     equipment(to) <- equipment(from)
     fisheye(to) <- fisheye(from)
     datetime(to) <- datetime(from)
-    geocode(to) <- geocode(from)
+    geoLocation(to) <- geoLocation(from)
     bearing(to) <- bearing(from)
     elevation(to) <- elevation(from)
-    aperture(to) <- aperture(from)
-    ssDenominator(to) <- ssDenominator(from)
+    slope(to) <- slope(from)
+    fNumber(to) <- fNumber(from)
+    exposureTime(to) <- exposureTime(from)
     isoSpeed(to) <- isoSpeed(from)
     names(to) <- names(from)
     rtitle(to) <- rtitle(from)
@@ -375,10 +376,10 @@ setMethod("cloneSlots",
   }
 )
 
-#### ssDenominator ####
-#' @title Set or get the ssDenominator slot.
+#### exposureTime ####
+#' @title Set or get the exposureTime slot.
 #'
-#' @aliases ssDenominator<-
+#' @aliases exposureTime<-
 #'
 #' @description Set or get the denominator of the shutter speed used to take the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
 #'
@@ -389,73 +390,73 @@ setMethod("cloneSlots",
 #'
 #' @seealso \code{\link{loadPhoto}}.
 #'
-#' @example /inst/examples/ssDenominatorExample.R
+#' @example /inst/examples/exposureTimeExample.R
 #'
-setGeneric("ssDenominator", function(x) standardGeneric("ssDenominator"))
-#' @export ssDenominator
+setGeneric("exposureTime", function(x) standardGeneric("exposureTime"))
+#' @export exposureTime
 
-#' @rdname ssDenominator
-setMethod("ssDenominator",
+#' @rdname exposureTime
+setMethod("exposureTime",
           signature(x = "CanopyPhoto"),
           function (x) {
-            return(x@ssDenominator)
+            return(x@exposureTime)
           }
 )
 
-setGeneric("ssDenominator<-", function(x, value) standardGeneric("ssDenominator<-"),
+setGeneric("exposureTime<-", function(x, value) standardGeneric("exposureTime<-"),
            useAsDefault = FALSE)
 
-#' @rdname ssDenominator
-setMethod("ssDenominator<-",
+#' @rdname exposureTime
+setMethod("exposureTime<-",
           signature(x = "CanopyPhoto", value = "numeric"),
           function (x, value) {
-            x@ssDenominator <- value
+            x@exposureTime <- value
             validObject(x)
             return(x)
           }
 )
-#' @export ssDenominator<-
+#' @export exposureTime<-
 
-#### aperture ####
-#' @title Set or get the aperture slot.
+#### fNumber ####
+#' @title Set or get the fNumber slot.
 #'
-#' @aliases aperture<-
+#' @aliases fNumber<-
 #'
-#' @description Set or get the the aperture used to take the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
+#' @description Set or get the the fNumber used to take the photograph represented by a \code{\linkS4class{CanopyPhoto}}.
 #'
 #' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param value Numeric. Aperture used to take \code{x}.
+#' @param value Numeric. fNumber used to take \code{x}.
 #'
 #' @return numeric.
 #'
 #' @seealso \code{\link{loadPhoto}}.
 #'
-#' @example /inst/examples/apertureExample.R
+#' @example /inst/examples/fNumberExample.R
 #'
-setGeneric("aperture", function(x) standardGeneric("aperture"))
-#' @export aperture
+setGeneric("fNumber", function(x) standardGeneric("fNumber"))
+#' @export fNumber
 
-#' @rdname aperture
-setMethod("aperture",
+#' @rdname fNumber
+setMethod("fNumber",
           signature(x = "CanopyPhoto"),
           function (x) {
-            return(x@aperture)
+            return(x@fNumber)
           }
 )
 
-setGeneric("aperture<-", function(x, value) standardGeneric("aperture<-"),
+setGeneric("fNumber<-", function(x, value) standardGeneric("fNumber<-"),
            useAsDefault = FALSE)
 
-#' @rdname aperture
-setMethod("aperture<-",
+#' @rdname fNumber
+setMethod("fNumber<-",
           signature(x = "CanopyPhoto", value = "numeric"),
           function (x, value) {
-            x@aperture <- value
+            x@fNumber <- value
             validObject(x)
             return(x)
           }
 )
-#' @export aperture<-
+#' @export fNumber<-
 
 #### isoSpeed ####
 #' @title Set or get the isoSpeed slot.
@@ -529,4 +530,51 @@ setMethod("getHour",
             hour
           }
 )
+
+
+#### slope ######
+#' @title Set or get the slope slot.
+#'
+#' @aliases slope<-
+#'
+#' @description Set or get the the slope of the photosite in which the
+#'   photograph represented by a \code{\linkS4class{CanopyPhoto}} was taken.
+#'
+#' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param value \code{\linkS4class{Angle}} that represents the slope of
+#'   \code{x}.
+#'
+#' @details The slope is the complement of the line-of-sight zenith angle.
+#'   For zenith angle definition, see the details of \code{\link{lensPolyCoef}}.
+#'
+#' @return \code{\linkS4class{Angle}}.
+#'
+#' @seealso \code{\link{loadPhoto}}.
+#'
+#' @example /inst/examples/slopeExample.R
+#'
+setGeneric("slope", function(x) standardGeneric("slope"))
+#' @export slope
+
+#' @rdname slope
+setMethod("slope",
+          signature(x = "CanopyPhoto"),
+          function (x) {
+            return(x@slope)
+          }
+)
+
+setGeneric("slope<-", function(x, value) standardGeneric("slope<-"),
+           useAsDefault = FALSE)
+
+#' @rdname slope
+setMethod("slope<-",
+          signature(x = "CanopyPhoto", value = "Angle"),
+          function (x, value) {
+            x@slope <- value
+            validObject(x)
+            return(x)
+          }
+)
+#' @export slope<-
 

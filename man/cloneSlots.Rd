@@ -19,8 +19,8 @@ cloneSlots(from, to)
 \code{\linkS4class{CanopyPhoto}}.
 }
 \description{
-Copy the slots equipment, fisheye, datetime, geocode,
-  bearing, elevation, aperture, ssDenominator, isoSpeed and names
+Copy the slots equipment, fisheye, datetime, geoLocation,
+  bearing, elevation, fNumber, exposureTime, isoSpeed and names
   from a \code{\linkS4class{CanopyPhoto}} to another.
 }
 \examples{

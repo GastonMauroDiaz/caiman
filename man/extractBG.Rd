@@ -26,7 +26,7 @@ extractBG(x, ...)
 
 \item{a}{\code{\linkS4class{AzimuthImage}}. Optional.}
 
-\item{canopyPhoto}{\code{\link{CanopyPhoto}}.}
+\item{canopyPhoto}{\code{\linkS4class{CanopyPhoto}}.}
 
 \item{id}{Two columns data.frame. The first column is the name of the
 photographs (extension included) and must be named \emph{photo}, the second
