@@ -73,10 +73,10 @@ The result will be written in *c:/folder_out* whit the same name of the original
 
 You can install *caiman* package in your system using *devtools* package from CRAN. Make sure you have *devtools* installed, if not run `install.packages("devtools")` in the console. Next, run `devtools::install_github("GastonMauroDiaz/caiman")`. 
 
-Probably, you do not have installed the dependent packages *EBImage*. This is a package in the BioConductor repository, follow the link to get full instruction about [how to install BioConductor packages](https://www.bioconductor.org/install/#install-bioconductor-packages) or run: 
+Probably, you do not have installed the dependent packages *EBImage*. This is a package in the BioConductor repository, follow the link to get full instruction about [how to install BioConductor packages](https://www.bioconductor.org/install/#install-bioconductor-packages) or run:
 ```
-source("https://bioconductor.org/biocLite.R")
-biocLite()
-biocLite("EBImage")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("EBImage")
 ```
 If you have any problem, please contact me: gastonmaurodiaz[at]gmail.com

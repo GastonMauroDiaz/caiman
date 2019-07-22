@@ -275,8 +275,11 @@ setMethod("makeZimage",
       }
     }
 
+    # fix for issue found with RAMI dataset. Jun, 2019
+    # calcR(asAngle(90), lensPolyCoef(c(0.67657, 0.04487, -0.04760))) < 1
+    rcl[nrow(rcl),2] <- 1
+
     zenithImage <- reclassify(x, rcl)
-    #zenithImage <- 180 * zenithImage / pi
 
     z <- new("ZenithImage")
     z@diameter <- x@diameter

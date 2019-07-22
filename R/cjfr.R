@@ -175,7 +175,7 @@ setMethod("bgModel",
 
             if (erode) bin[] <- raster(EBImage::erode(as.matrix(bin)))[]
 
-            blue <- raster::subset(cp, "Blue")
+            blue <- raster::subset(x, "Blue")
             #blue <- raster::focal(blue, w=matrix(1/9, nc=3, nr=3))
             blue[!bin] <- NA
 
@@ -335,7 +335,7 @@ setMethod("bgInterpol2",
 
             if (erode) bin[] <- raster(EBImage::erode(as.matrix(bin)))[]
 
-            blue <- raster::subset(cp, "Blue")
+            blue <- raster::subset(x, "Blue")
             #blue <- raster::focal(blue, w=matrix(1/9, nc=3, nr=3))
 
             Blue <- blue
