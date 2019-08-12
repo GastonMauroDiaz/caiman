@@ -733,3 +733,134 @@ setMethod("colorfulness",
 
   }
 )
+
+
+#### adaptive_binarization ####
+#' @title Adaptive binarization
+#'
+#' @description todo
+#'
+#' @param cp \code{\linkS4class{CanopyPhoto}}. todo
+#' @param z \code{\linkS4class{ZenithImage}}. todo
+#' @param mask \linkS4class{BinImage}. todo
+#' @param thr4only_catching_plants numerical.
+#'
+#' @details todo
+#'
+#' @return numeric or \code{\linkS4class{Raster}}.
+#'
+#' @seealso \code{\link{autoThr}}, \code{\link{normalize}}.
+#'
+#'
+setGeneric("adaptive_binarization",
+           function(cp, z, m, thr4only_catching_plants = 0.2)
+             standardGeneric("adaptive_binarization"))
+#' @export adaptive_binarization
+
+#' @rdname adaptive_binarization
+setMethod("adaptive_binarization",
+          signature(cp = "CanopyPhoto"),
+          function(cp, z, m, thr4only_catching_plants = 0.2) {
+
+            is_any_plant_here <- function(x, thr = 0.2) {
+              x <- raster::aggregate(x, 2, mean)
+              any(x[] < thr)
+            }
+
+
+            cover_percentage <- function(x) {
+              #This is the cover percentage from the point of view of the sensor. Therefore,
+              #it is ok to not correct lens distortion.
+              total <- ncell(x) - freq(is.na(x), value = 1)
+              (freq(x, value = 1) / total) * 100
+            }
+
+            x <- cp
+
+            x[!doMask(z)] <- NA
+
+            if (is_any_plant_here(x$Blue, thr4only_catching_plants)) {
+
+              # create a broad mask to roughly know how much unobscored sky is seen
+              foo <- raster::aggregate(x$Blue, 4)
+              foo <- foo < thr4only_catching_plants
+              w <- round(sum(foo[!is.na(foo)]) / 27857.11)
+              if (round(w/2) == w/2) w <- w + 1
+              if (w < 3) w <- 3
+              foo <- focal(foo, matrix(1, w, w), pad = TRUE)
+              m <- foo != 0
+              m <- disaggregate(m, 4, "")
+              m[is.na(m)] <- 0
+              m <- resample(m, x$Blue, "ngb")
+              compareRaster(m, x$Blue)
+
+
+
+              if (cover_percentage(m) < 25) {
+                # When the photo is taken with auto-exposure under an open canopy, the
+                # auto-exposure system adjusted the exposure to produce a middle grey
+                # image (considering the full picture). Because a high percentage of the
+                # sky was visible in the scene, auto-exposure produced a middle grey sky
+                # (considering only value information). A middle gray sky can be easily
+                # classified as plant because the algorithm is expecting a light sky.
+                # There are two very different scenarios: (1) blue skies, and (2) overcast
+                # skies. Broken clouds skies, of course, fall into the middle.  To known
+                # were a given photo falls, this function uses colorfulness(). The idea is
+                # that blue skies produce colorfulness picture and the reverse is true
+                # too.
+
+
+                if (colorfulness(x) > 1) {
+                  # If we are here, the photo was taken under the open sky on a day with a
+                  # blue sky. This kind of photo has sunlit canopy elements, so it is
+                  # better to use the color information because there is a lot of info in
+                  # that domain. Therefore, I use only the color (hue) information. First,
+                  # I extract the data as a matrix so I can access the fuzyness parameters
+                  # (I need to modify the code of enhanceHP to make this easier)
+
+                  ma <- x[]
+
+                  ma <- cbind(ma, 1) # a fake mask is added
+                  ma <- enhanceHP(ma, 0.5, 1)
+                  xe <- x$Red
+                  xe[] <- ma
+                  plot(xe)
+                  xe[!m] <- NA
+                  foo <- autoThr(xe)
+                  xe[] <- ma
+                  x <- presetThr(xe, foo@threshold/2)
+
+
+                } else {
+                  # If we are here, the photo was taken under the open sky on an overcast
+                  # day. In this scenario, the diffuse light is high but is very likely
+                  # that the canopy element will be darker than the sky. However, there
+                  # are a lot of sky pixels, so autoThr() produce a wrong thr. The
+                  # solution is to use the rough mask. On the other hand, enhanceHP is not
+                  # needed because there is no color info here.
+
+                  foo <- x$Blue
+                  foo[!m] <- NA
+                  plot(foo)
+                  foo <- autoThr(foo)
+                  x <- presetThr(x$Blue, foo@threshold/2)
+
+                }
+
+
+              } else{
+                # This is when a lot of the canopy is seen in the photo. Generally, it works fine.
+                x <- enhanceHP(x, mask = m)
+                x <- autoThr(x)
+              }
+
+            } else {
+              x[] <- 1
+              x <- presetThr(x$Blue, 0.5)
+              x@threshold <- NA
+            }
+
+            return(x)
+
+          }
+)
