@@ -240,6 +240,137 @@ setMethod("sRGB2LAB",
 )
 
 
+#### sRGB2HLS ####
+#' @title Convert sRGB to HLS.
+#'
+#' @description Wrapper function of \code{\link[colorspace]{sRGB}} and
+#'   \code{\link[colorspace]{HLS}} that convert colors from sRGB to HLS.
+#'
+#' @param x numeric, matrix or \code{\linkS4class{CanopyPhoto}}. Values must
+#'   lying between \code{0} and \code{1}.
+#' @param ... Additional arguments as for \code{\link[raster]{writeRaster}}.
+#'
+#' @return Matrix, or \code{\linkS4class{CanopyPhoto}}.
+#'
+#' @seealso \code{\link{normalize}}.
+#'
+#' example /inst/examples/sRGB2HLSexample.R
+#'
+setGeneric("sRGB2HLS", function(x, ...) standardGeneric("sRGB2HLS"))
+#' @export sRGB2HLS
+
+#' @describeIn sRGB2HLS Each row should represent a color. Argument \code{x} must have three columns.
+setMethod("sRGB2HLS",
+          signature(x = "matrix"),
+          function (x)
+          {
+            stopifnot(max(x, na.rm = TRUE) <= 1)
+            stopifnot(min(x, na.rm = TRUE) >= 0)
+            if (ncol(x) != 3) stop("x must be a matrix with three columns")
+            z <- colorspace::sRGB(x[, 1], x[, 2], x[, 3])
+            x <- as(z, "HLS")
+            x <- colorspace::coords(x)
+            return(x)
+          }
+)
+
+#' @describeIn sRGB2HLS Convert a single color from sRGB to HLS. Argument \code{x} must be of length three. The output is a matrix.
+setMethod("sRGB2HLS",
+          signature(x = "numeric"),
+          function (x)
+          {
+            if (length(x) != 3) stop("x must be a numeric vector of length three")
+            x <- matrix(x, nrow = 1)
+            x <- sRGB2HLS(x)
+            return(x)
+          }
+)
+
+#' @describeIn sRGB2HLS The output is a \code{\linkS4class{CanopyPhoto}} with layer names H, L and S.
+setMethod("sRGB2HLS",
+          signature(x = "CanopyPhoto"),
+          function (x, ...)
+          {
+            stopifnot(names(x) == c("Red", "Green", "Blue"))
+            from <- x
+            stopifnot(max(getMax(x)) <= 1)
+            stopifnot(min(getMin(x)) >= 0)
+            fun <- .makeF8multi(function(x, ...) sRGB2HLS(x), ...)
+            x <- fun(x, ...)
+            x <- as(x, "CanopyPhoto")
+            cloneSlots(from, x)
+            names(x) <- c("H", "L", "S")
+            return(x)
+          }
+)
+
+
+#### HLS2sRGB ####
+#' @title Convert sRGB to HLS.
+#'
+#' @description Wrapper function of \code{\link[colorspace]{HLS}} and
+#'   \code{\link[colorspace]{sRGB}} that convert colors from HLS to sRGB.
+#'
+#' @param x numeric, matrix or \code{\linkS4class{CanopyPhoto}}. Values must
+#'   lying between \code{0} and \code{1}.
+#' @param ... Additional arguments as for \code{\link[raster]{writeRaster}}.
+#'
+#' @return Matrix, or \code{\linkS4class{CanopyPhoto}}.
+#'
+#' @seealso \code{\link{normalize}}.
+#'
+#' example /inst/examples/HLS2sRGBexample.R
+#'
+setGeneric("HLS2sRGB", function(x, ...) standardGeneric("HLS2sRGB"))
+#' @export HLS2sRGB
+
+#' @describeIn HLS2sRGB Each row should represent a color. Argument \code{x} must have three columns.
+setMethod("HLS2sRGB",
+          signature(x = "matrix"),
+          function (x)
+          {
+            # stopifnot(max(x, na.rm = TRUE) <= 1)
+            # stopifnot(min(x, na.rm = TRUE) >= 0)
+            if (ncol(x) != 3) stop("x must be a matrix with three columns")
+            z <- colorspace::HLS(x[, 1], x[, 2], x[, 3])
+            x <- as(z, "sRGB")
+            x <- colorspace::coords(x)
+            return(x)
+          }
+)
+
+#' @describeIn HLS2sRGB Convert a single color from HLS to sRGB. Argument \code{x} must be of length three. The output is a matrix.
+setMethod("HLS2sRGB",
+          signature(x = "numeric"),
+          function (x)
+          {
+            if (length(x) != 3) stop("x must be a numeric vector of length three")
+            x <- matrix(x, nrow = 1)
+            x <- HLS2sRGB(x)
+            return(x)
+          }
+)
+
+#' @describeIn HLS2sRGB The output is a \code{\linkS4class{CanopyPhoto}} with layer names Red, Green and Blue.
+setMethod("HLS2sRGB",
+          signature(x = "CanopyPhoto"),
+          function (x, ...)
+          {
+            stopifnot(names(x) == c("H", "L", "S"))
+            from <- x
+            # stopifnot(max(getMax(x)) <= 1)
+            # stopifnot(min(getMin(x)) >= 0)
+            fun <- .makeF8multi(function(x, ...) HLS2sRGB(x), ...)
+            x <- fun(x, ...)
+            x <- as(x, "CanopyPhoto")
+            cloneSlots(from, x)
+            names(x) <- c("Red", "Green", "Blue")
+            return(x)
+          }
+)
+
+
+
 #### outOfDR ####
 #' @title Get the percentages of pixels that are out of the dynamic range.
 #'

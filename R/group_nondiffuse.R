@@ -620,8 +620,7 @@ setMethod("doOBIA",
 #' @description todo
 #'
 #' @param cp \code{\linkS4class{CanopyPhoto}}. todo
-#' @param z \code{\linkS4class{ZenithImage}}. todo
-#' @param mask \linkS4class{BinImage}. todo
+#' @param m \linkS4class{BinImage}. todo
 #' @param thr4only_catching_plants numerical.
 #'
 #' @details todo
@@ -632,14 +631,14 @@ setMethod("doOBIA",
 #'
 #'
 setGeneric("adaptive_binarization",
-           function(cp, z, m, thr4only_catching_plants = 0.2)
+           function(cp, m = NULL, thr4only_catching_plants = 0.2)
              standardGeneric("adaptive_binarization"))
 #' @export adaptive_binarization
 
 #' @rdname adaptive_binarization
 setMethod("adaptive_binarization",
           signature(cp = "CanopyPhoto"),
-          function(cp, z, m, thr4only_catching_plants = 0.2) {
+          function(cp, m, thr4only_catching_plants) {
 
             is_any_plant_here <- function(x, thr = 0.2) {
               x <- raster::aggregate(x, 2, mean)
@@ -656,14 +655,15 @@ setMethod("adaptive_binarization",
 
             x <- cp
 
-            x[!doMask(z)] <- NA
+            if (!is.null(m)) {x[!m] <- NA}
 
             if (is_any_plant_here(x$Blue, thr4only_catching_plants)) {
 
-              # create a broad mask to roughly know how much unobscored sky is seen
+              # create a broad mask to roughly know how much unobscored sky
+              # is seen in the picture
               foo <- raster::aggregate(x$Blue, 4)
               foo <- foo < thr4only_catching_plants
-              w <- round(sum(foo[!is.na(foo)]) / 27857.11)
+              w <- round(sum(foo[!is.na(foo)]) / 27857.11) # empirical parameter
               if (round(w/2) == w/2) w <- w + 1
               if (w < 3) w <- 3
               foo <- focal(foo, matrix(1, w, w), pad = TRUE)

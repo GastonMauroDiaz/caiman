@@ -278,54 +278,6 @@ setMethod("doMask",
   }
 )
 
-#### expandFullframe ####
-#' @title Expand full frame hemispherical photographs
-#'
-#' @description Expand a full frame hemispherical photograph to get the
-#'   equivalent of a circular hemispherical photograph. Added
-#'   pixels will be \code{0}.
-#'
-#' @param x \code{\linkS4class{CanopyPhoto}}.
-#' @param z \code{\linkS4class{ZenithImage}}.
-
-#' @return \code{\linkS4class{CanopyPhoto}}.
-#'
-#' @seealso \code{\link{doMask}}.
-#'
-#' @example /inst/examples/doMaskExample.R
-#'
-setGeneric("expandFullframe",
-  function (x, z)
-    standardGeneric("expandFullframe"))
-#' @export expandFullframe
-
-#' @rdname expandFullframe
-setMethod("expandFullframe",
-  signature(x = "CanopyPhoto", z = "ZenithImage"),
-  function (x, z) {
-
-    if (all(!fisheye(x)@fullframe, fisheye(x)@is))
-      stop("Argument x should be a fullframe hemispherical photo, you need to declare this with the fisheye function.")
-
-    center <- ncol(z) / 2
-    xmn <- center - (ncol(x) / 2)
-    xmx <- center + (ncol(x) / 2)
-    ymn <- center - (nrow(x) / 2)
-    ymx <- center + (nrow(x) / 2)
-    e <- extent(xmn, xmx, ymn, ymx)
-    extent(x) <- e
-
-    foo <- extend(x, z, value = 0)
-
-    foo <- as(foo, "CanopyPhoto")
-    foo <- cloneSlots(x, foo)
-    foo@fisheye@fullframe <- FALSE
-    e <- extent(0, ncol(foo), 0, nrow(foo))
-    extent(foo) <- e
-    foo
-
-  }
-)
 
 #### calcExposure ####
 #' @title Calculate exposure

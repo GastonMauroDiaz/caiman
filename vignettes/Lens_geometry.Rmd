@@ -1,0 +1,189 @@
+---
+title: "Lens geometry"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lens_geometry}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Theoretical background
+
+To understand how a lens works, imagine yourself inside a cage that is perfectly spherical (don’t worry, you have the key in your pocket).
+The cage bars are arranged as the parallels and meridians of an earth globe (if you have trouble imagining this, check some photographs of the [Mapparium]( https://www.google.com/search?rlz=1C1CHBD_esAR786AR787&q=mapparium&tbm=isch&source=univ&sa=X&ved=2ahUKEwiVzNOLtdblAhVdIrkGHbrLCOUQsAR6BAgHEAE&cshid=1573071862837714&biw=1920&bih=888)). 
+This earth-globe-like cage is in the middle of the forest, with the poles aligned with the vertical (North pole upward).
+Your dominant eye is in the exact center of the sphere.
+Now, imagine that the space between the bars is made of glass in which you can draw.
+Without translating the eye (you can rotate it as long as it remains in the center), draw the silhouette of the canopy and fill it with black inside, from the equator to the North pole.
+You are going to get an accurate image that is not flat and an ancient problem, the same type of problem that geographers have when they want to make global maps.
+The hemisphere surface needs to be projected into a plane, and there are numerous ways of doing that, but none of them preserve all the information [@Schneider2009].
+A lens can be understood as a device that makes the projection.
+
+
+
+>**NOTE:** I took this analogy of the earth-globe-like cage from the book [Extreme perspective! for artist](https://www.goodreads.com/book/show/9172266-extreme-perspective-for-artists) by David Chelsea.
+
+****
+
+![](C:/Users/gdiaz/OneDrive/caiman/vignettes/Lens_geometry/Figure_1.jpg){width=14cm}
+
+Figure 1. Simplification of the acquisition of a hemispherical photograph. The orthographic projection is not the most common. I selected it to simplify the diagram.
+
+****
+
+
+The zenith is the point in the sky directly above an observer ([Oxford dictionary](https://www.lexico.com/en/definition/zenith)).
+In hemispherical photography of the forest canopy, photographs are taken pointing to the zenith, i.e., with the image plane leveled (Figure 1).
+The line that passes through the center of curvature of a lens and is parallel to its axis of symmetry is known as the optical axis ([Oxford dictionary](https://www.lexico.com/en/definition/optical_axis)).
+Therefore, assuming a lens pointing to the zenith, the vertical line at the lens location is the optical axis, and the angle between the optical axis and any other line that passes through the lens is the zenith angle ($\theta$).
+The orthogonal projection of the optical axis onto the surface of the digital image sensor is called the optical center by some authors [@Pekin2009; @Caneye].
+However, in optics, optical center refers to a point that is on the optical axis and inside the lens [@Allen2011].
+That could be confusing; therefore, I prefer the term ‘zenith’, which is in line with the use of zenith angle.
+Besides, we are actually taking photographs of the zenith, so it makes sense to me.
+ 
+
+An important parameter of the equipment is the radius in pixels of the horizon (think on the equator bar of the earth-globe-like cage, it would be aligned with the horizon; therefore, in the hemispherical images the horizon is a ring instead of a straight line).
+This parameter depends on the specific combination of camera body and lens.
+The horizon corresponds to 90º $\theta$.
+Each $\theta$ has a corresponding ring.
+The radius expressed as a fraction of the horizon radius is the relative radius ($R$).
+In the ‘caiman’ package, a polynomial curve is used to model the relation between $\theta$ and $R$.
+This model is what is known as the lens projection.
+A third-order polynomial model is sufficient in most cases [@Frazer2001].
+
+
+## Lens calibration
+
+### Determining the zenith coordinates
+
+To acquire the data for determining the zenith coordinates, I recommend the technique described in the user manual of the software Can-Eye [@Caneye], under the headline “Optical center characterization”.
+This technique was used by @Pekin2019, among others.
+Briefly, it consists in drilling a small hole in the cap of the fisheye lens (it must be away from the center of the cap), and taking about ten photographs without removing the cap. 
+The cap must be rotated about 30º before taking each photograph. 
+Then, you can use the point selection tool of ImageJ (see the vignette “Introduction to the ‘caiman’ package”) to manually digitalize the white dots, creating a CSV file that you can process with the `calcOpticalCenter()` function.
+
+
+>**NOTE:** It is important to always keep in mind the difference between the so-called raster coordinates and the cartesian coordinates. In the latter, when you go down the vertical axis value decreases, but the opposite is true for the raster coordinates, which works like a spreadsheet. The author of ‘raster’ package cleverly named the axis of this coordinate system rows and columns. ImageJ uses raster coordinates by default, but named it *X* and *Y*, which is somewhat confusing. 
+
+
+Another method --only valid for circular hemispherical photographs-- is taking a very bright picture (for example, a picture of a room with walls painted in light colors) with the lens completely free (do not use any mount).
+Then, digitize points over the perimeter of the circle.
+Finally, use the `calcOpticalCenter()` function.
+There is an example code below (you can download the [CSV file](https://osf.io/mu8gs/download) and give it a try):
+
+
+```{r eval=FALSE, include=TRUE}
+points <- read.csv2(‘points_over_perimeter.csv’)
+zenith_coordinates <- calcOpticalCenter(points)
+```
+```{r eval=FALSE, include=TRUE}
+points <- read.csv2(‘points_over_perimeter.csv’)
+zenith_coordinates <- calcOpticalCenter(points)
+```
+
+
+>**Field of view:**
+The perimeter of the circle that is depicted in a circular hemispherical photograph is not necessarily the horizon.
+The field of view (FOV) of a lens can be understood as how much of the earth-globe-like cage will be on a photograph taken from the exact center of it.
+If the optical axis of the lens is aligned with the vertical and some bar lower than the equator bar is on the photographs; then, the FOV is greater than 180º.
+If you can not see the equator bar; then, the FOV is less than 180º.
+For a non-circular photograph, the FOV is going to vary, being the diagonal the widest, and the vertical the narrowest.
+
+### Building the lens projection function
+
+After estimating the zenith coordinates, you should proceed with lens calibration.
+The chances are that you can find the lens projection on the literature, but for a different camera body than yours. 
+If that is the case, please check the vignette “Introduction to the ‘caiman’ package”, under the headline “Standard binarization of a non-circular hemispherical photograph” .
+You can obtain the required data (radius-angle data) following the instructions given in the [user manual of Hemisfer](https://www.schleppi.ch/patrick/hemisfer/help/en/lens.htm) software .
+The manual suggests using a corner to set up markers on the walls from 0º to 90º $\theta$. 
+Remember, 0º $\theta$ should match with the zenith coordinates as accurately as possible.
+To achieve that, take a photograph using a tripod and, without moving the camera, check on your computer if there is a match (using ImageJ, for example). 
+If there is not, correct the camera position (it could take a while, please be patient).
+
+A fast way of obtaining a photograph showing several targets with known $\theta$ is to find a wall, draw  a triangle of 5 $\times$ 4 $\times$ 3 meters on the floor, with the 4-meter side over the wall.
+Locate the camera one meter above the floor, just over the vertice that is 3 meters away from the wall.
+Point the camera to the wall.
+Make a mark on the wall at one meter over the vertice that is in front of the camera.
+Next, make four more marks each one meter, following a horizontal line.
+This will create marks for 0º, 18º, 34º, 45º, and 54º $\theta$.
+Don’t forget to align the zenith coordinates with the 0º $\theta$ mark and check if the optical axis is leveled.
+
+If you do not have the lens projection, you need to estimate it.
+To that end, I created a [sheet](https://osf.io/tudzc/download) that you should print (A1 size, almost like a poster).
+Also, you are going to need a tripod, a table, a standard yoga mat, and several push pins of different colors.
+Use these elements to set up the marks, as shown in Figure 2.
+I took the idea from @Clark1988.
+
+
+****
+
+![](C:/Users/gdiaz/OneDrive/caiman/vignettes/Lens_geometry/Figure_2.jpg){width=14cm}
+
+Figure 2. Set up for lens calibration.
+
+****
+
+You can download an [example photograph](https://osf.io/dq746/download) of a setup like the one observed in Figure 2.
+Using ImageJ, I digitized the pushpins (Figure 3), and produced a [CSV file](https://osf.io/yvsbr/download).
+It is required to start from the zenith pushpin and do not skip any pushpin.
+This process assumes that the zenith coordinates match perfectly with the zenith push pin.
+However, achieving that is difficult, so that will be an error source.
+Also, it is required to manually select a point  in the border of the image.
+For circular hemispherical photographs, that point should be on the perimeter of the circle.
+For full-frame hemispherical photographs, in the image border.
+
+****
+
+![](C:/Users/gdiaz/OneDrive/caiman/vignettes/Lens_geometry/Figure_3.jpg){width=14cm}
+
+Figure 3. Digitalization of pushpin coordinates using Fiji.
+
+****
+
+
+Once you obtain the CSV file, use the `calibrate_lens()` function.
+
+
+```{r eval=FALSE, include=TRUE}
+lens_projection <- calibrate_lens(‘Results_calibration.csv’)
+lens_projection # to see the coefficients
+```
+```{r eval=FALSE, include=TRUE}
+lens_projection <- calibrate_lens(‘Results_calibration.csv’)
+lens_projection # to see the coefficients
+```
+
+
+
+This method does not provide a highly accurate calibration, but it would be a good enough one. 
+
+If you use this method, please email me (gastonmaurodiaz@gmail.com) the results so that I can incorporate your lens into the database. 
+I am asking for: camera and lens names, the photographs of the marks, the CSV file, and the coefficients.
+Also, please specify that you are releasing this data under the GPL-3.0 license.
+
+
+## References
+pandoc-citeproc: reference Schneider2009 not found
+pandoc-citeproc: reference Caneye not found
+pandoc-citeproc: reference Pekin2009 not found
+pandoc-citeproc: reference Caneye not found
+pandoc-citeproc: reference Allen2011 not found
+pandoc-citeproc: reference Frazer2001 not found
+pandoc-citeproc: reference Caneye not found
+pandoc-citeproc: reference Pekin2019 not found
+pandoc-citeproc: reference Clark1988 not found
+pandoc-citeproc: reference Caneye not found
+
+@Caneye
+https://www6.paca.inra.fr/can-eye/content/download/3052/30819/version/4/file/CAN_EYE_User_Manual.pdf
+
+
+

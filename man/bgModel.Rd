@@ -4,8 +4,18 @@
 \alias{bgModel}
 \title{Background modelling}
 \usage{
-bgModel(x, z, a, bin, filling = NULL, prob = 0.95, erode = FALSE,
-  ZA = TRUE, parallel = TRUE, freeThreads = 2)
+bgModel(
+  x,
+  z,
+  a,
+  bin,
+  filling = NULL,
+  prob = 0.95,
+  erode = FALSE,
+  ZA = TRUE,
+  parallel = TRUE,
+  freeThreads = 2
+)
 }
 \arguments{
 \item{x}{\code{\linkS4class{CanopyPhoto}}.}

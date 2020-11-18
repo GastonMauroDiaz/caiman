@@ -1,0 +1,323 @@
+---
+title: "Model-based local thresholding"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MBLT}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+Canopy hemispherical photography has a long tradition of waiting for the best light condition to produce pictures with the greater contrast between the sky and the canopy, but without significantly overexposing the sky.
+This is a time consuming process.
+On the contrary, the image processing usually is an automatic global thresholding that takes zero time and is prone to errors.
+The model-based local thresholding (MBLT) is a complex algorithm that was designed to ‘honor’ the time expended in the acquisition of very high contrast hemispherical photographs.
+You can find a detailed explanation of the MBLT algorithm in @Diaz2018.
+In this vignette you will find the information needed to process your own carefully acquired photographs with MBLT.
+
+
+## Binarization with the MBLT algorithm
+
+As its name suggests, the MBLT method is a local one, which means that it applies a specific threshold for each pixel.
+To obtain the threshold, the method uses a linear model that predicts the initial value (IV) in function of the digital number (DN) of the sky.
+The IV is a term coined by @Wagner1998. 
+It is the boundary between the DN of a pure sky pixel and a mixed pixel and is always higher than the OTV.
+In summary, the MBLT method turns the cumbersome problem of finding the optimal threshold value into the simpler one of estimating the Sky DN.
+
+As a side note, all the DN should be not gamma corrected or gamma back-corrected.
+The latter case is typically required when JPEG images are used, in which the gamma correction is used to optimize file size because it helps to maintain the perceived image quality when color depth is degraded to 24-bit [@Allen2010].
+Use the `gbc()` function to perform this correction.
+
+To calculate the IV in function of the Sky DN, it is necessary to have a model that is camera specific.
+However, the linear model that I obtained for the Nikon Coolpix 5700 is `function(x) = -7.8 + 0.98*x`, i.e., it is almost a subtraction.
+As a generic model, I used `function(x) = x - 8`.
+I obtained great results using this model with photographs acquired with a Canon EOS 5D.
+If you want the best possible results, read the section “Camera calibration”.
+
+So, the real problem is to estimate the Sky DN.
+This estimation can be done in multiple ways, the more costly but straightforward of these is to have a twin equipment taking photographs from above the canopy.
+At the other end is to only have the canopy photographs.
+In the middle, is having some photographs of the open sky acquired during the sesion.
+The latter case matches with the dataset of the article @Diaz2018.
+Next, each of these cases are addressed.
+Refer to the vignette “Introduction to the ‘caiman’ package” for the basic use of the package and the instructions for batch processing.
+
+The method is only available for circular hemispherical photographs.
+If you want to apply the MBLT algorithm to non-circular hemispherical photographs or conventional canopy photographs, please contact me (gastonmaurodiaz@gmail.com).
+
+### Having a synchronous above-canopy photograph
+
+The processing is simple if there is a synchronous (or almost synchronous) above-canopy photograph available that was acquired with the same equipment and setting that the canopy photograph.
+You can download the hemispherical photograph I use in this section from these links: [DSCN5547.JPG](https://osf.io/sf5uj/download) and [DSCN5548.JPG](https://osf.io/kp7rx/download).
+
+
+```{r eval=FALSE, include=TRUE}
+zenith_coordinates <- c(1280, 960)
+radius <- 745
+lens_projection <- lensPolyCoef(‘FC-E9’)
+z <- makeZimage(radius*2, lens_projection)
+a <- makeAimage(z)
+m <- doMask(z, zlim = asAngle(c(0, 70)))
+
+cp <- loadPhoto(‘DSCN5548.JPG’, 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+
+sky <- loadPhoto(‘DSCN5547.JPG’, 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+
+ncp <- normalize(cp, 0, 255)
+nsky <- normalize(sky, 0,255)
+ncp <- gbcFun(ncp)
+nsky <- gbcFun(nsky)
+# This do not work because camera internal processing differences between
+# DSCN5547.JPG and DSCN5548.JPG
+nsky_masked <- nsky
+nsky_masked[!m] <- NA
+bin <- ncp$Blue > _masked$Blue - 8 * 0.5 # using w=0.5 and the generic model
+# Use this instead, which can handle those differences
+bin <- MBLT1(ncp, z, a, m, filling_source = nsky)
+````
+
+
+
+ 
+When the above-canopy photograph was acquired with different settings than the canopy photographs, the code is essentially the same, as you can see below.
+Remember, you should try to use the same settings. 
+To replicate the example download these files: [DSCN4383.JPG](https://osf.io/qty72/download) and [DSCN4380.JPG](https://osf.io/2kv5g/download).
+
+
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘DSCN4383.JPG’, 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+
+sky <- loadPhoto(‘DSCN4380.JPG’, 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+
+cp <- gbcFun(cp)
+sky <- gbcFun(sky)
+ncp <- normalize(cp, 0, 255)
+nsky <- normalize(sky, 0, 255)
+
+# I rotate the azimuth and the sky because camera top
+# was not oriented to North in this particular dataset.
+a <- rotAzim(a, asAngle(-207))
+nsky <- rotAzim(nsky, asAngle(-207))
+
+bin <- MBLT1(ncp, z, a, m, filling_source = nsky)
+````
+
+
+
+
+The function `MBLT1()` is essentially the algorithm explained in @Diaz2018.
+The only difference is that the first step was replaced by a regional binarization.
+
+### Having asynchronous above-canopy photographs
+
+The problem with this kind of dataset is selecting the less asynchronous above-canopy photographs for each canopy photograph.
+The `get_sky_fun()` function solves this problem.
+It creates a function that will return the best above-canopy photograph available based on the acquisition time of the canopy photograph.
+If you want to use these functions, the ‘exifr’ package has to be installed in your system.
+Refer to the vignette “Introduction to the ‘caiman’ package”, section “Managing metadata” to know more about this topic.
+To follow the demonstration in your PC, please create the sky_photos folder and download there these two above-canopy photographs: [DSCN4475.JPG](https://osf.io/su3tf/download) and [DSCN4597.JPG](https://osf.io/t4qch/download).
+
+```{r eval=FALSE, include=TRUE}
+path2sky_photos <- "sky_photos/"
+
+sky_fun <- get_sky_fun(path2sky_photos,
+                                      asAngle(c(9,-28)),
+                                      zenith_coordinates,
+                                      radius)
+
+cp <- loadPhoto(‘DSCN4383.JPG’,
+                          zenith= zenith_coordinates,
+                          radius = radius)
+ncp <- normalize(cp, 0, 255)
+ncp <- gbcFun(ncp)
+sky <- sky_fun(getHour(datetime(cp)))
+sky <- gbcFun(sky)
+nsky <- normalize(sky, 0, 255)
+
+a <- rotAzim(a, asAngle(-207))
+sky <- rotAzim(sky, asAngle(-207))
+
+bin <- MBLT1(ncp, z, a, m, w=0.5,
+                       filling_source = sky)
+````
+
+
+
+
+### Not having above-canopy photographs available
+
+If you do not have photographs of the open sky, chances are that you are in one of these two scenarios:
+(1) the photographs were taken randomly, using different camera settings each time and with a large period of time between photographs,
+or (2) the photographs were taken systemically per plot, in a small time windows and using a unique camera setting.
+
+The second scenario allows the creation of a block of photographs.
+In this context, a block is a set of photographs taken in a short time window using a unique camera setting.
+What is a short time window is related with how much illumination conditions change with time. 
+Unfortunately, there is no enough research to made general recommendations.
+
+Since blocks can not be created for the first scenario, the code is straightforward.
+In the example that follows I used the [DSCN4383.JPG](https://osf.io/qty72/download) file, so this result can be easily compared with the obtained using an above-canopy photograph.
+
+ 
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘DSCN4383.JPG’, 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+ncp <- normalize(cp, 0, 255)
+m <- doMask(z)
+
+bin <- MBLT1(ncp, z, a, m)
+````
+
+
+
+
+When you can create image blocks (second scenario), you can do several alternative processing pipelines.
+I am going to demonstrate the more complex one (four steps), and you can simplify it at your convenience.
+To follow the demonstration in your PC, please download this dataset: [lago_guacho.zip](https://osf.io/8xhn4/download).
+
+The first step is manual digitalization of pure sky pixels using the multi-point selection tool of ImageJ, followed by the use of the `process_multi_point()` function from the ‘caiman’ package.
+Refer to the vignette “Introduction to the ‘caiman’ package” to know more about ImageJ.
+
+The lago_guacho dataset already has CSV files resulting of the manual digitalizations that I performed.
+To use the `process_multi_point()` function, the CSV files must be in the same folder than the photographs and they must have the same exact name, as in the lago_guacho dataset. 
+
+```{r eval=FALSE, include=TRUE}
+path2data <- ‘lago_guacho/’
+path4output <- ‘skies_manual/’
+
+files <- dir(path2data, pattern = ‘JPG’)
+blocks <- c(rep(1,5), rep(2,2))
+block_info <- data.frame(file = files, block = blocks)
+
+process_multi_point(block_info, path2data, path4output, datatype = ‘INT1U’)
+# Note: check ?dataType to understand the use of ‘INT1U’.
+````
+
+
+
+
+As a result, you are going to have a folder named skies_manual, with two files repeated several times.
+This is not a clever use of the storage, but it improves usability because this kind of arrangement facilitates the next step.
+The `process_multi_point()` function selected the points from the 5 photographs of block number 1 and performed an interpolation, generating a single virtual-above-canopy photograph .
+This image has the same size and number of channels than the photographs.
+Then, it created 5 copies with the same name than the photographs.
+Finally, it repeated the process for block number 2.
+
+The second step in the processing pipeline is the extraction of sky chunks. 
+This  is driven by the `extract_sky_chunks()` function, which is easy to use, as you can see below.
+
+
+```{r eval=FALSE, include=TRUE}
+path2photos <- ‘lago_guacho/’
+path2skies_manual <- ‘skies_manual/’
+path4write <- ‘sky_chunks/’
+
+metadata <- extract_sky_chunks(z, a, m,
+                                                     zenith_coordinates,
+                                                     path2photos, 
+                                                     path2skies_manual,
+                                                     path4write)
+````
+
+
+
+
+The `extract_sky_chunks()` function writes one TIFF file per photograph and creates also a metadata.csv file that contains the time expressed as a 24-hour clock in decimal-number format.
+
+The third step is processing the extracted sky chunks to produce one sky image per block.
+The `asynchronic_sky()` function does this task using the output of `extract_sky_chunks()` as input, and it also generates metadata useful for the final step.
+
+
+```{r eval=FALSE, include=TRUE}
+path4output <- ‘skies/’
+metadata <- asynchronic_sky(metadata, path4output, z, a, m)
+````
+
+
+
+
+The final steps are straightforward:
+
+
+```{r eval=FALSE, include=TRUE}
+path4write <- ‘path/to/output_folder’
+for (i in seq_along(files)) {
+  cp <- loadPhoto(files[i], 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+  ncp <- normalize(ncp, 0, 255)
+  ncp <- gbcFun(ncp)
+  bin <- MBLT1(ncp, z, a, m, filling_source = metadata)
+  write_bin(bin, paste0(path4write, name))
+}
+````
+
+
+
+## Camera calibration 
+
+The chances are that you can obtain very good results without calibrating the camera.
+However, if you want the best possible results that MBLT can provide, I recommend you to read this section carefully.
+This section complements the article @Diaz2018 and its supplementary material, so is better to start with a fast read of the subheading “Description of our method” from the article, and the subsection “S1: Taking canopy model photographs” from the supplementary material.
+
+In summary, the calibration consist of 
+(1) taking photographs with variable exposure of physical canopy models backlighted by a homogeneous light source,
+(2) find the threshold values that produce a binary image with openness near the reference openness (i.e., the openness with which the canopy model was designed),
+(3) fit a linear model to predict the threshold value with the background digital number (i.e., the background of the simulated sky).
+
+The calibration only requires low-cost materials but, as a drawback, is a time consuming process.
+One of the most expensive materials is the light source.
+We used a cubic shaped lightbox with LED-diffuse-light-strips [(Foldio 2 by Orangemonkie)](http://orangemonkie.com/).
+This kind of products are mostly used for catalogue product photography.
+However, a cheaper alternative is a lightpad, which is a tool commonly used by drawers [(This is a random example of many alternatives available in the market)](https://www.huiontablet.com/l4s.html).
+
+The other expensive components are the [canopy models](https://osf.io/6h24w/).
+Based on @Song2018, now I recommend to use only the canopy models with the greater canopy-border length, which are the ones with the thinner walls (see Table 1-S1 from the supplementary material).
+To be precise, I recommend to use only the number 6, with 0.75 mm wall-width and 0.592 openness.
+I selected this model seeking a balance between strong structure and high canopy-border length.
+Based on some material experimentations that I did in 2017, this model can be built on a black cardboard using a cutting machine.
+The use of a black cardboard instead of a 3 mm medium density fiberboard has the advantage of minimizing errors produced by the thickness of the material. 
+On the other hand, the use of only one canopy model saves time and money without, in theory, compromising the quality of the results.
+
+I still recommend the use of the higher zoom level (between reasonable limits, of course) because it diminishes perspective distortion and facilitates the comparison between the designed openness of the canopy models and the one photographed.
+Also, the cylindrical pipe must be used to produce back illumination only.
+However, I do not recommend to expend time in the achievement of a circular image similar to the produced by the fisheye lens.
+This requirement was important for the method of Song et al. (2018) due to its use of relative exposure values, but MBLT does not use these values.
+
+You should take the canopy model photographs using a fixed aperture and a constant ISO speed.
+Choose these values considering that you are going to use them in the field.
+Use three to six different illumination intensities and take several photographs per intensity. 
+Start with the highest underexposure that allows you to interpret some of the grid silhouettes in the preview on the camera display. 
+Then, slow shutter speed step by step, taking a photograph each time, and repeating until the preview appears clearly saturated. 
+A sample of the photographs is available [here](https://osf.io/58nt2/download).
+
+Once you have the photographs, the processing is facilitated by the functions `getReady4ECM()` and `findOTRs()`.
+Please, see the help of these functions to get specific instructions.
+
+>**NOTE:** In the early version of the caiman package the functions `getReady4ECM()` and `findOTRs()` were called `getReady4ECM()` and `findOTRs()`, respectively. You can find these names in @Diaz2018.
+
+
+If, after doing all the homework, you have troubles following these processes, feel free to email me (gastonmaurodiaz@gmail.com).
+I would also appreciate any feedback to improve this section.
+Finally, you can consider to send me the results so that I can incorporate your camera settings  into the database. 
+I am asking for the coefficients only.
+Also, please specify that you are releasing this data under the GPL-3.0 license.
+
+## References

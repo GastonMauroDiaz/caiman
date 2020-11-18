@@ -1,0 +1,596 @@
+---
+title: "Introduction to the ‘caiman’ package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Intro_caiman}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+
+I created this package to:
+
+* help me to develop algorithms for processing photographs of the plant canopy,
+* share those algorithms.
+
+To accomplish these goals, I created a base of functions for speeding up my development cycle and make the use of the developed algorithms easier.
+
+Some of these functions are super simple and even maybe silly, such as `switchUnit()`, while others are pretty complex, such as `doPolarQtree()`.
+This guide explains how to combine these functions in order to manipulate canopy photographs.
+Each section explains a basic processing pipeline.
+
+However, before starting with the “how to use the ‘caiman’ package”, I will introduce you to third-party software packages that are part of the processing chain. 
+Paraphrasing ImageJ developers (see below), the ‘caiman’ package is not an island. I developed it to work along with other software packages that were out there doing a great job in what they do.
+
+Last but not least, if you have any suggestions to improve this or other documentation of the ‘caiman’ package, please email me (gastonmaurodiaz@gmail.com).
+
+>**NOTE:** The ‘caiman’ package is not an island although there is one with a similar name.
+
+## 1. Third-party software packages
+
+### 1.1. ImageJ software
+ 
+[ImageJ](https://imagej.net/Welcome) is an open platform for scientific image analysis.
+I really like what it can be read on its web page: “ImageJ is not an island. Use the best tool for the job...”
+This sentence invites the reader to create processing pipelines that combine ImageJ with other software. That is a powerful idea.
+
+ImageJ is better than any current R package for both image visualization and selection by vector drawing.
+The features that I use the most are [point selection](https://imagej.nih.gov/ij/docs/guide/146-19.html#sec:Multi-point-Tool) and [rectangular selection](https://imagej.nih.gov/ij/docs/guide/146-19.html#sub:Rectangular-Selection-Tool).
+
+I like the distribution of ImageJ called [Fiji](https://fiji.sc/) because is powerful and easy to use.
+In Windows, it does not require installation.
+
+ImageJ is humble; it will show as a tiny toolbar on your screen. 
+To start, go to File>open or just drag and drop a file into the toolbar.
+You can zoom in with ‘+’ key, press and hold spacebar to pan, and zoom out with ‘-’ key. 
+
+### 1.2. CIMES-FISHEYE
+
+The program CIMES-FISHEYE (or just CIMES) was developed by Professor Jean-Michel Walter, who is a renamed hemispherical-photography researcher.
+CIMES is a toolbox that can be used to compute canopy variables or light regimes from pre-processed hemispherical photographs.
+The toolbox includes the majority of algorithms that can be found in the literature and are useful to analyze binarized canopy hemispherical images.
+CIMES has a companion manual that explains each algorithm and provides references, which is ideal for facilitating academic writing.
+
+CIMES is not like other open-source projects because the source code is not available online, but you can request access by email [@Gonsamo2018].
+Compilations for Windows, Mac OS X, and Linux are distributed through the [CIMES-FISHEYE web page](http://jmnw.free.fr/) under a GNU license.
+
+The pre-processing required by CIMES, which is binarizing and reprojecting to a standard projection, can be done with the ‘caiman’ package.
+Therefore, the typical processing chain will be Fiji-caiman-CIMES.
+The main drawback is that CIMES does not support non-circular photographs.
+
+### 1.3. Hemisfer
+
+[Hemisfer](https://www.wsl.ch/en/services-and-products/software-websites-and-apps/hemisfer.html) was developed by [Dr. Patrick Schleppi](https://www.wsl.ch/en/employees/schleppi.html).
+This software can perform the whole processing chain: model the specific projection of any fisheye lens, binarize the photographs, and estimate both forest variables and light regime.
+It has an intuitive graphical user interface and a complete user manual.
+This software has two binarization algorithms and several ones to estimate leaf area index.
+The reference for each algorithm is easily available.
+
+Hemisfer is a proprietary software package distributed by the WLS institute.
+Its non-profit license has a [very affordable price](https://www.wsl.ch/eshop/product_info.php?products_id=198) that includes access to updates without additional cost.
+It also includes the technical support service, which in my experience is upstanding, with fast and complete responses by Dr. Patrick Schleppi.
+
+A freeware version is available for non-registered users. 
+With that version, binarized images of 500 $\times$ 500 pixels can be analyzed using all the functionalities provided by Hemisfer.
+I wrote the `downsample_bin()` function to facilitate the use of the freeware version.
+
+An advanced feature of Hemisfer software is its capacity to work with masked images. @Diaz2018 analyzed the advantage of this approach. Although no concrete recommendation could be drawn from the results, I think that this approach is very promising.
+
+The main drawback of Hemisfer is that it only runs on Windows.
+
+
+### 1.4. Can-Eye
+
+[CAN-EYE](https://www6.paca.inra.fr/can-eye/) is a free software package developed since 2003 at EMMAH (Environnement Mediterranéen et Modélisation des Agro-Hydrosystèmes) by INRA (French National Institute of Agronomical Research).
+This software can perform the whole processing chain, it has a graphical user interface and a complete user manual.
+I have not personally tried it yet, but [many other researchers have used it](https://www6.paca.inra.fr/can-eye/Documentation/Publications).
+
+The mathematical model for lens calibration that Can-Eye uses is different from the one used by the ‘caiman’ package.
+Therefore, interoperability is difficult.
+The best solution could be reprojecting to a standard projection (the same pre-processing that CIMES requires). 
+
+The main drawback of Can-Eye is that it only runs on Windows.
+
+## 2. Basic processing pipelines
+Under the following subheadings you can find demonstrations of how to combine functions to perform basic manipulations of canopy photographs.
+I provide the code and links to sample photographs, so you can replicate the process step by step.
+The goal is gaining familiarity with the base functions to seemly move to the more complex original algorithms that are the core of the ‘caiman’ package, and are addressed in theirs own vignettes.
+
+### 2.1. Standard binarization of a conventional canopy photograph
+
+You can read a photograph taken with your phone (or whatever another conventional camera) using the function `loadPhoto()`.
+This creates a `CanopyPhoto` object in the working environment. 
+This class of object represents a photograph stored in the disk.
+I built the `CanopyPhoto` class on top of the `RasterBrick` class from the ‘raster’ package.
+At first glance, this could seem like a weird choice because the ‘raster’ package was developed for geographic data.
+However, that does not create any important drawback but gives several advantages.
+The ‘raster’ package provides general raster manipulation functions that are amazingly fast and memory saving (it is a great software).
+The drawback is that `CanopyPhoto` class inherits slots that do not make any sense, such as the `crs` slot, which is used to define the geographic projection of a geo-raster. 
+
+
+You can download the hemispherical photograph I use in this section from this link: [19.JPG](https://osf.io/zh5md/download). 
+
+The demonstration starts reading a photograph named ‘19.JPG’ that is stored in the working directory. 
+
+
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘19.JPG’)
+```
+
+
+
+
+
+The nonsense slot is there but is not harmful.
+
+```{r eval=FALSE, include=TRUE}
+cp@crs
+```
+
+
+If you want a specific region of interest (ROI) from ‘19.JPG’, you can open it in Fiji and use the rectangle selection tool to draw a rectangle that includes the ROI.
+The status bar will display the coordinates of the upper left corner, the width and the height (or go to Analyze>Tools>ROI manager... and then More>Specify…).
+For example, you can get: x = 534, y = 237, w = 1530, h = 1476.
+
+
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘19.JPG’, upperLeft = c(534,237), width = 1530, height = 1476)
+```
+
+
+
+
+Run the next line of code to binarize the photo using the blue channel (default):
+
+
+```{r eval=FALSE, include=TRUE}
+bin <- autoThr(cp)
+```
+
+
+
+
+Finally, you can save the result in the disk using the `writeRaster()` function from the ‘raster’ package.
+
+
+```{r eval=FALSE, include=TRUE}
+writeRaster(bin * 255, ‘bin.tif’, datatype = “INT1U”)
+```
+
+
+
+
+To improve usability, I wrote the `write_bin()` wrapper function.
+
+
+```{r eval=FALSE, include=TRUE} 
+write_bin(bin, ‘bin’)
+```
+
+
+
+
+
+>**NOTE:** Also I wrote the `read_bin()` function to improve usability.
+
+
+
+However, you probably are interested in processing a lot of photographs automatically (batch processing).
+The next script do all the processing by folder.
+
+```{r eval=FALSE, include=TRUE}
+photos <- dir(‘path/to/photos’, pattern = ‘jpg’, ignore.case = TRUE, full.names = TRUE)
+path4write <- ‘path/to/output_folder’
+
+for (i in seq_along(photos) {
+	cp <- loadPhoto(photos[i])
+	bin <- autoThr(cp)
+	name <- basename(photos[i])
+	ext <- tools::file_ext(name)
+	name <- sub(paste0(‘\.’, ext), ‘’, name)
+	write_bin(bin, paste0(path4write, name))
+}
+```
+
+
+
+
+By using the `extract_name()` function, which I wrote to improve usability, the code can be more compact and readable:
+
+
+```{r eval=FALSE, include=TRUE}
+for (i in seq_along(photos) {
+	cp <- loadPhoto(photos[i])
+	bin <- autoThr(cp)
+	name <- extract_name(photos[i]) # three lines now are one
+	write_bin(bin, paste0(path4write, name))
+}
+````
+
+
+
+
+### 2.2. Standard binarization of a circular hemispherical photograph
+
+Lens with a field of view (FOV) near 180º are known as fisheye or hemispherical lens.
+A picture with 180º of both vertical and horizontal FOV is a circle inside the rectangular frame produced by the shape of the sensor.
+That is what is known as a circular hemispherical photograph [@Schneider2009].
+If you do not understand these concepts, I recommend you to read the vignette entitled “Lens geometry”. 
+
+You can download the hemispherical photograph that I use in this section from this link: [2_B_2_DSCN4547.JPG](https://osf.io/nrd8y).
+I took this photograph using a Nikon FC-E9 converter attached to a Nikon Coolpix 5700 camera.
+
+As you can see below, reading a circular hemispherical photograph is like reading a ROI from a photograph.
+
+
+```{r eval=FALSE, include=TRUE}
+# equipment parameters 
+zenith_coordinates <- c(1280, 960)
+radius <- 745
+
+# There are two ways of doing this
+cp <- loadPhoto(‘2_B_2_DSCN4547.JPG’, 
+    upperLeft = zenith_coordinates - radius,
+     width = radius*2, height = radius*2)
+# or
+cp <- loadPhoto(‘2_B_2_DSCN4547.JPG’, 
+    zenith  = zenith_coordinates, 
+    radius = radius)
+```
+
+
+
+
+
+>**NOTE:** Use the `plotRGB()` function to visualize a `CanopyPhoto` object.
+
+
+The complexity is in knowing the equipment parameters that define the ROI, i.e., the `zenith_coordinates` and the `radius`.
+To know more about the topic, refer to the vignette “Lens geometry”. 
+
+
+
+>**NOTE:** To estimate forest variables or light regime, you need to know and be able to model the lens geometry. Read the sections 1.2 and 1.3 to know more about this topic.
+
+
+At this point, the photograph is ready for a standard binarization with `autoThr()`, as in section 2.1.
+The `autoThr()` function takes numeric data from a single layer of the image (the blue channel by default) and calculates a global threshold value using the @Ridler1978 method (by default).
+The implementation of this method is based on [the ImageJ plugin](http://fiji.sc/Auto_Threshold#IsoData) by Gabriel Landini.
+
+You can access the threshold value using:
+
+
+```{r eval=FALSE, include=TRUE}
+autThr(cp[])
+````
+
+
+
+
+
+Until now, the values from the areas outside the circle were used in the calculation of the threshold value, which is not recommended.
+Below is how these values can be excluded.
+
+
+```{r eval=FALSE, include=TRUE}
+r <- makeRimage(radius*2)
+# or
+r <- makeRimage(ncol(cp))
+
+m <- doMask(r)
+cp[!m] <- NA
+
+bin <- autoThr(cp)
+````
+
+
+
+
+
+Ok. A lot of new things here. 
+The `makeRimage()` function creates a `RelativeRadiusImage` object in the working environment.
+This object, called `r`, is a raster that matches to `cp` but has values of relative radius (R).
+Then, the `r` object is used to obtain the `m` object, which is a mask latter used to turn all pixels outside the circle into `NA` values.
+Finally, the `autoThr()` function ignores `NA` values and, therefore, it retrieves the desired output.
+
+
+>**NOTE:** To understand the relative radius (R), is useful to imagine infinite concentric circles centered at the `zenith_coordinates`. R is the radius of those circles expressed as a fraction of the radius that belongs to the circle that has the horizon as its perimeter. See the vignette entitled “Lens geometry” to learn more about R.
+
+
+But, what if you want to calculate the threshold using a region and then apply it to the whole image?
+See how to do it below.
+
+
+
+```{r eval=FALSE, include=TRUE}
+cp_aux <- loadPhoto(‘2_B_2_DSCN4547.JPG’, 
+upperLeft = c(909,777),
+width = 363,
+height = 363)
+thr <- autoThr(cp_aux[])
+bin <- presetThr(cp$Blue, thr) 
+````
+
+
+
+
+
+Ok, but, what if you want to calculate the threshold with pixels between 50º and 60º zenith angle?
+That is harder. So, before continuing, I strongly recommend you to read the vignette entitled “Lens geometry”.
+
+In the ‘caiman’ package, a polynomial curve is used to model lens projection.
+A third-order polynomial is sufficient in most cases [@Frazer2001].
+The `lensPolyCoef()` function can be used to create a `LensPolyCoef` object in the working environment.
+
+
+```{r eval=FALSE, include=TRUE}
+lens_projection <- lensPolyCoef(‘FC-E9’)
+lens_projection@coef
+
+z <- makeZimage(ncol(cp), lens_projection)
+m <- doMask(z, zlim = asAngle(c(50,60))
+thr <- autoThr(cp$Blue[m])
+bin <- presetThr(cp$Blue, thr) 
+````
+
+
+
+
+
+>**NOTE:** The `asAngle()` and the `swichUnit()` are silly functions that I created for dealing with angle units.
+
+
+A new thing here. The `makeZimage()` is similar to `makeRimage()`, but for zenith angle instead of R.
+This creates a `ZenithImage` object in the working environment.
+The zenith is an imaginary point directly above a location. The straight line that contains the location and the zenith is a perfect vertical. The angle between that vertical line and any other line passing through the location is the zenith angle ($\theta$).
+More details in the vignette entitled “Lens geometry”.
+
+### 2.3. Standard binarization of a non-circular hemispherical photograph
+
+Lenses with a field of view (FOV) near 180º are known as fisheye or hemispherical lenses.
+Lenses with near 180º diagonal FOV are called diagonal [@Schneider2009] or full-frame hemispherical lenses [@Macfarlane2007].
+The latter term suggests the sensor is completely used (no black areas on the photographs).
+I like the term full-frame, but I think that non-circular is the most useful because converters attached to mobile devices can produce photographs with some black areas but without a complete circle on them.
+This term is used in the [manual of the Gap Light Analyzer software package](https://www.caryinstitute.org/science/scientific-staff/our-scientists/dr-charles-d-canham/gap-light-analyzer-gla).
+
+As an example, I use a photograph obtained using a Nikkor 10.5 mm lens attached to a Nikon D50 body (courtesy of MA Isabel Santiago).
+You can download the photograph from the following link: [DSC_2881.JPG](https://osf.io/x8urg).
+
+Reading a non-circular hemispherical photograph is simple. 
+The complexity is in knowing the equipment parameters.
+The method for estimating them is usually called calibration.
+
+The Nikkor 10.5 mm was calibrated by @Pekin2009 using data in the range 0 to 70º zenith angle and a Nikon D80, which is different to the D50 used to take the ‘DSC_2881.JPG` photo.
+The polynomial function is valid for the lens. However, other parameters depend on the specific combination of camera body and lens.
+These parameters are the zenith coordinates (called optical center by these authors) and the relation between $\theta$ and distance in pixels from the zenith.
+To understand this, try to think of the image as a polar coordinate system instead of a cartesian one.
+The zenith is the reference point of the polar system and the distance from the zenith is the radius of any given concentric circle. 
+
+
+```{r eval=FALSE, include=TRUE}
+Pekin2009 <- function(theta) {
+# theta: zenith angle in degrees
+29.9 * theta + 0.00836 * theta^2 - 0.0005 * theta^3
+# return the radius in pixels (assuming the use of a D80)
+}
+
+angles <- seq(0, pi/2, pi/180)
+relative_radius <- Pekin2009 (angles) / Pekin2009 (pi/2) 
+
+plot(angles, relative_radius)
+
+m <- lm(relative_radius ~ poly(angles, 3, raw = TRUE) - 1)
+coef(m2)
+
+lens_projection <- lensPolyCoef(c(0.71553, 0.01146, -0.03928), asAngle(70))
+````
+
+
+
+
+>**NOTE:** In the vignette entitled “Lens geometry” I explain how to obtain both the zenith coordinates and radius-angle data.
+
+
+For the Nikkor 10.5 mm lens attached to a Nikon D50 body, 1202 pixels radius is the equivalent of  53º $\theta$.
+This radius-angle data and the `lens_projection` object can be used along with the `calcDiameter()` function to find the diameter that a circular image would have if the equipment could depict the whole hemisphere.
+
+
+```{r eval=FALSE, include=TRUE}
+diameter <- calcDiameter(lens_projection, 1202, asAngle(53))
+````
+
+
+
+
+
+
+Zenit coordinates, diameter and lens projection is all you need to estimate forest variables using Hemisfer, which can handle non-circular hemispherical photographs very well.
+After setting the parameters based on these three variables, a standard binarization can be done in Hemisfer with almost zero effort.
+On the other hand, due to a non-circular hemispherical photograph does not require the subsetting of a ROI, you already know how to do it with the ‘caiman’ package, but I show it bellow to reinforce it.
+
+
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘DSC_2881.JPG’)
+bin <- autoThr(cp)
+````
+
+
+
+
+As I explained earlier, this guide is for getting familiarity with the base functions of ‘caiman’ package.
+Then, you can use that familiarity to gain access to the original algorithms implemented in the package.
+The advanced functions of caiman usually will require this as a previous step:
+
+
+```{r eval=FALSE, include=TRUE}
+zenith_coordinates <- c(1503, 998)
+z <- makeZimage(diameter, lens_projection)
+cp <- loadPhoto(‘DSC_2881.JPG’)
+cp <- expandFullframe(cp, z, zenith_coordinates)
+````
+
+
+
+
+
+
+This creates a virtual circular hemispherical photograph from the non-circular one.
+
+### 2.4. Reprojecting hemispherical images
+
+Once the equipment projection is known, the image data can be reprojected to any standard projection.
+The package has the cylindrical (also known as panoramic or pano) and equiangular (also known as polar) reprojections.
+
+In this section, I use the 2_B_2_DSCN4547.JPG sample photograph.
+Below is the projection of the equipment used to acquire it:
+
+
+```{r eval=FALSE, include=TRUE}
+zenith_coordinates <- c(1280, 960)
+radius <- 745
+lens_projection <- lensPolyCoef(“FC-E9”)
+z <- makeZimage(ncol(cp), lens_projection)
+a <- makeAimage(z)
+````
+
+
+
+
+
+The `makeAimage()` function is the same that `makeZimage()` but for azimuthal angles.
+It assumes the camera top pointing to North. If it were oriented elsewhere, the `rotAzim()` function can be used to rotate `a`. 
+
+Reprojection to cylindrical can be done with the `fisheye2pano()` or the `fisheye2pano_lr()` functions. 
+The appendix “_lr” stands for low resolution.
+This is a very transparent approach that requires a sky grid (also known as sky map), which is the intersection of a segmentation of `z` and a segmentation of `a`.
+
+The segmentation of `z` produces ring shapes.
+
+
+```{r eval=FALSE, include=TRUE}
+rings <- makeRings(z, asAngle(5))
+````
+
+
+
+
+
+The segmentation of `a` produces pie-slice shapes.
+
+
+```{r eval=FALSE, include=TRUE}
+pieslices <- makePolarSectors(a, asAngle(5))
+````
+
+
+
+
+
+The intersection of these segmentations produces windshield shapes.
+The `makePolarGrid()` function generates this intersection guaranteeing a unique id for each segment, which is important during processing.
+
+
+```{r eval=FALSE, include=TRUE}
+g <- makePolarGrid(z, a, asAngle(5))
+````
+
+
+
+
+The functions for reprojecting require a normalized input; therefore, the `CanopyPhoto` values must be in the range of 0 to 1.
+ 
+
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(“2_B_2_DSCN4547.JPG”, 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+ncp <- normalize(cp, 0, 255) # 8-bit per channel 
+
+g <- makePolarGrid(z, a, asAngle(1))
+pano_lr <- fisheye2pano(ncp, g)
+
+g <- makePolarGrid(z, a, asAngle(5))
+pano_lr <- fisheye2pano_lr(ncp, g)
+````
+
+
+
+
+
+The use of `fisheye2pano()` and `fisheye2polar()` functions is straightforward.
+
+
+```{r eval=FALSE, include=TRUE}
+pano <- fisheye2pano(ncp, z, a)
+
+pol <- fisheye2pol(ncp, z, a)
+````
+
+
+
+
+### 2.5. Regional Binarization
+
+An advanced feature of the package is regional binarization.
+This method can handle certain type of sky brightness heterogeneity.
+Although its relative simplicity, it has demonstrated better performance than the standard global thresholding approach, which can not handle sky brightness heterogeneity at all [@Diaz2018].
+
+
+
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘2_B_2_DSCN4547.JPG’, 
+    zenith  = zenith, 
+    radius = radius)
+rings <- makeRings(z, asAngle(5))
+bin <- regional_thr(cp$Blue, rings)
+````
+
+
+
+
+### 2.6. Managing metadata
+
+The caiman package can help you manage the metadata of photographs thanks to the ‘exifr’ package [@cite], which uses the well-known [ExifTool Perl library](https://www.sno.phy.queensu.ca/~phil/exiftool/). 
+Therefore, it [requires Perl installed in your system](https://github.com/paleolimbot/exifr#installation).
+Because not everyone needs to read EXIF metadata, I made this feature optional.
+The default installation of the ‘caiman’ package can not read the EXIF metadata.
+If you want this feature, you must manually install ‘exifr’ and Perl (if they are not already installed on your system --if you are a Windows user, I recommend you Active State Perl).
+
+With this feature ON, you can access EXIF metadata using r functions.
+
+
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘DSC_2881.JPG’)
+equipment(cp)
+datetime(cp)
+exposureTime(cp)
+fNumber(cp)
+isoSpeed(cp)
+````
+
+
+
+
+
+However, with or without this feature ON, you can set the values manually (this does not change the file, only the r object).
+
+
+```{r eval=FALSE, include=TRUE}
+equipment(cp) <- ‘tricorder’
+exposureTime(cp) <- 1
+````
+
+
+
+
+## References
+
+

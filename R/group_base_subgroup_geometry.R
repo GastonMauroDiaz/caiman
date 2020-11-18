@@ -462,6 +462,66 @@ setMethod("calcDiameter",
 )
 
 
+#### expandFullframe ####
+#' @title Expand full frame hemispherical photographs
+#'
+#' @description Expand a full frame hemispherical photograph to get the
+#'   equivalent of a circular hemispherical photograph. Added
+#'   pixels will be \code{0}.
+#'
+#' @param x \code{\linkS4class{CanopyPhoto}}.
+#' @param z \code{\linkS4class{ZenithImage}}.
+
+#' @return \code{\linkS4class{CanopyPhoto}}.
+#'
+#' @seealso \code{\link{doMask}}.
+#'
+#' @example /inst/examples/doMaskExample.R
+#'
+setGeneric("expandFullframe",
+           function (x, z, zenith_colrow)
+             standardGeneric("expandFullframe"))
+#' @export expandFullframe
+
+#' @rdname expandFullframe
+setMethod("expandFullframe",
+          signature(x = "CanopyPhoto", z = "ZenithImage"),
+          function (x, z, zenith_colrow) {
+
+            zenith_xy <- zenith_colrow
+            zenith_xy[2] <- nrow(x) - zenith_colrow[2]
+
+            # locate the center of x over the center of z
+            center <- ncol(z) / 2
+            xmn <- center - (ncol(x) / 2)
+            xmx <- center + (ncol(x) / 2)
+            ymn <- center - (nrow(x) / 2)
+            ymx <- center + (nrow(x) / 2)
+            e <- extent(xmn, xmx, ymn, ymx)
+            extent(x) <- e
+
+            # shift the center of x according with zenith_xy
+            delta_x <- zenith_xy[1] - ncol(x) / 2
+            delta_y <- zenith_xy[2] - nrow(x) / 2
+            xmn <- xmin(x) + delta_x
+            xmx <- xmax(x) + delta_x
+            ymn <- ymin(x) + delta_y
+            ymx <- ymax(x) + delta_y
+            e <- extent(xmn, xmx, ymn, ymx)
+            extent(x) <- e
+
+
+            foo <- extend(x, z, value = NA)
+
+            foo <- as(foo, "CanopyPhoto")
+            foo <- cloneSlots(x, foo)
+            e <- extent(0, ncol(foo), 0, nrow(foo))
+            extent(foo) <- e
+            foo
+
+          }
+)
+
 ##### rotAzim ####
 #' @title Rotate Azimuth
 #'
@@ -587,7 +647,9 @@ setMethod("fisheye2pano",
             decode_label <- function(label) {
               sector_ID <- trunc(label / 1000)
               rings_ID <- label - sector_ID * 1000
-              data.frame(sector_ID, rings_ID = max(rings_ID) - rings_ID)
+              #browser()
+              #data.frame(sector_ID, rings_ID = max(rings_ID) - rings_ID)
+              data.frame(sector_ID, rings_ID)
             }
 
             xy <- decode_label(as.numeric(names(blue)))
@@ -596,7 +658,7 @@ setMethod("fisheye2pano",
             r <- raster(r)
             extent(r) <- extent(0, ncol(r), 0, nrow(r))
 
-            cells <- cellFromXY(r, as.matrix(xy))
+            cells <- cellFromXY(r, as.matrix(xy)-0.5)
             r[cells] <- blue
             # .labels <- r
             # .labels[cells] <- as.numeric(names(blue))
@@ -689,5 +751,67 @@ setMethod("fisheye2pano_hr",
 
             extent(photo) <- extent(0, ncol(r), 0, nrow(r))
             photo
+          }
+)
+
+##### calibrate_lens ####
+
+#' @title todo
+#'
+#' @description todo
+#'
+#' @param cvs todo
+#'
+#' @export calibrate_lens
+#'
+#' @examples #todo
+setGeneric("calibrate_lens",
+           function(csv)
+             standardGeneric("calibrate_lens"))
+
+#' @rdname calibrate_lens
+setMethod("calibrate_lens",
+          signature(csv = "data.frame"),
+          function (csv)
+          {
+            degree <- 3
+
+            csv <- cbind(csv$X, csv$Y)
+
+            #center in (0,0)
+            csv[,1] <- csv[,1] - csv[1,1]
+            csv[,2] <- csv[,2] - csv[1,2]
+
+            maxFOV_px <- csv[nrow(csv),]
+            csv <- csv[-nrow(csv),]
+
+            theta <- seq(0,90,5) * pi/180
+            theta <- theta[1:nrow(csv)]
+
+            #convert
+            csv <- cart2pol(csv)
+            maxFOV_px <- cart2pol(maxFOV_px)
+            maxFOV_px <- maxFOV_px[2]
+
+            pix <- csv[,2]
+
+            #fit to get FOV
+            fit <- lm(theta ~ poly(pix, degree, raw = TRUE) -1)
+            maxFOV <- predict(fit, data.frame(pix = maxFOV_px)) * 180/pi
+
+            # fit to get the radius of the horizon
+            fit <- lm(pix ~ poly(theta, degree, raw = TRUE) -1)
+            pix90 <- predict(fit, data.frame(theta = pi/2))
+
+            #relative radius
+            R <- pix/pix90
+
+            # fit to get the coefficients
+            fit <- lm(R ~ poly(theta, degree, raw = TRUE) -1)
+
+            coefficients(fit)
+            lens <- lensPolyCoef()
+            lens@coef <- unname(coefficients(fit))
+            lens
           }
 )

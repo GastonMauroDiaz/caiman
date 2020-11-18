@@ -848,6 +848,16 @@ setMethod("process_multi_point",
               data.frame(x, y, z)
             }
 
+            # .extract_blueDN <- function(i) {
+            #   name <- basename(block_info$file[i])
+            #   extension(name) <- "csv"
+            #   xy <- read.csv(paste0(path2data, name))
+            #   x <- xy$X
+            #   y <- nrow(cp) - xy$Y
+            #   z <- xy$Mean
+            #   data.frame(x, y, z)
+            # }
+
             indices <- seq_along(block_info$file)
             ds <- Map(.extract_blueDN, indices)
             for (i in unique(block_info$block)) {

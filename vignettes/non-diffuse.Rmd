@@ -1,0 +1,213 @@
+---
+title: "Processing photographs acquired under non-diffuse light conditions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{non-diffuse}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(caiman)
+```
+
+## Introduction
+
+### Why it is recommended to acquire hemispherical photographs in diffuse light conditions?
+
+The general recommendation of acquiring hemispherical photographs of the forest canopy in diffuse light conditions has created some confusion.
+The goal of this section is to avoid any confusion by understanding the whys.
+
+Cameras are designed for producing nice-looking color images.
+To do this, manufacturers use digital sensors that are able to transform the incident radiation into voltage.
+These two concepts, i.e., the camera as a device for producing images and the camera as a sensor that responds to radiation, form the pillars of two paradigms of data processing: (1) using image processing techniques [@Nobis2005] and (2) using techniques developed for radiation-measuring equipment [@Cescatti2007].
+These paradigms have different assumptions.
+
+The image-processing paradigm assumes the photograph has enough information to correctly classify pixels depicting canopy gaps, while the radiation-measuring paradigm assumes that, for a given direction, the ratio between radiation measured below and above the canopy is equal to the gap fraction (GF).
+A straightforward definition of GF is the fraction of unobstructed sky seen from beneath the canopy [@Chen1997]. 
+
+Because the canopy elements do not behave as optically black objects (i.e., non-reflecting and opaque), the radiation-measuring paradigm requires diffuse light conditions; otherwise, the reflection of a sunlit canopy will increase the radiation measured below the canopy [@Kuus2016].
+
+For the image-processing paradigm, it is true that an image acquired in diffuse light has such a very high contrast that all the information needed to separate the gap-pixels from everything else is a threshold value for the digital number (DN) of the blue channel.
+However, it is also true that if we use thresholding to classify a photograph acquired in non-diffuse light conditions, we can see where the classification is wrong.
+Therefore, the information is there.
+The problem is that each method has assumptions and a level of error associated with the level of divergence between its ideal data and the actual input data.
+Thresholding assumes a high contrast image, so other image processing approach must be applied to handle the type of colorful photographs that are acquired under non-diffuse light conditions.
+
+Diffuse light conditions are (1) under a relatively uniformly overcast sky, avoiding raindrops over the lens, or (2) at dawn/dusk under a clear sky when there is no sunlit canopy [@libro2018].
+Therefore, diffuse light conditions occur only in a relatively small time window.
+Non-diffuse light is every other light conditions during the day, such as under a clear sky, which is a great condition for field work.
+
+
+### binarization of colorful canopy photographs
+
+In 2015, as a lead author, I published a new algorithm to binarize hemispherical photographs acquired in non-diffuse light conditions [@Diaz2015].
+The title of the paper is “Enhanced gap fraction extraction from hemispherical photography”, while in retrospective the title was poorly crafted, the content is helpful to know how the algorithm works (we even did some really good animations that are part of the paper as complementary material).
+This algorithm, which I called binarization of colorful canopy photographs (BCCP), has three main steps: (1) per-pixel classification based on color space transformation and fuzzy logic, (2) quad-tree segmentation, and (3) multiscale object-based image analysis.
+BCCP  is a complex algorithm that requires much more computational power than any thresholding algorithm. 
+In addition, the result is not as accurate as it could be if very high contrast photographs were acquired under diffuse light conditions.
+The main reasons for that could be (1) the accumulation and propagation of error throughout the several steps of the algorithm and (2) the low resolution of the hue information in comparison with the lightness information.
+Therefore, users need to evaluate the advantage of this approach that trades field costs per accuracy.
+My recommendation is to evaluate the accuracy of the BCCP algorithm for your specific equipment and forest type before proceeding to extensive sampling. 
+To do that, you can use an experimental design similar to the one used by @Diaz2015, but maybe using the `MBLT()` function as reference.
+You can learn about this function in the vignette “Model-based local thresholding algorithm”. 
+
+The original implementation of the BCCP algorithm (@Diaz2015) was exclusively for circular hemispherical photographs.
+Over time, I adapted it for processing non-circular hemispherical photographs and conventional photographs.
+
+Next, I present a processing pipeline for each type of photograph.
+Refer to the vignette “Introduction to the ‘caiman’ package” for the basic use of the package and the instructions for batch processing. 
+
+## Binarization of a circular hemispherical photograph
+
+You can download the photograph I use in this section from this link: [2_Normal Program_2009-12-07 07-35-36.JPG](https://osf.io/gr5jc/download).
+
+
+```{r eval=FALSE, include=TRUE}
+zenith_coordinates <- c(1280, 960)
+radius <- 745
+lens_projection <- lensPolyCoef(‘FC-E9’)
+z <- makeZimage(ncol(cp), lens_projection)
+a <- makeAimage(z)
+
+cp <- loadPhoto(‘2_Normal Program_2009-12-07 07-35-36.JPG’, 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+ncp <- normalize(cp, 0, 255)
+m <- doMask(z)
+````
+```{r eval=FALSE, include=TRUE}
+zenith_coordinates <- c(1280, 960)
+radius <- 745
+lens_projection <- lensPolyCoef(‘FC-E9’)
+z <- makeZimage(ncol(cp), lens_projection)
+a <- makeAimage(z)
+
+cp <- loadPhoto(‘2_Normal Program_2009-12-07 07-35-36.JPG’, 
+    zenith  = zenith_coordinates,
+    radius = radius) 
+ncp <- normalize(cp, 0, 255)
+m <- doMask(z)
+````
+
+
+
+Next, I apply the original algorithm:
+
+
+```{r eval=FALSE, include=TRUE}
+ecp <- enhanceHP(x, m)
+bin <- autoThr(ecp)
+seg <- doPolarQtree(x, z, a, scaleParameter = 0.2)
+bin <- doOBIA(ncp, bin, z, seg, zlim = asAngle(c(30, 60)))
+````
+```{r eval=FALSE, include=TRUE}
+ecp <- enhanceHP(x, m)
+bin <- autoThr(ecp)
+seg <- doPolarQtree(x, z, a, scaleParameter = 0.2)
+bin <- doOBIA(ncp, bin, z, seg, zlim = asAngle(c(30, 60)))
+````
+
+
+
+More recently, I developed the `adaptive_binarization()` function, which replaces the duo `enhaceHP()` and `autoThr()` in the processing pipeline.
+This function is a rule-based system that delivers the better flavor of `enhaceHP()` according to the photograph characteristics, or, if the photograph has no hue information, applies `autoThr()` ignoring large gaps.
+In addition, `adaptive_binarization()` can suggest the use of the `MBLT()` function.
+
+
+```{r eval=FALSE, include=TRUE}
+bin <- adaptive_binarization(cp, m)
+seg <- doPolarQtree(x, z, a, scaleParameter = 0.2)
+bin <- doOBIA(ncp, bin, z, seg, zlim = asAngle(c(30, 60)))
+````
+```{r eval=FALSE, include=TRUE}
+bin <- adaptive_binarization(cp, m)
+seg <- doPolarQtree(x, z, a, scaleParameter = 0.2)
+bin <- doOBIA(ncp, bin, z, seg, zlim = asAngle(c(30, 60)))
+````
+
+
+
+Try to process [2_B_2_DSCN4547.JPG](https://osf.io/nrd8y/download) with the same processing pipeline. 
+You will see that you are going to obtain a binary image and a message.
+The message will say that the `adaptive_binarization()` function has been created a temporary folder in your working directory with a copy of 2_B_2_DSCN4547.JPG.
+If you are using batch processing, this is a nice feature because you can try the MBLT algorithm in the copies or, if you don't have the time, delete the folder.
+
+## Binarization of a non-circular hemispherical photograph
+
+You can download the photograph I use in this section from this link: [DSC_2881.JPG](https://osf.io/x8urg/download).
+The processing pipeline is straightforward:
+
+
+```{r eval=FALSE, include=TRUE}
+lens_projection <- lensPolyCoef(‘Nikkor 10.5 mm’)
+zenith_coordinates <- c(1503, 998)
+radius <- 1877 
+z <- makeZimage(radius*2, lens_projection)
+a <- makeAimage(z)
+
+cp <- loadPhoto(‘DSC_2881.JPG’)
+cp <- expandFullframe(cp, z, zenith_coordinates)
+ncp <- normalize(cp, 0, 255)
+
+bin <- adaptive_binarization(cp)
+seg <- doPolarQtree(x, z, a, scaleParameter = 0.2)
+bin <- doOBIA(ncp, bin, z, seg, zlim = asAngle(c(30, 60)))
+````
+```{r eval=FALSE, include=TRUE}
+lens_projection <- lensPolyCoef(‘Nikkor 10.5 mm’)
+zenith_coordinates <- c(1503, 998)
+radius <- 1877 
+z <- makeZimage(radius*2, lens_projection)
+a <- makeAimage(z)
+
+cp <- loadPhoto(‘DSC_2881.JPG’)
+cp <- expandFullframe(cp, z, zenith_coordinates)
+ncp <- normalize(cp, 0, 255)
+
+bin <- adaptive_binarization(cp)
+seg <- doPolarQtree(x, z, a, scaleParameter = 0.2)
+bin <- doOBIA(ncp, bin, z, seg, zlim = asAngle(c(30, 60)))
+````
+
+
+
+## Binarization of a conventional canopy photograph
+
+You can download the hemispherical photograph I use in this section from this link: [19.JPG](https://osf.io/zh5md/download).
+This is the easiest processing pipeline:
+
+
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘19.JPG’)
+ncp <- normalize(cp, 0, 255)
+
+bin <- adaptive_binarization(cp)
+seg <- doQtree(x, z, a, scaleParameter = 0.2)
+bin <- doOBIA(ncp, bin, z, seg, zlim = asAngle(c(30, 60)))
+````
+```{r eval=FALSE, include=TRUE}
+cp <- loadPhoto(‘19.JPG’)
+ncp <- normalize(cp, 0, 255)
+
+bin <- adaptive_binarization(cp)
+seg <- doQtree(x, z, a, scaleParameter = 0.2)
+bin <- doOBIA(ncp, bin, z, seg, zlim = asAngle(c(30, 60)))
+````
+
+
+
+>**NOTE:** Some recommendations to acquire photographs in non-diffuse light conditions”:
+
+* Avoid direct sunlight on the lens by using the canopy to block it, if your photosite is flexible, or by using a little disk as @Kuusk2007 did.
+* Obtain 16-bit TIFF instead of 8-bit JPEG.
+* Overexpose the canopy without losing the color information.
+
+## References
