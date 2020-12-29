@@ -659,9 +659,11 @@ setMethod("fisheye2pano",
             extent(r) <- extent(0, ncol(r), 0, nrow(r))
 
             cells <- cellFromXY(r, as.matrix(xy)-0.5)
+            #cells <- cellFromXY(r, as.matrix(xy))
             r[cells] <- blue
             # .labels <- r
             # .labels[cells] <- as.numeric(names(blue))
+            r <- flip(r, "y") #because nadir is 0 and for raster 0 is the bottom
 
             if(!is.null(m)) r <- trim(r)
 
